@@ -189,10 +189,6 @@ void mapUpdateField()
 		}
 	}
 
-	Serial.println("this should only have 0 and 1:::");
-	mapDisplay();
-	Serial.println("yo ---");
-	
 	// update distance to nearest unvisited
 	for ( uint8_t s=0; s<NUMBEROFSTORIES; ++s ){
 		for ( uint8_t i=0; i<MAPSIZE; ++i ){
@@ -267,7 +263,7 @@ void calcDistanceRecursively(uint8_t s, uint8_t x, uint8_t y, uint8_t num)
 	// north field
 	if(y < MAPSIZE - 1)
 	{
-		if(!Map[ s ][ x ][ y ].directions[NOTH])
+		if(!Map[ s ][ x ][ y ].directions[SOUTH])
 		{
 			if(!Map[ s ][ x ][ y + 1 ].isBlack)
 			{
@@ -312,7 +308,7 @@ void calcDistanceRecursively(uint8_t s, uint8_t x, uint8_t y, uint8_t num)
 	// east field
 	if(x < MAPSIZE - 1)
 	{
-		if(!Map[ s ][ x ][ y ].directions[EAST])
+		if(!Map[ s ][ x ][ y ].directions[WEST])
 		{
 			if(!Map[ s ][ x + 1 ][ y ].isBlack)
 			{
@@ -346,7 +342,7 @@ void calcDistanceRecursively(uint8_t s, uint8_t x, uint8_t y, uint8_t num)
 	// south field
 	if(y > 1)
 	{
-		if(!Map[ s ][ x ][ y ].directions[SOUTH])
+		if(!Map[ s ][ x ][ y ].directions[NOTH])
 		{
 			if(!Map[ s ][ x ][ y - 1 ].isBlack)
 			{
@@ -391,7 +387,7 @@ void calcDistanceRecursively(uint8_t s, uint8_t x, uint8_t y, uint8_t num)
 	// west field
 	if(x > 1)
 	{
-		if(!Map[ s ][ x ][ y ].directions[WEST])
+		if(!Map[ s ][ x ][ y ].directions[EAST])
 		{
 			if(!Map[ s ][ x - 1 ][ y ].isBlack)
 			{
@@ -633,9 +629,9 @@ void mapDisplay()
 	for( uint8_t i=0; i<MAPSIZE; ++i )
 	{
 		if ( Map[s][i][o].directions[NOTH] )
-			Serial.print("@@@");
+			Serial.print("@@@@@");
 		else
-			Serial.print("   ");
+			Serial.print("     ");
 	}
 	Serial.println();
 	// waende im WESTEN und OSTEN
@@ -656,10 +652,15 @@ void mapDisplay()
 		test.Y = o;
 		// skip[0] = *robot_is_at;
 		Serial.print( Map[s][i][o].distanceToUnvisited );
-		// if ( Map[i][o].visited )
-			// Serial.print("V");
-		// else
-			// Serial.print("X");
+		if ( Map[s][i][o].visited )
+			Serial.print("V");
+		else
+			Serial.print("_");
+
+		if ( Map[s][i][o].isRamp )
+			Serial.print("R");
+		else
+			Serial.print("_");
 		
 
 		// OSTEN
@@ -675,9 +676,9 @@ void mapDisplay()
 	for( uint8_t i=0; i<MAPSIZE; ++i )
 	{
 		if ( Map[s][i][o].directions[SOUTH] )
-			Serial.print("@@@");
+			Serial.print("@@@@@");
 		else
-			Serial.print("   ");
+			Serial.print("     ");
 	}
 	Serial.println();
 	}
