@@ -6,7 +6,7 @@ Field Map[NUMBEROFSTORIES][MAPSIZE][MAPSIZE];
 
 // Variables of Robot
 uint8_t robot_is_facing;
-uint8_t robot_is_on_story = 0;
+uint8_t robot_is_on_story;
 Vector robot_is_at;
 
 // translates compas to direction
@@ -147,6 +147,7 @@ void mapInit()
 	// FIXME: half of MAPSIZE
 	robot_is_at.X = 5;
 	robot_is_at.Y = 5;
+	robot_is_on_story = 0;
 }
 
 
@@ -155,51 +156,59 @@ void mapUpdateField()
 	Serial.println("updating field");
 
 	// add walls to current field
-	Map[robot_is_at.X][robot_is_at.Y].directions[ mapDirectionToCompas( FRONT ) ] = wallExists(FRONT);
-	Map[robot_is_at.X][robot_is_at.Y].directions[ mapDirectionToCompas( RIGHT ) ] = wallExists(RIGHT);
-	Map[robot_is_at.X][robot_is_at.Y].directions[ mapDirectionToCompas( BACK ) ] = 	wallExists(BACK);
-	Map[robot_is_at.X][robot_is_at.Y].directions[ mapDirectionToCompas( LEFT ) ] = 	wallExists(LEFT);
+	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[ mapDirectionToCompas( FRONT ) ] = wallExists(FRONT);
+	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[ mapDirectionToCompas( RIGHT ) ] = wallExists(RIGHT);
+	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[ mapDirectionToCompas( BACK ) ] = 	wallExists(BACK);
+	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[ mapDirectionToCompas( LEFT ) ] = 	wallExists(LEFT);
 
 	Serial.println("new walls:");
 	for ( uint8_t i=0; i<4; ++i ){
-		Serial.println(Map[robot_is_at.X][robot_is_at.Y].directions[i]);
+		Serial.println(Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[i]);
 	}
 	
 	// change walls of sourounding fields
-	Map[robot_is_at.X][robot_is_at.Y-1].directions[ SOUTH ] = 	Map[robot_is_at.X][robot_is_at.Y].directions[NOTH];
-	Map[robot_is_at.X+1][robot_is_at.Y].directions[ WEST ] = 	Map[robot_is_at.X][robot_is_at.Y].directions[EAST];
-	Map[robot_is_at.X][robot_is_at.Y+1].directions[ NOTH ] = 	Map[robot_is_at.X][robot_is_at.Y].directions[SOUTH];
-	Map[robot_is_at.X-1][robot_is_at.Y].directions[ EAST ] = 	Map[robot_is_at.X][robot_is_at.Y].directions[WEST];
+	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y-1].directions[ SOUTH ] = 	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[NOTH];
+	Map[robot_is_on_story][robot_is_at.X+1][robot_is_at.Y].directions[ WEST ] = 	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[EAST];
+	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y+1].directions[ NOTH ] = 	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[SOUTH];
+	Map[robot_is_on_story][robot_is_at.X-1][robot_is_at.Y].directions[ EAST ] = 	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[WEST];
 
 	// mark current field as visited
-	Map[robot_is_at.X][robot_is_at.Y].visited = true;
+	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].visited = true;
 
 	// clear distances from the map
-	for ( uint8_t i=0; i<MAPSIZE; ++i ){
-		for ( uint8_t o=0; o<MAPSIZE; ++o ){
-			if (Map[ i ][ o ].visited == false)
-			{
-				Map[ i ][ o ].distanceToUnvisited = 1;
-			} else {
-				Map[ i ][ o ].distanceToUnvisited = 0;
+	for ( uint8_t s=0; s<NUMBEROFSTORIES; ++s ){
+		for ( uint8_t i=0; i<MAPSIZE; ++i ){
+			for ( uint8_t o=0; o<MAPSIZE; ++o ){
+				if (Map[ s ][ i ][ o ].visited == false)
+				{
+					Map[ s ][ i ][ o ].distanceToUnvisited = 1;
+				} else {
+					Map[ s ][ i ][ o ].distanceToUnvisited = 0;
+				}
 			}
 		}
 	}
+
+	Serial.println("this should only have 0 and 1:::");
+	mapDisplay();
+	Serial.println("yo ---");
 	
 	// update distance to nearest unvisited
-	for ( uint8_t i=0; i<MAPSIZE; ++i ){
-		for ( uint8_t o=0; o<MAPSIZE; ++o ){
-			if (Map[ i ][ o ].visited == false)
-			{
-				calcDistanceRecursively(i, o, 1);
-			}
+	for ( uint8_t s=0; s<NUMBEROFSTORIES; ++s ){
+		for ( uint8_t i=0; i<MAPSIZE; ++i ){
+			for ( uint8_t o=0; o<MAPSIZE; ++o ){
+				if (Map[s][ i ][ o ].visited == false)
+				{
+					calcDistanceRecursively(s, i, o, 1);
+				}
 
-			/*Vector test;
-			test.X = i;
-			test.Y = o;
-			Vector skipMe[LENGTHOFSKIP];
-			Serial.print("Field: ");Serial.print(i);Serial.print(", ");Serial.println(o);
-			Map[i][o].distanceToUnvisited = mapSearchForUnvisited( test, skipMe);*/
+				/*Vector test;
+				test.X = i;
+				test.Y = o;
+				Vector skipMe[LENGTHOFSKIP];
+				Serial.print("Field: ");Serial.print(i);Serial.print(", ");Serial.println(o);
+				Map[i][o].distanceToUnvisited = mapSearchForUnvisited( test, skipMe);*/
+			}
 		}
 	}
 }
@@ -233,50 +242,102 @@ void mapBlackFieldFront()
 
 void mapVictimNewAtCurrentField()
 {
-	Map[ robot_is_at.X ][ robot_is_at.Y ].hasVictim = true;
+	Map[robot_is_on_story][ robot_is_at.X ][ robot_is_at.Y ].hasVictim = true;
 }
 
 bool mapVictimIsAtCurrentField()
 {
-	return( Map[robot_is_at.X][robot_is_at.Y].hasVictim );
+	return( Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].hasVictim );
 }
 
-void calcDistanceRecursively(uint8_t x, uint8_t y, uint8_t num)
+void calcDistanceRecursively(uint8_t s, uint8_t x, uint8_t y, uint8_t num)
 {
-	/*Serial.println("recursion call:");
-	Serial.println(x);
-	Serial.println(y);
-	Serial.println(num);*/
+	Serial.print("recursion call:");
+	Serial.print(s);
+	Serial.print(x);
+	Serial.print(y);
+	Serial.println(num);
 
-	Map[ x ][ y ].distanceToUnvisited = num;
+	// declarations
+	Vector thisRamp;
+	Vector storiesThatMatch;
+
+	Map[ s ][ x ][ y ].distanceToUnvisited = num;
 
 	// north field
 	if(y < MAPSIZE - 1)
 	{
-		if(!Map[ x ][ y ].directions[NOTH])
+		if(!Map[ s ][ x ][ y ].directions[NOTH])
 		{
-			if(!Map[ x ][ y + 1 ].isBlack)
+			if(!Map[ s ][ x ][ y + 1 ].isBlack)
 			{
-				if(Map[ x ][ y + 1 ].distanceToUnvisited == 0 or
-				Map[ x ][ y + 1 ].distanceToUnvisited >= num + 1)
+				if(Map[ s ][ x ][ y + 1 ].distanceToUnvisited == 0 or
+				Map[ s ][ x ][ y + 1 ].distanceToUnvisited >= num + 1)
 				{
-					calcDistanceRecursively(x, y + 1, num + 1);
+					if(Map[ s ][ x ][ y + 1 ].isRamp)
+					{
+						Serial.println("ramp stuff");
+						thisRamp.X = x;
+						thisRamp.Y = y + 1;
+						storiesThatMatch = mapStoriesThatConnectAt(thisRamp);
+
+						if( storiesThatMatch.X == s && storiesThatMatch.Y != s )
+						{
+							calcDistanceRecursively(storiesThatMatch.Y, x, y + 1, num + 1);
+						}
+						else if ( storiesThatMatch.Y == s && storiesThatMatch.X != s )
+						{
+							calcDistanceRecursively(storiesThatMatch.X, x, y + 1, num + 1);
+						}else{
+							Serial.println("something went very wrong...");
+						}
+					}else{
+						Serial.println("distance is not 0 and not bigger than num+1 ::: north");
+						calcDistanceRecursively(s, x, y + 1, num + 1);
+					}
+				}else{
+					Serial.println(x);
+					Serial.println(y+1);
+					Serial.println("should work... north");
+					Serial.println(Map[ s ][ x ][ y + 1 ].distanceToUnvisited);
 				}
+			}else{
+				Serial.println("tile north is black");
 			}
+		}else{
+			Serial.println("there is a wall north");
 		}
 	}
 
 	// east field
 	if(x < MAPSIZE - 1)
 	{
-		if(!Map[ x ][ y ].directions[EAST])
+		if(!Map[ s ][ x ][ y ].directions[EAST])
 		{
-			if(!Map[ x + 1 ][ y ].isBlack)
+			if(!Map[ s ][ x + 1 ][ y ].isBlack)
 			{
-				if(Map[ x + 1 ][ y ].distanceToUnvisited == 0 or
-				Map[ x + 1 ][ y ].distanceToUnvisited >= num + 1)
+				if(Map[ s ][ x + 1 ][ y ].distanceToUnvisited == 0 or
+				Map[ s ][ x + 1 ][ y ].distanceToUnvisited >= num + 1)
 				{
-					calcDistanceRecursively(x + 1, y, num + 1);
+					if(Map[ s ][ x + 1 ][ y ].isRamp)
+					{
+						thisRamp.X = x + 1;
+						thisRamp.Y = y;
+						storiesThatMatch = mapStoriesThatConnectAt(thisRamp);
+
+						if( storiesThatMatch.X == s && storiesThatMatch.Y != s )
+						{
+							calcDistanceRecursively(storiesThatMatch.Y, x + 1, y, num + 1);
+						}
+						else if ( storiesThatMatch.Y == s && storiesThatMatch.X != s )
+						{
+							calcDistanceRecursively(storiesThatMatch.X, x + 1, y, num + 1);
+						}else{
+							Serial.println("something went very wrong...");
+						}
+					}else{
+						calcDistanceRecursively(s, x + 1, y, num + 1);
+					}
 				}
 			}
 		}
@@ -285,30 +346,77 @@ void calcDistanceRecursively(uint8_t x, uint8_t y, uint8_t num)
 	// south field
 	if(y > 1)
 	{
-		if(!Map[ x ][ y ].directions[SOUTH])
+		if(!Map[ s ][ x ][ y ].directions[SOUTH])
 		{
-			if(!Map[ x ][ y - 1 ].isBlack)
+			if(!Map[ s ][ x ][ y - 1 ].isBlack)
 			{
-				if(Map[ x ][ y - 1 ].distanceToUnvisited == 0 or
-				Map[ x ][ y - 1 ].distanceToUnvisited >= num + 1)
+				if(Map[ s ][ x ][ y - 1 ].distanceToUnvisited == 0 or
+				Map[ s ][ x ][ y - 1 ].distanceToUnvisited >= num + 1)
 				{
-					calcDistanceRecursively(x, y - 1, num + 1);
+					if(Map[ s ][ x ][ y - 1 ].isRamp)
+					{
+						Serial.print("ramp stuff");
+						thisRamp.X = x;
+						thisRamp.Y = y - 1;
+						storiesThatMatch = mapStoriesThatConnectAt(thisRamp);
+
+						if( storiesThatMatch.X == s && storiesThatMatch.Y != s )
+						{
+							calcDistanceRecursively(storiesThatMatch.Y, x, y - 1, num + 1);
+						}
+						else if ( storiesThatMatch.Y == s && storiesThatMatch.X != s )
+						{
+							calcDistanceRecursively(storiesThatMatch.X, x, y - 1, num + 1);
+						}else{
+							Serial.println("something went very wrong...");
+						}
+					}else{
+						Serial.println("should work...");
+						calcDistanceRecursively(s, x, y - 1, num + 1);
+					}
+				}else{
+					Serial.println("distance is not 0 and not bigger than num+1 :::");
+					Serial.println(x);
+					Serial.println(y-1);
+					Serial.println(Map[ s ][ x ][ y - 1 ].distanceToUnvisited);
 				}
+			}else{
+				Serial.println("tile is black");
 			}
+		}else{
+			Serial.println("there is a wall");
 		}
 	}
 
 	// west field
 	if(x > 1)
 	{
-		if(!Map[ x ][ y ].directions[WEST])
+		if(!Map[ s ][ x ][ y ].directions[WEST])
 		{
-			if(!Map[ x - 1 ][ y ].isBlack)
+			if(!Map[ s ][ x - 1 ][ y ].isBlack)
 			{
-				if(Map[ x - 1 ][ y ].distanceToUnvisited == 0 or
-				Map[ x - 1 ][ y ].distanceToUnvisited >= num + 1)
+				if(Map[ s ][ x - 1 ][ y ].distanceToUnvisited == 0 or
+				Map[ s ][ x - 1 ][ y ].distanceToUnvisited >= num + 1)
 				{
-					calcDistanceRecursively(x - 1, y, num + 1);
+					if(Map[ s ][ x - 1 ][ y ].isRamp)
+					{
+						thisRamp.X = x - 1;
+						thisRamp.Y = y;
+						storiesThatMatch = mapStoriesThatConnectAt(thisRamp);
+
+						if( storiesThatMatch.X == s && storiesThatMatch.Y != s )
+						{
+							calcDistanceRecursively(storiesThatMatch.Y, x - 1, y, num + 1);
+						}
+						else if ( storiesThatMatch.Y == s && storiesThatMatch.X != s )
+						{
+							calcDistanceRecursively(storiesThatMatch.X, x - 1, y, num + 1);
+						}else{
+							Serial.println("something went very wrong...");
+						}
+					}else{
+						calcDistanceRecursively(s, x - 1, y, num + 1);
+					}
 				}
 			}
 		}
@@ -360,18 +468,18 @@ uint8_t mapWhereToDrive()
 {
 	uint8_t distancesForCompas[4] = {0, 0, 0, 0};
 	// wenn in der Richtung keine Wand ist guck wie weit von dort das näheste unbesuchte Feld ist
-	if( !Map[robot_is_at.X][robot_is_at.Y].directions[ NOTH ] )
-		if( !Map[robot_is_at.X][robot_is_at.Y + 1].isBlack )
-			distancesForCompas[ NOTH ] = Map[robot_is_at.X][robot_is_at.Y-1].distanceToUnvisited;
-	if( !Map[robot_is_at.X][robot_is_at.Y].directions[ EAST ] )
-		if( !Map[robot_is_at.X + 1][robot_is_at.Y].isBlack )
-			distancesForCompas[ EAST ] = Map[robot_is_at.X+1][robot_is_at.Y].distanceToUnvisited;
-	if( !Map[robot_is_at.X][robot_is_at.Y].directions[ SOUTH ] )
-		if( !Map[robot_is_at.X][robot_is_at.Y - 1].isBlack )
-			distancesForCompas[ SOUTH ]= Map[robot_is_at.X][robot_is_at.Y+1].distanceToUnvisited;
-	if( !Map[robot_is_at.X][robot_is_at.Y].directions[ WEST ] )
-		if( !Map[robot_is_at.X - 1][robot_is_at.Y].isBlack )
-			distancesForCompas[ WEST ] = Map[robot_is_at.X-1][robot_is_at.Y].distanceToUnvisited;
+	if( !Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[ NOTH ] )
+		if( !Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y + 1].isBlack )
+			distancesForCompas[ NOTH ] = Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y-1].distanceToUnvisited;
+	if( !Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[ EAST ] )
+		if( !Map[robot_is_on_story][robot_is_at.X + 1][robot_is_at.Y].isBlack )
+			distancesForCompas[ EAST ] = Map[robot_is_on_story][robot_is_at.X+1][robot_is_at.Y].distanceToUnvisited;
+	if( !Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[ SOUTH ] )
+		if( !Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y - 1].isBlack )
+			distancesForCompas[ SOUTH ]= Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y+1].distanceToUnvisited;
+	if( !Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[ WEST ] )
+		if( !Map[robot_is_on_story][robot_is_at.X - 1][robot_is_at.Y].isBlack )
+			distancesForCompas[ WEST ] = Map[robot_is_on_story][robot_is_at.X-1][robot_is_at.Y].distanceToUnvisited;
 
 	return( indexofSmallestElement( distancesForCompas ) );
 }
@@ -379,40 +487,108 @@ uint8_t mapWhereToDrive()
 
 void mapRampAtCurrentField()
 {
-	Map[robot_is_at.X][robot_is_at.Y].isRamp = true;
+	// mark as visited
+	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].visited = true;
+	// mark as ramp
+	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].isRamp = true;
+	// set walls acordingly
+	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[ mapDirectionToCompas( FRONT ) ] = 	true;
+	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[ mapDirectionToCompas( RIGHT ) ] = 	true;
+	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[ mapDirectionToCompas( BACK ) ] = 	false;
+	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[ mapDirectionToCompas( LEFT ) ] = 	true;
+	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y-1].directions[ SOUTH ] = 	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[NOTH];
+	Map[robot_is_on_story][robot_is_at.X+1][robot_is_at.Y].directions[ WEST ] = 	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[EAST];
+	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y+1].directions[ NOTH ] = 	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[SOUTH];
+	Map[robot_is_on_story][robot_is_at.X-1][robot_is_at.Y].directions[ EAST ] = 	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[WEST];
+
+	// put virtual robot on new story
+	robot_is_on_story = 1;
+	// NO NO NO NO KEEP THE COORDINATES
+	// robot_is_at.X = 5;
+	// robot_is_at.Y = 5;
+
+	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].isRamp = true;
+	// set walls acordingly
+	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[ mapDirectionToCompas( FRONT ) ] = 	false;
+	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[ mapDirectionToCompas( RIGHT ) ] = 	true;
+	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[ mapDirectionToCompas( BACK ) ] = 	true;
+	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[ mapDirectionToCompas( LEFT ) ] = 	true;
+	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y-1].directions[ SOUTH ] = 	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[NOTH];
+	Map[robot_is_on_story][robot_is_at.X+1][robot_is_at.Y].directions[ WEST ] = 	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[EAST];
+	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y+1].directions[ NOTH ] = 	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[SOUTH];
+	Map[robot_is_on_story][robot_is_at.X-1][robot_is_at.Y].directions[ EAST ] = 	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[WEST];
+	// mark current field as visited
+	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].visited = true;
+	// move on field to front
+	mapMoveTo(FRONT);
+}
+
+
+Vector mapStoriesThatConnectAt(Vector rampCoordinates)
+{
+	Vector stories;
+	int first = -1;
+	int second = -1;
+	for(uint8_t i = 0; i < NUMBEROFSTORIES; i++)
+    {
+		if( Map[ i ][ rampCoordinates.X ][ rampCoordinates.Y ].isRamp )
+		{
+			if( first == -1 )
+			{
+				first = i;
+			}else{
+				second = i;
+			}
+		}
+	}
+	stories.X = first;
+	stories.Y = second;
+	/*Serial.println("Theres a ramp connection between:");
+	Serial.println(first);
+	Serial.println(second);
+	Serial.println("at:");
+	Serial.println(rampCoordinates.X);
+	Serial.println(rampCoordinates.Y);*/
+	return(stories);
 }
 
 
 void mapDisplay()
 {
-	for( uint8_t i=0; i<MAPSIZE; ++i )
+	/*for( uint8_t s=0; s<NUMBEROFSTORIES; ++s )
 	{
-		for( uint8_t o=0; o<MAPSIZE; ++o )
+		for( uint8_t i=0; i<MAPSIZE; ++i )
 		{
-			Serial.println("-");
-			Serial.print("Field: ");
-			Serial.print(i);
-			Serial.print(" ");
-			Serial.println(o);
-			Serial.print("visited: ");
-			Serial.println(Map[i][o].visited);
-			Serial.print("distance: ");
-			Serial.println(Map[i][o].distanceToUnvisited);
-			Serial.print("walls: ");
-			for( uint8_t w=0; w<4; ++w )
+			for( uint8_t o=0; o<MAPSIZE; ++o )
 			{
-				Serial.print(Map[i][o].directions[w]);
+				Serial.println("-");
+				Serial.print("Field: ");
+				Serial.print(s);
 				Serial.print(" ");
+				Serial.print(i);
+				Serial.print(" ");
+				Serial.println(o);
+				Serial.print("visited: ");
+				Serial.println(Map[ s ][i][o].visited);
+				Serial.print("ramp: ");
+				Serial.println(Map[ s ][i][o].isRamp);
+				Serial.print("distance: ");
+				Serial.println(Map[ s ][i][o].distanceToUnvisited);
+				Serial.print("walls: ");
+				for( uint8_t w=0; w<4; ++w )
+				{
+					Serial.print(Map[ s ][i][o].directions[w]);
+					Serial.print(" ");
+				}
+				Serial.println();
 			}
-			Serial.println();
 		}
-	}
+	}*/
 
 
 
-
-	/*
-	Serial.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ distances");
+	
+	/*Serial.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ distances");
 	for( uint8_t i=0; i<MAPSIZE; ++i )
 	{
 		for( uint8_t o=0; o<MAPSIZE; ++o )
@@ -437,12 +613,18 @@ void mapDisplay()
 		Serial.println();
 	}
 
-	return(0);
+	return(0);*/
 
 
 
 
 
+	for (uint8_t s=0; s<NUMBEROFSTORIES; ++s)
+	{
+		Serial.println();
+		Serial.print("Story:");
+		Serial.println(s);
+		Serial.println();
 	
 	for (uint8_t o=0; o<MAPSIZE; ++o)
 	{
@@ -450,7 +632,7 @@ void mapDisplay()
 	// waende im NORDEN
 	for( uint8_t i=0; i<MAPSIZE; ++i )
 	{
-		if ( Map[i][o].directions[NOTH] )
+		if ( Map[s][i][o].directions[NOTH] )
 			Serial.print("@@@");
 		else
 			Serial.print("   ");
@@ -460,7 +642,7 @@ void mapDisplay()
 	for( uint8_t i=0; i<MAPSIZE; ++i )
 	{
 		// WESTEN
-		if ( Map[i][o].directions[WEST] )
+		if ( Map[s][i][o].directions[WEST] )
 		{	
 			Serial.print("@");
 		}else{
@@ -473,8 +655,7 @@ void mapDisplay()
 		test.X = i;
 		test.Y = o;
 		// skip[0] = *robot_is_at;
-		// Serial.print( mapSearchForUnvisited( test, skip, false ) );
-		Serial.print( Map[i][o].distanceToUnvisited );
+		Serial.print( Map[s][i][o].distanceToUnvisited );
 		// if ( Map[i][o].visited )
 			// Serial.print("V");
 		// else
@@ -482,7 +663,7 @@ void mapDisplay()
 		
 
 		// OSTEN
-		if ( Map[i][o].directions[EAST] )
+		if ( Map[s][i][o].directions[EAST] )
 		{	
 			Serial.print("@");
 		}else{
@@ -493,13 +674,14 @@ void mapDisplay()
 	// waende im SUEDEN
 	for( uint8_t i=0; i<MAPSIZE; ++i )
 	{
-		if ( Map[i][o].directions[SOUTH] )
+		if ( Map[s][i][o].directions[SOUTH] )
 			Serial.print("@@@");
 		else
 			Serial.print("   ");
 	}
 	Serial.println();
+	}
 	delay(1);
 	}
-	*/
+	
 }

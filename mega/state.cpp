@@ -15,6 +15,7 @@ uint8_t nextState=0;
 // bool seenVic = false;
 uint8_t moveTo = 5;
 bool overHalf = false;
+bool overHalfOfRamp = false;
 
 uint8_t nothing()
 {
@@ -99,8 +100,8 @@ void stateChange()
 			else
 			{
 				uint8_t compasToGoTo = mapWhereToDrive();
-				Serial.print("going: ");
-				Serial.println(compasToGoTo);
+				// Serial.print("going: ");
+				// Serial.println(compasToGoTo);
 				switch ( mapCompasToDirection( compasToGoTo ) ) {
 					case FRONT:
 						state = 3;
@@ -188,18 +189,20 @@ void stateChange()
 			// wenn on ramp down
 			if( sensorData[4] < level - RAMP_THRESHOLD && overHalf)
 			{
-				// mark current field as ramp down in map
-				mapRampAtCurrentField();
+				motorResetAllSteps();
+				overHalfOfRamp = false;
 
+				// ramp down
 				state = 11;
 			}
 
 			// wenn on ramp up
 			if( sensorData[4] > level + RAMP_THRESHOLD && overHalf)
 			{
-				// mark current field as ramp up in map
-				mapRampAtCurrentField();
+				motorResetAllSteps();
+				overHalfOfRamp = false;
 
+				// ramp up
 				state = 12;
 			}
 			
@@ -375,11 +378,16 @@ void stateChange()
 			LEDSetColor(YELLOW);
 			motorDriveTo(FRONT, BASESPEED/2);
 
-			// when level
-			if( sensorData[4] > level - RAMP_THRESHOLD && overHalf)
+			if ( motorAverageSteps() > STEPSFORHALFARAMP && !overHalfOfRamp )
 			{
-				// mark current field as ramp up in map
+				// next story
+				mapRampAtCurrentField();
+				overHalfOfRamp = true;
+			}
 
+			// when level
+			if( sensorData[4] > level - RAMP_THRESHOLD )
+			{
 				// kurz vorwärts fahren dann neu entscheiden
 				state = 13;
 			}
@@ -397,7 +405,7 @@ void stateChange()
 			motorDriveTo(FRONT, BASESPEED*1.5);
 			
 			// when level
-			if( sensorData[4] < level + RAMP_THRESHOLD && overHalf)
+			if( sensorData[4] < level + RAMP_THRESHOLD )
 			{
 				// mark current field as ramp down in map
 

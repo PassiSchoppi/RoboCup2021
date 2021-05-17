@@ -42,7 +42,7 @@ void setup()
 	rampInit();
 	// gyroInit();
 
-	Serial.begin(1000000);
+	Serial.begin(115200);
 }
 
 
@@ -50,7 +50,7 @@ void loop()
 {
 	//digitalWrite(13, !digitalRead(13));
 	stateChange();
-	output();
+	// output();
 	// mapDisplay();
 	// gyroInterrupt();
 	// Serial.print(gyroX());Serial.print(" ");

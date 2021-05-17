@@ -37,8 +37,9 @@ void mapBlackFieldFront();
 void mapVictimNewAtCurrentField();
 
 void mapRampAtCurrentField();
+Vector mapStoriesThatConnectAt(Vector rampCoordinates);
 
-void calcDistanceRecursively(uint8_t x, uint8_t y, uint8_t num);
+void calcDistanceRecursively(uint8_t s, uint8_t x, uint8_t y, uint8_t num);
 
 bool mapVictimIsAtCurrentField();
 uint8_t mapWhereToDrive();

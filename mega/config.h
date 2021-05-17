@@ -37,6 +37,7 @@ extern uint8_t level;  // ebene fläche
 #define CUTDATAVAL 		0
 
 #define RAMP_THRESHOLD  10
+#define STEPSFORHALFARAMP   200
 
 #define VICTIMTEMP 		28
 

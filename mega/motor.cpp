@@ -67,6 +67,17 @@ void motorSetSpeed(uint8_t i, int speed)
   	digitalWrite(motor[i].pin2, speed<=0);
 }
 
+unsigned int motorAverageSteps()
+{
+	unsigned int average = 0;
+	for(uint8_t i=0; i<4; ++i)
+	{
+		average = average + motorStepsMade(i);
+	}
+	average = average/4;
+	return(average);
+}
+
 void motorCheckForStepsMade(uint8_t i)
 {
 	// momentanes siganal auf enc1 des Motors i
