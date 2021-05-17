@@ -2,10 +2,11 @@
 
 
 // 2D Array of Fields
-Field Map[MAPSIZE][MAPSIZE];
+Field Map[NUMBEROFSTORIES][MAPSIZE][MAPSIZE];
 
 // Variables of Robot
 uint8_t robot_is_facing;
+uint8_t robot_is_on_story = 0;
 Vector robot_is_at;
 
 // translates compas to direction
@@ -372,18 +373,13 @@ uint8_t mapWhereToDrive()
 		if( !Map[robot_is_at.X - 1][robot_is_at.Y].isBlack )
 			distancesForCompas[ WEST ] = Map[robot_is_at.X-1][robot_is_at.Y].distanceToUnvisited;
 
-	Serial.print("-----------------------------------------");
-	for(int i = 0; i < 4; i++)
-    {
-		Serial.print(i);
-		Serial.print(":");
-		Serial.print(distancesForCompas[i]);
-		Serial.print(" ");
-	}
-	Serial.print(" res:");
-	Serial.println(indexofSmallestElement( distancesForCompas ));
-
 	return( indexofSmallestElement( distancesForCompas ) );
+}
+
+
+void mapRampAtCurrentField()
+{
+	Map[robot_is_at.X][robot_is_at.Y].isRamp = true;
 }
 
 

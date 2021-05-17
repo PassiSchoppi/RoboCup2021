@@ -21,21 +21,25 @@
 // ## GLOBAL VARIABLES (see config.h) ##
 volatile uint8_t sensorData[15];
 uint8_t state;
+uint8_t level;
 
 
 void setup() 
 {
 	// stabilize und dann entscheiden
 	state = 8;
+	level = 0;
 	
 	// ## INIT ##
   	motorInit();
-	sensorInit(); // 1 second delay
+	sensorInit();
+	sensorRead();
 	melexisInit();
 	mapInit();
-	timerInit();
+	timerInit(); // 2 second delay
 	kitdropperInit();
 	raspiInit();
+	rampInit();
 	// gyroInit();
 
 	Serial.begin(1000000);

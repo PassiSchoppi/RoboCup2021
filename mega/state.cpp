@@ -7,6 +7,7 @@
 #include "config.h"
 #include "stabilize.h"
 #include "map.h"
+#include "ramp.h"
 
 int average;
 uint8_t lastState=0;
@@ -183,6 +184,24 @@ void stateChange()
 				motorBrake();
 				state = 9;
 			}
+
+			// wenn on ramp down
+			if( sensorData[4] < level - RAMP_THRESHOLD && overHalf)
+			{
+				// mark current field as ramp down in map
+				mapRampAtCurrentField();
+
+				state = 11;
+			}
+
+			// wenn on ramp up
+			if( sensorData[4] > level + RAMP_THRESHOLD && overHalf)
+			{
+				// mark current field as ramp up in map
+				mapRampAtCurrentField();
+
+				state = 12;
+			}
 			
 			// wenn Victim
 			if( sensorData[11]>VICTIMTEMP || sensorData[12]>VICTIMTEMP )
@@ -350,6 +369,59 @@ void stateChange()
 			{
 				state = 4;
 			}
+			break;
+		case 11:
+			// ramp down
+			LEDSetColor(YELLOW);
+			motorDriveTo(FRONT, BASESPEED/2);
+
+			// when level
+			if( sensorData[4] > level - RAMP_THRESHOLD && overHalf)
+			{
+				// mark current field as ramp up in map
+
+				// kurz vorwärts fahren dann neu entscheiden
+				state = 13;
+			}
+
+			// wenn victim
+			if( sensorData[11]>VICTIMTEMP || sensorData[12]>VICTIMTEMP )
+			{
+				lastState = state;
+				state = 6;
+			}
+			break;
+		case 12:
+			// ramp up
+			LEDSetColor(YELLOW);
+			motorDriveTo(FRONT, BASESPEED*1.5);
+			
+			// when level
+			if( sensorData[4] < level + RAMP_THRESHOLD && overHalf)
+			{
+				// mark current field as ramp down in map
+
+				// kurz vorwärts fahren dann neu entscheiden
+				state = 13;
+			}
+
+			// wenn victim
+			if( sensorData[11]>VICTIMTEMP || sensorData[12]>VICTIMTEMP )
+			{
+				lastState = state;
+				state = 6;
+			}
+			break;
+		case 13:
+			// kurz vorwärts fahren
+			motorBrake();
+			motorResetAllSteps();
+			motorDriveTo(FRONT, BASESPEED);
+			while(motorStepsMade(0)<20){}
+			motorResetAllSteps();
+			motorBrake();
+			// stabilize und dann neu entscheiden
+			state = 8;
 			break;
 	}
 }

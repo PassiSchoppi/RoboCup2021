@@ -20,7 +20,7 @@ struct Field
 	bool isBlack = false;
 	bool hasVictim = false;
 	bool isRamp = false;
-	uint8_t distanceToUnvisited;
+	uint8_t distanceToUnvisited = 0;
 };
 
 // Utility functions
@@ -35,6 +35,8 @@ void mapUpdateField();
 void mapMoveTo(uint8_t directionToGo);
 void mapBlackFieldFront();
 void mapVictimNewAtCurrentField();
+
+void mapRampAtCurrentField();
 
 void calcDistanceRecursively(uint8_t x, uint8_t y, uint8_t num);
 

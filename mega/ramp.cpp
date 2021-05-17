@@ -3,7 +3,7 @@
 #include "sensor.h"
 #include "config.h"
 
-bool ramp()
+void rampInit()
 {
-	Serial.println( sensorData[4] );
+	level = sensorData[4];
 }

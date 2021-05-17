@@ -46,4 +46,6 @@ void output()
 	Serial.print(" R: ");Serial.print(wallExists(RIGHT));
 	Serial.print(" L: ");Serial.print(wallExists(LEFT));
 	Serial.print(" B: ");Serial.println(wallExists(BACK));*/
+	// # RAMP #
+	Serial.print("Level:");Serial.print(level);Serial.print(" | ");Serial.println(sensorData[4]);
 }

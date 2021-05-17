@@ -9,8 +9,6 @@ void sensorInit()
 	pinMode(INTERUPT_PIN_B, OUTPUT);
 
 	pinMode(7, OUTPUT);
-
-	delay(1000);
 }
 
 void sensorRead()

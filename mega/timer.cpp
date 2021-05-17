@@ -36,6 +36,8 @@ void timerInit()
 
   	// enable global interrupts
   	sei();
+
+	delay(2000);
 	
 }
 

@@ -9,11 +9,13 @@
 #define DOVICTIMEDETECTION 		true
 #define SMOOTHENSENSORDATA 		15
 #define MAPSIZE 				10
+#define NUMBEROFSTORIES         2
 #define LENGTHOFSKIP 			10
 
 // ## GLOBAL VARIABLES ##
 extern volatile uint8_t sensorData[15];
 extern uint8_t state;
+extern uint8_t level;  // ebene fläche
 
 #define INTERUPT_PIN_A 	8
 #define INTERUPT_PIN_B 	9
@@ -33,6 +35,8 @@ extern uint8_t state;
 #define DISTANCETOWALL 	36
 #define MINDISTANCETOW 	100
 #define CUTDATAVAL 		0
+
+#define RAMP_THRESHOLD  10
 
 #define VICTIMTEMP 		28
 
