@@ -14,13 +14,14 @@ struct Vector
 
 struct Field
 {
+	// uint8_t properties = 240; // 1111 0000
 	bool directions[4] = {1, 1, 1, 1};
 	bool visited = false;
-	bool isSilver = false;
 	bool isBlack = false;
 	bool hasVictim = false;
 	bool isRamp = false;
 	uint8_t distanceToUnvisited = 0;
+
 };
 
 // Utility functions
@@ -35,6 +36,8 @@ void mapUpdateField();
 void mapMoveTo(uint8_t directionToGo);
 void mapBlackFieldFront();
 void mapVictimNewAtCurrentField();
+
+void mapReturnToHome();
 
 void mapRampAtCurrentField();
 Vector mapStoriesThatConnectAt(Vector rampCoordinates);

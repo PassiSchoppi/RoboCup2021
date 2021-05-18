@@ -14,7 +14,6 @@ uint8_t lastState=0;
 uint8_t nextState=0;
 // bool seenVic = false;
 uint8_t moveTo = 5;
-bool overHalf = false;
 bool overHalfOfRamp = false;
 
 uint8_t nothing()
@@ -115,6 +114,10 @@ void stateChange()
 					case LEFT:
 						state = 4;
 						break;
+					case 5:
+						mapReturnToHome();
+						state = 1;
+						break;
 				}
 				mapDisplay();
 				mapMoveTo( mapCompasToDirection( compasToGoTo ) );
@@ -165,19 +168,7 @@ void stateChange()
 				// stabilize und dann neue entscheidung
 				state = 8;
 			}
-			
-			// wenn über hälfte tritt (nur in genau dem Moment)
-			// durchschnitt ist über hälfte, ist aber nochnicht dokumentiert
-			if ( average > STEPSFORHALF && !overHalf )
-			{
-				// move robot on map
-				// wurde vorher geschrieben
-				//           ||
-				//           \/
-				mapMoveTo( moveTo );
-				overHalf = true;
-			}
-			
+						
 			// wenn zu nah an einer Wand
 			if( sensorData[7]>124 )
 			{
@@ -187,7 +178,7 @@ void stateChange()
 			}
 
 			// wenn on ramp down
-			if( sensorData[4] < level - RAMP_THRESHOLD && overHalf)
+			if( sensorData[4] < level - RAMP_THRESHOLD)
 			{
 				motorResetAllSteps();
 				overHalfOfRamp = false;
@@ -197,7 +188,7 @@ void stateChange()
 			}
 
 			// wenn on ramp up
-			if( sensorData[4] > level + RAMP_THRESHOLD && overHalf)
+			if( sensorData[4] > level + RAMP_THRESHOLD)
 			{
 				motorResetAllSteps();
 				overHalfOfRamp = false;
@@ -403,12 +394,17 @@ void stateChange()
 			// ramp up
 			LEDSetColor(YELLOW);
 			motorDriveTo(FRONT, BASESPEED*1.5);
+
+			if ( motorAverageSteps() > STEPSFORHALFARAMP && !overHalfOfRamp )
+			{
+				// next story
+				mapRampAtCurrentField();
+				overHalfOfRamp = true;
+			}
 			
 			// when level
 			if( sensorData[4] < level + RAMP_THRESHOLD )
 			{
-				// mark current field as ramp down in map
-
 				// kurz vorwärts fahren dann neu entscheiden
 				state = 13;
 			}
@@ -425,7 +421,7 @@ void stateChange()
 			motorBrake();
 			motorResetAllSteps();
 			motorDriveTo(FRONT, BASESPEED);
-			while(motorStepsMade(0)<20){}
+			while(motorStepsMade(0)<REST_OF_RAMP){}
 			motorResetAllSteps();
 			motorBrake();
 			// stabilize und dann neu entscheiden

@@ -5,7 +5,7 @@
 #define DOBLACKTILEDETECTION 	false
 #define DOMAP 					true
 #define DODRIVINGCORECTION 		true
-#define CORECTIONAGGRESSIVE 	5
+#define CORECTIONAGGRESSIVE 	2
 #define DOVICTIMEDETECTION 		true
 #define SMOOTHENSENSORDATA 		15
 #define MAPSIZE 				10
@@ -36,7 +36,8 @@ extern uint8_t level;  // ebene fläche
 #define MINDISTANCETOW 	100
 #define CUTDATAVAL 		0
 
-#define RAMP_THRESHOLD  10
+#define RAMP_THRESHOLD  15
+#define REST_OF_RAMP    30
 #define STEPSFORHALFARAMP   200
 
 #define VICTIMTEMP 		28
