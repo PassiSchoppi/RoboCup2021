@@ -38,7 +38,7 @@ void stateChange()
 			// Serial.println("new status");
 			LEDSetColor(WHITE);
 			
-			delay(250);
+			// delay(250);
 
 			mapUpdateField();
 
@@ -176,7 +176,7 @@ void stateChange()
 				// wenn on ramp down
 				if( sensorData[4] < level - RAMP_THRESHOLD)
 				{
-					motorResetAllSteps();
+					// motorResetAllSteps();
 					overHalfOfRamp = false;
 
 					// ramp down
@@ -186,7 +186,7 @@ void stateChange()
 				// wenn on ramp up
 				if( sensorData[4] > level + RAMP_THRESHOLD)
 				{
-					motorResetAllSteps();
+					// motorResetAllSteps();
 					overHalfOfRamp = false;
 
 					// ramp up
@@ -362,13 +362,14 @@ void stateChange()
 				LEDSetColor(WHITE);
 			}else
 				LEDSetColor(YELLOW);
-			motorDriveTo(FRONT, BASESPEED*0.8);
+			motorDriveTo(FRONT, BASESPEED*0.5);
 
 			if ( motorAverageSteps() > STEPSFORHALFARAMP && !overHalfOfRamp )
 			{
 				// next story
+				if(DORAMPONMAP){
 				mapRampAtCurrentField();
-				LEDSetColor(WHITE);
+				}
 				overHalfOfRamp = true;
 			}
 
@@ -377,6 +378,9 @@ void stateChange()
 			{
 				// kurz vorwärts fahren dann neu entscheiden
 				state = 13;
+				if(!overHalfOfRamp){
+					state = 3;
+				}
 			}
 
 			// wenn victim
@@ -390,17 +394,23 @@ void stateChange()
 			// ramp up
 			if(overHalfOfRamp){
 				LEDSetColor(WHITE);
-				motorDriveTo(FRONT, BASESPEED*2);
+				motorDriveTo(RAMPSTATE, BASESPEED*1.5);
 			}else
 			{
 				LEDSetColor(YELLOW);
-				motorDriveTo(FRONT, BASESPEED*1.2);
+				motorDriveTo(RAMPSTATE, BASESPEED*1.5);
 			}
+			/*motorSetSpeed(0, BASESPEED);
+			motorSetSpeed(1, BASESPEED*3);
+			motorSetSpeed(2, 60);
+			motorSetSpeed(3, BASESPEED*2);*/
 
 			if ( motorAverageSteps() > STEPSFORHALFARAMP && !overHalfOfRamp )
 			{
 				// next story
+				if(DORAMPONMAP){
 				mapRampAtCurrentField();
+				}
 				overHalfOfRamp = true;
 			}
 			
@@ -409,6 +419,9 @@ void stateChange()
 			{
 				// kurz vorwärts fahren dann neu entscheiden
 				state = 13;
+				if(!overHalfOfRamp){
+					state = 3;
+				}
 			}
 
 			// wenn victim

@@ -177,7 +177,7 @@ void motorDriveTo(uint8_t direction, int speed)
 	switch( direction )
 	{
 		case FRONT:
-			kP = 2;
+			kP = 1;
 			targetWallDistance = PERFECTDISTTOW;
 			if(wallExists(RIGHT)) {
 				errorP = (int)(sensorData[2]) - targetWallDistance;
@@ -193,7 +193,7 @@ void motorDriveTo(uint8_t direction, int speed)
 				motorSetSpeed(1, speed - sum);
 				motorSetSpeed(2, speed + sum);
 				motorSetSpeed(3, speed + sum);
-			} else if(wallExists(LEFT)) {
+			/*if(wallExists(LEFT)) {
 				errorP = -((int)(sensorData[0]) - targetWallDistance);
 				sum = (int)(errorP * kP);
 				if( sum > speed )
@@ -207,6 +207,8 @@ void motorDriveTo(uint8_t direction, int speed)
 				motorSetSpeed(1, speed - sum);
 				motorSetSpeed(2, speed + sum);
 				motorSetSpeed(3, speed + sum);
+			}*/
+
 			} else {
 				motorSetSpeed(0, speedFromEnc(motor[1].steps, motor[2].steps, motor[3].steps, motor[0].steps, speed, true, true));
 				motorSetSpeed(1, speedFromEnc(motor[0].steps, motor[2].steps, motor[3].steps, motor[1].steps, speed, true, true));
@@ -236,6 +238,23 @@ void motorDriveTo(uint8_t direction, int speed)
 			motorSetSpeed(1, -speed);
 			motorSetSpeed(2, -speed);
 			motorSetSpeed(3, -speed);
+			break;
+		case RAMPSTATE:
+			kP = 1;
+			targetWallDistance = PERFECTDISTTOW - 20;
+			errorP = -((int)(sensorData[0]) - targetWallDistance);
+			sum = (int)(errorP * kP);
+			if( sum > speed )
+			{
+				sum = speed;
+			}else if( sum < - speed )
+			{
+				sum = - speed;
+			}
+			motorSetSpeed(0, speed - sum);
+			motorSetSpeed(1, speed - sum);
+			motorSetSpeed(2, speed + sum);
+			motorSetSpeed(3, speed + sum);
 			break;
 	}
 	// Serial.println("done");

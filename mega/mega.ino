@@ -52,7 +52,7 @@ void loop()
 	// motorDriveSafe(SIGNUM(STEPSFORONE)*(uint8_t)(BASESPEED), 2, 0, 0);
 	// stabilize();
 	stateChange();
-	output();
+	// output();
 	// mapDisplay();
 	// gyroInterrupt();
 	// Serial.print(gyroX());Serial.print(" ");

@@ -8,7 +8,8 @@
 #define CORECTIONAGGRESSIVE 	1
 #define DOVICTIMEDETECTION 		true
 #define DORAMPDETECTION         true
-#define SMOOTHENSENSORDATA 		2 // 15
+#define DORAMPONMAP             true
+#define SMOOTHENSENSORDATA 		5 // 15
 #define MAPSIZE 				10
 #define NUMBEROFSTORIES         2
 #define LENGTHOFSKIP 			10
@@ -33,8 +34,10 @@ extern uint8_t level;  // ebene fläche
 #define BACK 			2
 #define LEFT 			3
 
+#define RAMPSTATE       4
+
 #define DISTANCETOWALL 	36
-#define PERFECTDISTTOW  75
+#define PERFECTDISTTOW  70
 #define MINDISTANCETOW 	100
 #define CUTDATAVAL 		0
 
