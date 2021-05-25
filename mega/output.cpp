@@ -24,7 +24,7 @@ void output()
 	Serial.print(" RV: ");Serial.print(sensorData[2]);
 	Serial.print(" RH: ");Serial.println(sensorData[3]);
 	Serial.print(" FL: ");Serial.print(sensorData[6]);
-	Serial.print(" FC: ");Serial.print(sensorData[7]);
+	Serial.print(" FC: ");Serial.println(sensorData[7]);
 	Serial.print(" FR: ");Serial.print(sensorData[8]);
 	Serial.print(" BL: ");Serial.print(sensorData[9]);
 	Serial.print(" BR: ");Serial.println(sensorData[10]);
@@ -45,7 +45,7 @@ void output()
 	Serial.print(" F: ");Serial.print(wallExists(FRONT));
 	Serial.print(" R: ");Serial.print(wallExists(RIGHT));
 	Serial.print(" L: ");Serial.print(wallExists(LEFT));
-	Serial.print(" B: ");Serial.println(wallExists(BACK));*/
+	Serial.print(" B: ");Serial.println(wallExists(BACK));
 	// # RAMP #
-	Serial.print("Level:");Serial.print(level);Serial.print(" | ");Serial.println(sensorData[4]);
+	Serial.print("Level:");Serial.print(level);Serial.print(" | ");Serial.println(sensorData[4]);*/
 }

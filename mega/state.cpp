@@ -38,17 +38,10 @@ void stateChange()
 			// Serial.println("new status");
 			LEDSetColor(WHITE);
 			
-			delay(1000);
+			delay(250);
 
 			mapUpdateField();
 
-			// if black tile
-/*			if( sensorData[13]>MAXWHITE || sensorData[14]>MAXWHITE )
-			{
-				*state = 10;
-				break;
-			}
-*/			
 			if ( !DOMAP )
 			{
 				// ## get direction to drive to ##
@@ -170,31 +163,35 @@ void stateChange()
 			}
 						
 			// wenn zu nah an einer Wand
-			if( sensorData[7]>124 )
+			if( sensorData[7]>120 )
 			{
 				// kurz zurück und dann neu entscheiden
 				motorBrake();
 				state = 9;
 			}
 
-			// wenn on ramp down
-			if( sensorData[4] < level - RAMP_THRESHOLD)
+			if(DORAMPDETECTION)
 			{
-				motorResetAllSteps();
-				overHalfOfRamp = false;
 
-				// ramp down
-				state = 11;
-			}
+				// wenn on ramp down
+				if( sensorData[4] < level - RAMP_THRESHOLD)
+				{
+					motorResetAllSteps();
+					overHalfOfRamp = false;
 
-			// wenn on ramp up
-			if( sensorData[4] > level + RAMP_THRESHOLD)
-			{
-				motorResetAllSteps();
-				overHalfOfRamp = false;
+					// ramp down
+					state = 11;
+				}
 
-				// ramp up
-				state = 12;
+				// wenn on ramp up
+				if( sensorData[4] > level + RAMP_THRESHOLD)
+				{
+					motorResetAllSteps();
+					overHalfOfRamp = false;
+
+					// ramp up
+					state = 12;
+				}
 			}
 			
 			// wenn Victim
@@ -203,9 +200,13 @@ void stateChange()
 				lastState = state;
 				state = 6;
 			}
-			
-			// wenn ramp
-			// if (  )
+
+			// if black tile
+			if( sensorData[13]>MAXWHITE || sensorData[14]>MAXWHITE )
+			{
+				mapBlackFieldFront();
+				state = 10;
+			}
 			break;
 		
 		case 4:
@@ -345,34 +346,29 @@ void stateChange()
 			break;
 
 		case 10:
-			// black tile und dann drive back one field
-			motorBrake();
-			motorDriveTo(BACK, BASESPEED);
-			while(motorStepsMade(0)<STEPSFORONE){}
+			//kurz zurück fahren
 			motorBrake();
 			motorResetAllSteps();
-			// write to map
-			sensorRead();
-			// wenn links eine wand ist muss er 180 drehung machen
-			// wenn nicht dann nur links und gerade aus
-			if( wallExists(LEFT) )
-			{
-				state = 5;
-			}
-			else
-			{
-				state = 4;
-			}
+			motorDriveTo(BACK, BASESPEED);
+			while(motorStepsMade(0)<35){}
+			motorResetAllSteps();
+			motorBrake();
+			// stabilize und dann neu entscheiden
+			state = 8;
 			break;
 		case 11:
 			// ramp down
-			LEDSetColor(YELLOW);
-			motorDriveTo(FRONT, BASESPEED/2);
+			if(overHalfOfRamp){
+				LEDSetColor(WHITE);
+			}else
+				LEDSetColor(YELLOW);
+			motorDriveTo(FRONT, BASESPEED*0.8);
 
 			if ( motorAverageSteps() > STEPSFORHALFARAMP && !overHalfOfRamp )
 			{
 				// next story
 				mapRampAtCurrentField();
+				LEDSetColor(WHITE);
 				overHalfOfRamp = true;
 			}
 
@@ -392,8 +388,14 @@ void stateChange()
 			break;
 		case 12:
 			// ramp up
-			LEDSetColor(YELLOW);
-			motorDriveTo(FRONT, BASESPEED*1.5);
+			if(overHalfOfRamp){
+				LEDSetColor(WHITE);
+				motorDriveTo(FRONT, BASESPEED*2);
+			}else
+			{
+				LEDSetColor(YELLOW);
+				motorDriveTo(FRONT, BASESPEED*1.2);
+			}
 
 			if ( motorAverageSteps() > STEPSFORHALFARAMP && !overHalfOfRamp )
 			{

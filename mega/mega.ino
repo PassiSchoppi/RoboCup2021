@@ -17,7 +17,6 @@
 #include "gyro.h"
 
 
-// uint8_t sensorData[15];
 // ## GLOBAL VARIABLES (see config.h) ##
 volatile uint8_t sensorData[15];
 uint8_t state;
@@ -49,8 +48,11 @@ void setup()
 void loop() 
 {
 	//digitalWrite(13, !digitalRead(13));
+	// motorDriveTo(BACK, BASESPEED);
+	// motorDriveSafe(SIGNUM(STEPSFORONE)*(uint8_t)(BASESPEED), 2, 0, 0);
+	// stabilize();
 	stateChange();
-	// output();
+	output();
 	// mapDisplay();
 	// gyroInterrupt();
 	// Serial.print(gyroX());Serial.print(" ");

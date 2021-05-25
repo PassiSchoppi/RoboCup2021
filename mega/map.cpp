@@ -153,7 +153,7 @@ void mapInit()
 
 void mapUpdateField()
 {
-	Serial.println("updating field");
+	// Serial.println("updating field");
 
 	// add walls to current field
 	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[ mapDirectionToCompas( FRONT ) ] = wallExists(FRONT);
@@ -161,10 +161,10 @@ void mapUpdateField()
 	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[ mapDirectionToCompas( BACK ) ] = 	wallExists(BACK);
 	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[ mapDirectionToCompas( LEFT ) ] = 	wallExists(LEFT);
 
-	Serial.println("new walls:");
+	/*Serial.println("new walls:");
 	for ( uint8_t i=0; i<4; ++i ){
 		Serial.println(Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[i]);
-	}
+	}*/
 	
 	// change walls of sourounding fields
 	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y-1].directions[ SOUTH ] = 	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[NOTH];
@@ -234,6 +234,35 @@ void mapMoveTo(uint8_t directionToGo)
 
 void mapBlackFieldFront()
 {
+	Serial.println("found black");
+	Serial.println( robot_is_at.X);
+	Serial.println( robot_is_at.Y);
+	Serial.println( robot_is_facing);
+	Map[robot_is_on_story][ robot_is_at.X ][ robot_is_at.Y ].visited = true;
+	Map[robot_is_on_story][ robot_is_at.X ][ robot_is_at.Y ].isBlack = true;
+	robot_is_at.X -= 1;
+	/*switch( mapDirectionToCompas( robot_is_facing ) ) {
+		case NOTH:
+			robot_is_at.Y -= 1;
+			break;
+		case EAST:
+			robot_is_at.X -= 1;
+			break;
+		case SOUTH:
+			robot_is_at.Y -= 1;
+			break;
+		case WEST:
+			robot_is_at.X += 1;
+			break;
+	}*/
+	// mapMoveTo(FRONT);
+	// mapMoveTo(FRONT);
+	// mapMoveTo(BACK);
+	Serial.println("moving...");
+	Serial.println( robot_is_at.X);
+	Serial.println( robot_is_at.Y);
+	Serial.println( robot_is_facing);
+	Serial.println("done");
 }
 
 void mapVictimNewAtCurrentField()
@@ -248,11 +277,11 @@ bool mapVictimIsAtCurrentField()
 
 void calcDistanceRecursively(uint8_t s, uint8_t x, uint8_t y, uint8_t num)
 {
-	Serial.print("recursion call:");
+	/*Serial.print("recursion call:");
 	Serial.print(s);
 	Serial.print(x);
 	Serial.print(y);
-	Serial.println(num);
+	Serial.println(num);*/
 
 	// declarations
 	Vector thisRamp;
@@ -272,7 +301,7 @@ void calcDistanceRecursively(uint8_t s, uint8_t x, uint8_t y, uint8_t num)
 				{
 					if(Map[ s ][ x ][ y + 1 ].isRamp)
 					{
-						Serial.println("ramp stuff");
+						// Serial.println("ramp stuff");
 						thisRamp.X = x;
 						thisRamp.Y = y + 1;
 						storiesThatMatch = mapStoriesThatConnectAt(thisRamp);
@@ -290,20 +319,20 @@ void calcDistanceRecursively(uint8_t s, uint8_t x, uint8_t y, uint8_t num)
 							Serial.println("something went very wrong...");
 						}
 					}else{
-						Serial.println("distance is not 0 and not bigger than num+1 ::: north");
+						//Serial.println("distance is not 0 and not bigger than num+1 ::: north");
 						calcDistanceRecursively(s, x, y + 1, num + 1);
 					}
 				}else{
-					Serial.println(x);
+					/*Serial.println(x);
 					Serial.println(y+1);
 					Serial.println("should work... north");
-					Serial.println(Map[ s ][ x ][ y + 1 ].distanceToUnvisited);
+					Serial.println(Map[ s ][ x ][ y + 1 ].distanceToUnvisited);*/
 				}
 			}else{
-				Serial.println("tile north is black");
+				// Serial.println("tile north is black");
 			}
 		}else{
-			Serial.println("there is a wall north");
+			// Serial.println("there is a wall north");
 		}
 	}
 
@@ -355,7 +384,7 @@ void calcDistanceRecursively(uint8_t s, uint8_t x, uint8_t y, uint8_t num)
 				{
 					if(Map[ s ][ x ][ y - 1 ].isRamp)
 					{
-						Serial.print("ramp stuff");
+						// Serial.print("ramp stuff");
 						thisRamp.X = x;
 						thisRamp.Y = y - 1;
 						storiesThatMatch = mapStoriesThatConnectAt(thisRamp);
@@ -373,20 +402,20 @@ void calcDistanceRecursively(uint8_t s, uint8_t x, uint8_t y, uint8_t num)
 							Serial.println("something went very wrong...");
 						}
 					}else{
-						Serial.println("should work...");
+						// Serial.println("should work...");
 						calcDistanceRecursively(s, x, y - 1, num + 1);
 					}
 				}else{
-					Serial.println("distance is not 0 and not bigger than num+1 :::");
+					/*Serial.println("distance is not 0 and not bigger than num+1 :::");
 					Serial.println(x);
 					Serial.println(y-1);
-					Serial.println(Map[ s ][ x ][ y - 1 ].distanceToUnvisited);
+					Serial.println(Map[ s ][ x ][ y - 1 ].distanceToUnvisited);*/
 				}
 			}else{
-				Serial.println("tile is black");
+				// Serial.println("tile is black");
 			}
 		}else{
-			Serial.println("there is a wall");
+			// Serial.println("there is a wall");
 		}
 	}
 
@@ -541,7 +570,6 @@ void mapRampAtCurrentField()
 		{
 			robot_is_on_story = possibleRamp.X;
 		}
-		delay(3000);
 	}
 	mapMoveTo(FRONT);
 }
@@ -641,13 +669,17 @@ void mapDisplay()
 
 
 
+	Serial.println("Robot is at:");
+	Serial.println( robot_is_at.X);
+	Serial.println( robot_is_at.Y);
+	Serial.println("Robot is facing:");
+	Serial.println( robot_is_facing);
 
 	for (uint8_t s=0; s<NUMBEROFSTORIES; ++s)
 	{
 		Serial.println();
 		Serial.print("Story:");
 		Serial.println(s);
-		Serial.println();
 	
 	for (uint8_t o=0; o<MAPSIZE; ++o)
 	{
@@ -684,8 +716,8 @@ void mapDisplay()
 		else
 			Serial.print("_");
 
-		if ( Map[s][i][o].isRamp )
-			Serial.print("R");
+		if ( Map[s][i][o].isBlack )
+			Serial.print("B");
 		else
 			Serial.print("_");
 		
@@ -709,7 +741,5 @@ void mapDisplay()
 	}
 	Serial.println();
 	}
-	delay(1);
 	}
-	
 }

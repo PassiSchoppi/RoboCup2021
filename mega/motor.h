@@ -63,6 +63,8 @@ int speedFromEnc(unsigned int encA, unsigned int encB, unsigned int encC, unsign
 // let the robot drive in specific direction
 void motorDriveTo(uint8_t direction, int speed);
 
+void motorDriveSafe(int16_t baseSpeed, float kP, float kI, float kD);
+
 // returns the average of all motor steps
 unsigned int motorAverageSteps();
 

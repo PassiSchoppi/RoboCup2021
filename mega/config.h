@@ -2,12 +2,13 @@
 #define CONFIG_H
 
 // ## SETTINGS ##
-#define DOBLACKTILEDETECTION 	false
+#define DOBLACKTILEDETECTION 	true
 #define DOMAP 					true
 #define DODRIVINGCORECTION 		true
-#define CORECTIONAGGRESSIVE 	2
+#define CORECTIONAGGRESSIVE 	1
 #define DOVICTIMEDETECTION 		true
-#define SMOOTHENSENSORDATA 		15
+#define DORAMPDETECTION         true
+#define SMOOTHENSENSORDATA 		2 // 15
 #define MAPSIZE 				10
 #define NUMBEROFSTORIES         2
 #define LENGTHOFSKIP 			10
@@ -33,12 +34,13 @@ extern uint8_t level;  // ebene fläche
 #define LEFT 			3
 
 #define DISTANCETOWALL 	36
+#define PERFECTDISTTOW  75
 #define MINDISTANCETOW 	100
 #define CUTDATAVAL 		0
 
 #define RAMP_THRESHOLD  15
 #define REST_OF_RAMP    30
-#define STEPSFORHALFARAMP   200
+#define STEPSFORHALFARAMP   250
 
 #define VICTIMTEMP 		28
 
@@ -66,5 +68,7 @@ extern uint8_t level;  // ebene fläche
 #define PINK 			5
 #define YELLOW 			6
 #define TURQUOISE 		7
+
+#define SIGNUM(x) ((x==0) ? 0 : x/abs(x))
 
 #endif

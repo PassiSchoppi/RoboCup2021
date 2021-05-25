@@ -167,15 +167,54 @@ int speedFromEnc(unsigned int encA, unsigned int encB, unsigned int encC, unsign
 
 void motorDriveTo(uint8_t direction, int speed)
 {
+	int kP;
+	int errorP;
+	int sum;
+	int targetWallDistance = PERFECTDISTTOW;
+
+	// Serial.println("hi");
+	// Serial.println(direction);
 	switch( direction )
 	{
 		case FRONT:
-			motorSetSpeed(0, speedFromEnc(motor[1].steps, motor[2].steps, motor[3].steps, motor[0].steps, speed, true, true));
-			motorSetSpeed(1, speedFromEnc(motor[0].steps, motor[2].steps, motor[3].steps, motor[1].steps, speed, true, true));
-			motorSetSpeed(2, speedFromEnc(motor[0].steps, motor[1].steps, motor[3].steps, motor[2].steps, speed, true, false));
-			motorSetSpeed(3, speedFromEnc(motor[0].steps, motor[2].steps, motor[1].steps, motor[3].steps, speed, true, false));
+			kP = 2;
+			targetWallDistance = PERFECTDISTTOW;
+			if(wallExists(RIGHT)) {
+				errorP = (int)(sensorData[2]) - targetWallDistance;
+				sum = (int)(errorP * kP);
+				if( sum > speed )
+				{
+					sum = speed;
+				}else if( sum < - speed )
+				{
+					sum = - speed;
+				}
+				motorSetSpeed(0, speed - sum);
+				motorSetSpeed(1, speed - sum);
+				motorSetSpeed(2, speed + sum);
+				motorSetSpeed(3, speed + sum);
+			} else if(wallExists(LEFT)) {
+				errorP = -((int)(sensorData[0]) - targetWallDistance);
+				sum = (int)(errorP * kP);
+				if( sum > speed )
+				{
+					sum = speed;
+				}else if( sum < - speed )
+				{
+					sum = - speed;
+				}
+				motorSetSpeed(0, speed - sum);
+				motorSetSpeed(1, speed - sum);
+				motorSetSpeed(2, speed + sum);
+				motorSetSpeed(3, speed + sum);
+			} else {
+				motorSetSpeed(0, speedFromEnc(motor[1].steps, motor[2].steps, motor[3].steps, motor[0].steps, speed, true, true));
+				motorSetSpeed(1, speedFromEnc(motor[0].steps, motor[2].steps, motor[3].steps, motor[1].steps, speed, true, true));
+				motorSetSpeed(2, speedFromEnc(motor[0].steps, motor[1].steps, motor[3].steps, motor[2].steps, speed, true, false));
+				motorSetSpeed(3, speedFromEnc(motor[0].steps, motor[2].steps, motor[1].steps, motor[3].steps, speed, true, false));
+			}
 			break;
-		
+
 		case RIGHT:
 			motorSetSpeed(0, speedFromEnc(motor[1].steps, motor[2].steps, motor[3].steps, motor[0].steps, speed, false, true));
 			motorSetSpeed(1, speedFromEnc(motor[0].steps, motor[2].steps, motor[3].steps, motor[1].steps, speed, false, true));
@@ -184,6 +223,7 @@ void motorDriveTo(uint8_t direction, int speed)
 			break;
 		
 		case LEFT:
+			// Serial.println("hello");
 			motorSetSpeed(0, speedFromEnc(motor[1].steps, motor[2].steps, motor[3].steps, motor[0].steps, -speed, false, true));
 			motorSetSpeed(1, speedFromEnc(motor[0].steps, motor[2].steps, motor[3].steps, motor[1].steps, -speed, false, true));
 			motorSetSpeed(2, speedFromEnc(motor[0].steps, motor[1].steps, motor[3].steps, motor[2].steps, speed, false, false));
@@ -192,12 +232,13 @@ void motorDriveTo(uint8_t direction, int speed)
 		
 		case BACK:
 			// FIXME
-			motorSetSpeed(0, speedFromEnc(motor[1].steps, motor[2].steps, motor[3].steps, motor[0].steps, -speed, false, true));
-			motorSetSpeed(1, speedFromEnc(motor[0].steps, motor[2].steps, motor[3].steps, motor[1].steps, -speed, false, true));
-			motorSetSpeed(2, speedFromEnc(motor[0].steps, motor[1].steps, motor[3].steps, motor[2].steps, -speed, false, false));
-			motorSetSpeed(3, speedFromEnc(motor[0].steps, motor[2].steps, motor[1].steps, motor[3].steps, -speed, false, false));
+			motorSetSpeed(0, -speed);
+			motorSetSpeed(1, -speed);
+			motorSetSpeed(2, -speed);
+			motorSetSpeed(3, -speed);
 			break;
 	}
+	// Serial.println("done");
 }
 
 void motorBrake() 
@@ -206,4 +247,67 @@ void motorBrake()
 	{
     	motorSetSpeed(i, 0);
   	}
+}
+
+
+int errorI=0;
+
+void motorDriveSafe(int16_t baseSpeed, float kP, float kI, float kD) {
+    int errorP = 0;
+    int errorD = 0;
+
+    int targetWallDistance = 0;
+    // int obstacle = obstacleInFront();
+
+    // if((obstacle == 1) && entireWall(LEFT, 180) && !entireWall(RIGHT, 200))
+        // targetWallDistance = 500;
+    // else if((obstacle == -1) && entireWall(RIGHT, 180) && !entireWall(LEFT, 200))
+        // targetWallDistance = 500;
+    // else
+    targetWallDistance = PERFECTDISTTOW;
+//0   [LF,
+	//1   LB,
+	//2   RF,
+	//3   RB,
+	//4   ACC_X,
+	//5   ACC_Z,
+	//6   FL,
+	//7   FC,
+	//8   FR,
+	//9   BL, ???
+	//10  BR,
+	//11  TEMP_L,
+	//12  TEMP_R
+	//13  LIGHT_R
+	//14  LIGHT_L]
+    if(wallExists(RIGHT)) {
+		errorP = (int)(sensorData[2]) - targetWallDistance;
+		errorI = errorI + errorP;
+		errorD = sensorData[3] - sensorData[2];
+		Serial.println();
+		Serial.print("P: ");Serial.print(errorP);Serial.print(" I: ");Serial.print(errorI);Serial.print(" D: ");Serial.print(errorD);Serial.print(" SUM: ");Serial.println(errorD+errorI+errorP);
+    } else if(wallExists(LEFT)) {
+        errorP = -((int)(sensorData[0]) - targetWallDistance);
+        errorI = errorI + errorP;
+        errorD = -(sensorData[1] - sensorData[0]);
+    } else {
+        errorI = 0;
+    }
+
+	int sum = (int)(errorP * kP) - (int)(errorI * kI) - (int)(errorD * kD);
+	if( sum > BASESPEED*1.5 )
+	{
+		sum = BASESPEED*1.5;
+	}else if( sum < BASESPEED/2 )
+	{
+		sum = BASESPEED/2;
+	}
+
+	motorSetSpeed(0, baseSpeed - (int)(errorP * kP) - (int)(errorI * kI) - (int)(errorD * kD));
+	motorSetSpeed(1, baseSpeed - (int)(errorP * kP) - (int)(errorI * kI) - (int)(errorD * kD));
+    motorSetSpeed(2, baseSpeed + (int)(errorP * kP) + (int)(errorI * kI) + (int)(errorD * kD));
+    motorSetSpeed(3, baseSpeed + (int)(errorP * kP) + (int)(errorI * kI) + (int)(errorD * kD));
+
+    /*motorSetLeftSpeed(baseSpeed + (int)(errorP * kP) + (int)(errorI * kI) + (int)(errorD * kD));
+    motorSetRightSpeed(baseSpeed - (int)(errorP * kP) - (int)(errorI * kI) - (int)(errorD * kD));*/
 }
