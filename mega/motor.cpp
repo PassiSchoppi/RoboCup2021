@@ -179,6 +179,23 @@ void motorDriveTo(uint8_t direction, int speed)
 		case FRONT:
 			kP = 1;
 			targetWallDistance = PERFECTDISTTOW;
+			int avoidObstacleBy= 20;
+			
+			//6   FL,
+			//7   FC,
+			//8   FR,
+			// wenn nur vorne rechts ein obstacle
+			if(sensorData[6]<DISTANCETOWALL && sensorData[7]<DISTANCETOWALL && sensorData[8]>DISTANCETOWALL)
+			{
+				targetWallDistance = PERFECTDISTTOW + avoidObstacleBy;
+			}
+			// wenn nur vorne links ein obstacle
+			if(sensorData[6]>DISTANCETOWALL && sensorData[7]<DISTANCETOWALL && sensorData[8]<DISTANCETOWALL)
+			{
+				targetWallDistance = PERFECTDISTTOW - avoidObstacleBy;
+			}
+			
+			
 			if(wallExists(RIGHT)) {
 				errorP = (int)(sensorData[2]) - targetWallDistance;
 				sum = (int)(errorP * kP);
