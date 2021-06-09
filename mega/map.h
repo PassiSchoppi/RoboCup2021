@@ -32,6 +32,8 @@ bool mapFieldInSkip(Vector field, Vector *skip);
 uint8_t mapSearchForUnvisited(Vector startPoint, Vector *skip);
 
 bool mapIsMapFine();
+void mapSilverField();
+bool mapSetBackToLastSilver();
 
 void mapInit();
 void mapUpdateField();

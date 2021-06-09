@@ -24,6 +24,10 @@ uint8_t nothing()
 
 void stateChange()
 {
+
+	// set back to last silver field
+	// mapIsFine = mapSetBackToLastSilver();
+
 	switch(state) 
 	{
 		case 0:
@@ -46,7 +50,10 @@ void stateChange()
 				mapIsFine = mapIsMapFine();
 			}
 
-			mapUpdateField();
+			if(mapIsFine)
+			{
+				mapUpdateField();
+			}
 
 			//if ( !DOMAP )
 			if(mapIsFine)

@@ -8,6 +8,7 @@ Field Map[NUMBEROFSTORIES][MAPSIZE][MAPSIZE];
 uint8_t robot_is_facing;
 uint8_t robot_is_on_story;
 Vector robot_is_at;
+Vector lastVisitedSilver;
 
 // translates compas to direction
 uint8_t mapCompasToDirection(uint8_t compasI)
@@ -175,6 +176,22 @@ bool mapIsMapFine()
 }
 
 
+void mapSilverField()
+{
+	lastVisitedSilver.X = robot_is_at.X;
+	lastVisitedSilver.Y = robot_is_at.Y;
+}
+
+
+bool mapSetBackToLastSilver()
+{
+	robot_is_at.X = lastVisitedSilver.X;
+	robot_is_at.Y = lastVisitedSilver.Y;
+	robot_is_facing = NOTH;
+	return(true);
+}
+
+
 void mapUpdateField()
 {
 	// Serial.println("updating field");
@@ -195,6 +212,12 @@ void mapUpdateField()
 	Map[robot_is_on_story][robot_is_at.X+1][robot_is_at.Y].directions[ WEST ] = 	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[EAST];
 	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y+1].directions[ NOTH ] = 	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[SOUTH];
 	Map[robot_is_on_story][robot_is_at.X-1][robot_is_at.Y].directions[ EAST ] = 	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[WEST];
+
+	// silver field
+	if( sensorData[13]<MINWHITE || sensorData[14]<MINWHITE )
+	{
+		mapSilverField();
+	}
 
 	// mark current field as visited
 	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].visited = true;

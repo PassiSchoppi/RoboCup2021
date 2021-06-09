@@ -8,7 +8,7 @@
 #define CORECTIONAGGRESSIVE 	1
 #define DOVICTIMEDETECTION 		true
 #define DORAMPDETECTION         true
-#define DORAMPONMAP             true
+#define DORAMPONMAP             false
 #define SMOOTHENSENSORDATA 		5 // 15
 #define MAPSIZE 				10
 #define NUMBEROFSTORIES         2
