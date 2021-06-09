@@ -240,21 +240,21 @@ void mapBlackFieldFront()
 	Serial.println( robot_is_facing);
 	Map[robot_is_on_story][ robot_is_at.X ][ robot_is_at.Y ].visited = true;
 	Map[robot_is_on_story][ robot_is_at.X ][ robot_is_at.Y ].isBlack = true;
-	robot_is_at.X -= 1;
-	/*switch( mapDirectionToCompas( robot_is_facing ) ) {
+	// robot_is_at.X -= 1;
+	switch( mapDirectionToCompas( robot_is_facing ) ) {
 		case NOTH:
 			robot_is_at.Y -= 1;
 			break;
 		case EAST:
-			robot_is_at.X -= 1;
-			break;
-		case SOUTH:
-			robot_is_at.Y -= 1;
-			break;
-		case WEST:
 			robot_is_at.X += 1;
 			break;
-	}*/
+		case SOUTH:
+			robot_is_at.Y += 1;
+			break;
+		case WEST:
+			robot_is_at.X -= 1;
+			break;
+	}
 	// mapMoveTo(FRONT);
 	// mapMoveTo(FRONT);
 	// mapMoveTo(BACK);
