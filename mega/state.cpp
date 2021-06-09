@@ -15,6 +15,7 @@ uint8_t nextState=0;
 // bool seenVic = false;
 uint8_t moveTo = 5;
 bool overHalfOfRamp = false;
+bool mapIsFine = true;
 
 uint8_t nothing()
 {
@@ -40,9 +41,15 @@ void stateChange()
 			
 			// delay(250);
 
+			if(mapIsFine)
+			{
+				mapIsFine = mapIsMapFine();
+			}
+
 			mapUpdateField();
 
-			if ( !DOMAP )
+			//if ( !DOMAP )
+			if(mapIsFine)
 			{
 				// ## get direction to drive to ##
 				// 																		RECHTSUMFAHRUNG

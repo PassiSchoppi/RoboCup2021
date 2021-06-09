@@ -31,6 +31,8 @@ uint8_t indexofSmallestElement(uint8_t array[4]);
 bool mapFieldInSkip(Vector field, Vector *skip);
 uint8_t mapSearchForUnvisited(Vector startPoint, Vector *skip);
 
+void mapIsMapFine();
+
 void mapInit();
 void mapUpdateField();
 void mapMoveTo(uint8_t directionToGo);

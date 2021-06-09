@@ -151,6 +151,30 @@ void mapInit()
 }
 
 
+void mapIsMapFine()
+{
+	if(    !(    wallExists(FRONT) && !Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[ mapDirectionToCompas( FRONT ) ]     )    )
+	{
+		return(false);
+	}
+	if(    !(    wallExists(RIGHT) && !Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[ mapDirectionToCompas( RIGHT ) ]     )    )
+	{
+		return(false);
+	}
+	if(    !(    wallExists(BACK) && !Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[ mapDirectionToCompas( BACK ) ]     )    )
+	{
+		return(false);
+	}
+	if(    !(    wallExists(LEFT) && !Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[ mapDirectionToCompas( LEFT ) ]     )    )
+	{
+		return(false);
+	}
+
+
+	return(true);
+}
+
+
 void mapUpdateField()
 {
 	// Serial.println("updating field");
