@@ -151,7 +151,7 @@ void mapInit()
 }
 
 
-void mapIsMapFine()
+bool mapIsMapFine()
 {
 	if(    !(    wallExists(FRONT) && !Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[ mapDirectionToCompas( FRONT ) ]     )    )
 	{
