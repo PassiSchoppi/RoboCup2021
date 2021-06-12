@@ -11,7 +11,7 @@
 #define DORAMPONMAP             false
 #define SMOOTHENSENSORDATA 		5 // 15
 #define MAPSIZE 				10
-#define NUMBEROFSTORIES         2
+#define NUMBEROFSTORIES         1
 #define LENGTHOFSKIP 			10
 
 // ## GLOBAL VARIABLES ##
@@ -67,7 +67,7 @@ extern uint8_t level;  // ebene fläche
 // #define MINWHITE 		150
 
 #define MAXWHITE 		240
-#define MINWHITE 		50
+#define MINWHITE 		100
 
 #define OFF 			0
 #define WHITE 			1

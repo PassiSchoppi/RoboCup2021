@@ -149,6 +149,8 @@ void mapInit()
 	// FIXME: half of MAPSIZE
 	robot_is_at.X = 5;
 	robot_is_at.Y = 5;
+	lastVisitedSilver.X = robot_is_at.X;
+	lastVisitedSilver.Y = robot_is_at.Y;
 	robot_is_on_story = 0;
 }
 
@@ -184,12 +186,11 @@ void mapSilverField()
 }
 
 
-bool mapSetBackToLastSilver()
+void mapSetBackToLastSilver()
 {
 	robot_is_at.X = lastVisitedSilver.X;
 	robot_is_at.Y = lastVisitedSilver.Y;
 	robot_is_facing = NOTH;
-	return(true);
 }
 
 
@@ -217,23 +218,48 @@ void mapUpdateField()
 	// silver field
 	if( sensorData[13]<MINWHITE || sensorData[14]<MINWHITE )
 	{
-		LEDSetColor(WHITE);
-		delay(100);
-		LEDSetColor(OFF);
-		delay(100);
-		LEDSetColor(WHITE);
-		delay(100);
-		LEDSetColor(OFF);
-		delay(100);
-		LEDSetColor(WHITE);
-		delay(100);
-		LEDSetColor(OFF);
-		delay(100);
-		LEDSetColor(WHITE);
-		delay(100);
-		LEDSetColor(OFF);
-		delay(100);
-		mapSilverField();
+		Serial.println("detected silver tile... robot is at:");
+		Serial.println(robot_is_at.X);
+		Serial.println(robot_is_at.Y);
+
+		if((robot_is_at.X != lastVisitedSilver.X) || (robot_is_at.Y != lastVisitedSilver.Y)){
+			LEDSetColor(WHITE);
+			delay(100);
+			LEDSetColor(OFF);
+			delay(100);
+			LEDSetColor(WHITE);
+			delay(100);
+			LEDSetColor(OFF);
+			delay(100);
+			LEDSetColor(WHITE);
+			delay(100);
+			LEDSetColor(OFF);
+			delay(100);
+			LEDSetColor(WHITE);
+			delay(100);
+			LEDSetColor(OFF);
+			delay(100);
+			mapSilverField();
+		}
+		else
+		{
+			LEDSetColor(BLUE);
+			delay(100);
+			LEDSetColor(OFF);
+			delay(100);
+			LEDSetColor(BLUE);
+			delay(100);
+			LEDSetColor(OFF);
+			delay(100);
+			LEDSetColor(BLUE);
+			delay(100);
+			LEDSetColor(OFF);
+			delay(100);
+			LEDSetColor(BLUE);
+			delay(100);
+			LEDSetColor(OFF);
+			delay(100);
+		}
 	}
 
 	// mark current field as visited
@@ -296,6 +322,49 @@ void mapMoveTo(uint8_t directionToGo)
 	}
 }
 
+
+void mapOnlyMoveTo(uint8_t directionToGo)
+{
+	LEDSetColor(RED);
+	delay(100);
+	switch( mapDirectionToCompas( directionToGo ) ) {
+		case NOTH:
+			robot_is_at.Y -= 1;
+			break;
+		case EAST:
+			robot_is_at.X += 1;
+			break;
+		case SOUTH:
+			robot_is_at.Y += 1;
+			break;
+		case WEST:
+			robot_is_at.X -= 1;
+			break;
+	}
+}
+
+
+void mapOnlyTurnTo(uint8_t directionToGo)
+{
+	LEDSetColor(RED);
+	delay(100);
+	switch( mapDirectionToCompas( directionToGo ) ) {
+		case NOTH:
+			robot_is_facing = NOTH;
+			break;
+		case EAST:
+			robot_is_facing = EAST;
+			break;
+		case SOUTH:
+			robot_is_facing = SOUTH;
+			break;
+		case WEST:
+			robot_is_facing = WEST;
+			break;
+	}
+}
+
+
 void mapBlackFieldFront()
 {
 	Serial.println("found black");
@@ -330,6 +399,17 @@ void mapBlackFieldFront()
 	Serial.println( robot_is_at.X);
 	Serial.println( robot_is_at.Y);
 	Serial.println( robot_is_facing);
+	Serial.println("done");
+}
+
+void mapBlackFieldCurrent()
+{
+	Serial.println("found black");
+	Serial.println( robot_is_at.X);
+	Serial.println( robot_is_at.Y);
+	Serial.println( robot_is_facing);
+	Map[robot_is_on_story][ robot_is_at.X ][ robot_is_at.Y ].visited = true;
+	Map[robot_is_on_story][ robot_is_at.X ][ robot_is_at.Y ].isBlack = true;
 	Serial.println("done");
 }
 

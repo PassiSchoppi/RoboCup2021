@@ -34,12 +34,17 @@ uint8_t mapSearchForUnvisited(Vector startPoint, Vector *skip);
 
 bool mapIsMapFine();
 void mapSilverField();
-bool mapSetBackToLastSilver();
+void mapSetBackToLastSilver();
 
 void mapInit();
 void mapUpdateField();
 void mapMoveTo(uint8_t directionToGo);
+
+void mapOnlyMoveTo(uint8_t directionToGo);
+void mapOnlyTurnTo(uint8_t directionToGo);
+
 void mapBlackFieldFront();
+void mapBlackFieldCurrent();
 void mapVictimNewAtCurrentField();
 
 void mapReturnToHome();

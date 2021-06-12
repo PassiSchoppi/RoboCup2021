@@ -14,6 +14,7 @@ uint8_t lastState=0;
 uint8_t nextState=0;
 // bool seenVic = false;
 uint8_t moveTo = 5;
+bool overHalf = false;
 bool overHalfOfRamp = false;
 bool mapIsFine = true;
 bool frontIsBlack = false;
@@ -29,6 +30,16 @@ void stateChange()
 
 	// set back to last silver field
 	// mapIsFine = mapSetBackToLastSilver();
+
+	if(sensorData[16] == 0) // PAUSE / LACK OF PROGRESS SWITCH
+	{
+		LEDSetColor(WHITE);
+		Serial.println("pausing");
+		motorBrake();
+		mapSetBackToLastSilver();
+		state = 1;
+		return;
+	}
 
 	switch(state) 
 	{
@@ -55,16 +66,99 @@ void stateChange()
 
 			if(mapIsFine)
 			{
-				mapUpdateField();
+				
 			}
 
-			// if ( !DOMAP )
-			if( !mapIsFine )
+			if( !DOMAP || !sensorData[15] )
 			{
 				// ## get direction to drive to ##
 				// 																		RECHTSUMFAHRUNG
 				
-				if(!wallExists(RIGHT))
+				/*uint8_t mostLeftFree;
+				uint8_t mostLeftWall;
+				mostLeftWall = 5;
+				mostLeftFree = 5;
+				if(mostLeftWall==5 && wallExists(RIGHT)){
+					mostLeftWall = RIGHT;
+				}
+				if(mostLeftWall==5 && wallExists(FRONT) || frontIsBlack){
+					mostLeftWall = FRONT;
+				}
+				if(mostLeftWall==5 && wallExists(LEFT)){
+					mostLeftWall = LEFT;
+				}
+				if(mostLeftWall==5 && wallExists(BACK)){
+					mostLeftWall = BACK;
+				}
+				if(mostLeftWall==5){
+					state = 2;
+				}
+				switch (mostLeftWall)
+				{
+				case RIGHT:
+					if(mostLeftFree==5 && (!wallExists(FRONT) || !frontIsBlack)){
+						mostLeftFree = FRONT;
+					}
+					if(mostLeftFree==5 && !wallExists(LEFT)){
+						mostLeftFree = LEFT;
+					}
+					if(mostLeftFree==5 && !wallExists(BACK)){
+						mostLeftFree = BACK;
+					}
+					break;
+				case FRONT:
+					if(mostLeftFree==5 && !wallExists(LEFT)){
+						mostLeftFree = LEFT;
+					}
+					if(mostLeftFree==5 && !wallExists(BACK)){
+						mostLeftFree = BACK;
+					}
+					if(mostLeftFree==5 && !wallExists(RIGHT)){
+						mostLeftFree = RIGHT;
+					}
+					break;
+				case LEFT:
+					if(mostLeftFree==5 && !wallExists(BACK)){
+						mostLeftFree = BACK;
+					}
+					if(mostLeftFree==5 && !wallExists(RIGHT)){
+						mostLeftFree = RIGHT;
+					}
+					if(mostLeftFree==5 && (!wallExists(FRONT) || !frontIsBlack)){
+						mostLeftFree = FRONT;
+					}
+					break;
+				case BACK:
+					if(mostLeftFree==5 && !wallExists(RIGHT)){
+						mostLeftFree = RIGHT;
+					}
+					if(mostLeftFree==5 && (!wallExists(FRONT) || !frontIsBlack)){
+						mostLeftFree = FRONT;
+					}
+					if(mostLeftFree==5 && !wallExists(LEFT)){
+						mostLeftFree = LEFT;
+					}
+					break;
+				}
+				switch (mostLeftFree)
+				{
+				case RIGHT:
+					state = 2;
+					break;
+				case FRONT:
+					state = 3;
+					break;
+				case LEFT:
+					state = 4;
+					break;
+				case BACK:
+					state = 5;
+					break;
+				case 5:
+					state = 0;
+				}*/
+				
+				if(!wallExists(RIGHT) && !frontIsBlack)
 				{
 					// rechts drehen dann gerade aus
 					// Serial.println("Rechts abbiegen!");
@@ -89,6 +183,7 @@ void stateChange()
 					state = 4;
 					// mapMoveTo(LEFT);
 					Serial.println("checngin state to: LEFT");
+					frontIsBlack = false;
 					return;
 				}
 				// wenn rechts und forne und links eine wand ist aber hinten keine
@@ -99,6 +194,7 @@ void stateChange()
 					state = 5;
 					// mapMoveTo(BACK);
 					Serial.println("checngin state to: BACK");
+					frontIsBlack = false;
 					return;
 				}
 				
@@ -110,6 +206,9 @@ void stateChange()
 			}
 			else
 			{
+				//                                                                             MAP
+				mapUpdateField();
+
 				uint8_t compasToGoTo = mapWhereToDrive();
 				// Serial.print("going: ");
 				// Serial.println(compasToGoTo);
@@ -127,12 +226,25 @@ void stateChange()
 						state = 4;
 						break;
 					case 5:
+						Serial.println("ARE WE HOME JET????");
 						mapReturnToHome();
+						Serial.println("SOON!!!!");
 						state = 1;
 						break;
+					default:
+						Serial.println("something went wrong...");
 				}
+				if( mapCompasToDirection( compasToGoTo ) == 5 )
+				{
+					Serial.println("ARE WE HOME JET????");
+					mapReturnToHome();
+					Serial.println("SOON!!!!");
+					state = 1;
+				}
+				Serial.println("letzzz gooo");
+				overHalf = false;
 				mapDisplay();
-				mapMoveTo( mapCompasToDirection( compasToGoTo ) );
+				// mapMoveTo( mapCompasToDirection( compasToGoTo ) );
 			}
 			break;
 		
@@ -146,11 +258,17 @@ void stateChange()
 				average = average + abs(motorStepsMade(i));
 			}
 			average = average/4;
+			if( !overHalf && average > STEPFFORRIGHT/2)
+			{
+				overHalf = true;
+				mapOnlyTurnTo(RIGHT);
+			}
 			if( average > STEPFFORRIGHT )
 			{
 				motorResetAllSteps();
 				motorBrake();
 				stabilize();
+				overHalf = false;
 				// gerade aus
 				state = 3;
 			}
@@ -173,6 +291,11 @@ void stateChange()
 				average = average + motorStepsMade(i);
 			}
 			average = average/4;
+			if( !overHalf && average > STEPFFORRIGHT/2)
+			{
+				overHalf = true;
+				mapOnlyMoveTo(FRONT);
+			}
 			//6   FL,
 			//7   FC,
 			//8   FR,
@@ -182,6 +305,7 @@ void stateChange()
 			{
 				motorBrake();
 				motorResetAllSteps();
+				overHalf = false;
 				// stabilize und dann neue entscheidung
 				state = 8;
 			}
@@ -191,6 +315,7 @@ void stateChange()
 			{
 				// kurz zurück und dann neu entscheiden
 				motorBrake();
+				overHalf = false;
 				state = 9;
 			}
 
@@ -202,6 +327,7 @@ void stateChange()
 				{
 					// motorResetAllSteps();
 					overHalfOfRamp = false;
+					overHalf = false;
 
 					// ramp down
 					state = 11;
@@ -212,6 +338,7 @@ void stateChange()
 				{
 					// motorResetAllSteps();
 					overHalfOfRamp = false;
+					overHalf = false;
 
 					// ramp up
 					state = 12;
@@ -228,8 +355,13 @@ void stateChange()
 			// if black tile
 			if( sensorData[13]>MAXWHITE || sensorData[14]>MAXWHITE )
 			{
-				mapBlackFieldFront();
+				if(overHalf){
+					mapBlackFieldFront();
+				}else{
+					mapBlackFieldCurrent();
+				}
 				frontIsBlack = true;
+				overHalf = false;
 				state = 10;
 				numberOfStepsBeforBlack = motorAverageSteps();
 			}
@@ -237,7 +369,7 @@ void stateChange()
 		
 		case 4:
 			// drive left dann gerade aus
-			LEDSetColor(RED);
+			LEDSetColor(TURQUOISE);
 			motorDriveTo(LEFT, BASESPEED);
 			// Left until average > STEPSFORLEFT
 			average = 0;
@@ -246,10 +378,16 @@ void stateChange()
 					average = average + abs(motorStepsMade(i));
 			}
 			average = average/4;
+			if(!overHalf && average > STEPSFORLEFT/2)
+			{
+				mapOnlyTurnTo(LEFT);
+				overHalf = true;
+			}
 			if(average > STEPSFORLEFT)
 			{
 				motorResetAllSteps();
 				stabilize();
+				overHalf = false;
 				// gerade aus
 				state = 3;
 			}
@@ -272,10 +410,16 @@ void stateChange()
 				average = average + abs(motorStepsMade(i));
 			}
 			average = average/4;
+			if(!overHalf && average > STEPSFORLEFT/2)
+			{
+				mapOnlyTurnTo(LEFT);
+				overHalf = true;
+			}
 			if(average > STEPSFORLEFT)
 			{
 				motorResetAllSteps();
 				stabilize();
+				overHalf = false;
 				// dann left und dann gerade aus
 				state = 4;
 			}
@@ -375,7 +519,7 @@ void stateChange()
 			//kurz zurück fahren
 			motorBrake();
 			motorDriveTo(BACK, BASESPEED);
-			while(motorStepsMade(0) < numberOfStepsBeforBlack * 2){}
+			while(motorStepsMade(0) < (numberOfStepsBeforBlack * 2)){}
 			numberOfStepsBeforBlack = 0;
 			motorResetAllSteps();
 			motorBrake();
