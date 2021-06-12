@@ -15,7 +15,7 @@
 #define LENGTHOFSKIP 			10
 
 // ## GLOBAL VARIABLES ##
-extern volatile uint8_t sensorData[15];
+extern volatile uint8_t sensorData[18];
 extern uint8_t state;
 extern uint8_t level;  // ebene fläche
 

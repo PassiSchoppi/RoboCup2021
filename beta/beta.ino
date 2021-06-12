@@ -2,7 +2,7 @@
 #include "config.h"
 
 uint8_t bufferVar;
-uint8_t sensorData[5];
+uint8_t sensorData[8];
 
 
 void setup() 
@@ -102,13 +102,16 @@ void loop()
 	sensorData[2] = analogRead(SHP_FR) >> 2;
 	sensorData[3] = analogRead(SHP_BL) >> 2;
 	sensorData[4] = analogRead(SHP_BR) >> 2;
+	sensorData[5] = digitalRead(9);
+	sensorData[6] = digitalRead(10);
+	sensorData[7] = digitalRead(11);
 
 	digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
 }
 
 void interupt()
 {
-	for(uint8_t i=0; i<5; ++i)
+	for(uint8_t i=0; i<8; ++i)
 	{
 		Serial.write(sensorData[i]);
 	}

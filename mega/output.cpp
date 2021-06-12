@@ -38,8 +38,8 @@ void output()
 	Serial.print(" R: ");Serial.println(sensorData[12]);
 	// # LIGHT #
 	Serial.print("Light:");
-	*/Serial.print(" R: ");Serial.print(sensorData[13]);
-	Serial.print(" L: ");Serial.println(sensorData[14]);/*
+	Serial.print(" R: ");Serial.print(sensorData[13]);
+	Serial.print(" L: ");Serial.println(sensorData[14]);
 	// # ISWALL #
 	Serial.print("Walls:");
 	Serial.print(" F: ");Serial.print(wallExists(FRONT));
@@ -48,4 +48,8 @@ void output()
 	Serial.print(" B: ");Serial.println(wallExists(BACK));
 	// # RAMP #
 	Serial.print("Level:");Serial.print(level);Serial.print(" | ");Serial.println(sensorData[4]);*/
+	// # SWITCHES #
+	Serial.print(" A: ");Serial.print(sensorData[15]);
+	Serial.print(" B: ");Serial.print(sensorData[16]);
+	Serial.print(" C: ");Serial.println(sensorData[17]);
 }

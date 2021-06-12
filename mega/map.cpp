@@ -523,7 +523,7 @@ void calcDistanceRecursively(uint8_t s, uint8_t x, uint8_t y, uint8_t num)
 		}
 	}
 	
-	return(0);
+	return;
 }
 
 

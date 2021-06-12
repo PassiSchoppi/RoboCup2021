@@ -64,7 +64,7 @@ void sensorRead()
 	
 	// auf Daten warten
 	counter = 0;
-	while(Serial3.available()<5)
+	while(Serial3.available()<8 || counter > 100)
 	{
 		++counter;
 		if(counter>100)
@@ -77,6 +77,10 @@ void sensorRead()
 	for(uint8_t i=0; i<5; ++i)
 	{
 		sensorData[i+6] = ( sensorData[i+6]*(SMOOTHENSENSORDATA-1) + Serial3.read() )/SMOOTHENSENSORDATA ;
+	}
+	for(uint8_t i=0; i<3; ++i)
+	{
+		sensorData[i+15] = Serial3.read();
 	}
 	
 	// Serial buffer leeren
@@ -91,11 +95,13 @@ void sensorRead()
 	sensorData[12]=((int)melexisGetValue(1));
 	
 	// 														LIGHT SENSOR
+	int smotheLightSensorBy;
+	smotheLightSensorBy = 2;
 	if( DOBLACKTILEDETECTION ){
 		if(digitalRead(7))
 		{
-			sensorData[13]=(analogRead(A6)>>2)-5;
-			sensorData[14]=analogRead(7)>>2;
+			sensorData[13]=(sensorData[13]*(smotheLightSensorBy-1) + (analogRead(A6)>>2))/smotheLightSensorBy;
+			sensorData[14]=(sensorData[13]*(smotheLightSensorBy-1) + (analogRead(7)>>2))/smotheLightSensorBy;
 			digitalWrite(7, LOW);
 		}
 		else
@@ -116,7 +122,10 @@ void sensorRead()
 	//9   BL, ???
 	//10  BR,
 	//11  TEMP_L,
-	//12  TEMP_R
-	//13  LIGHT_R
-	//14  LIGHT_L]
+	//12  TEMP_R,
+	//13  LIGHT_R,
+	//14  LIGHT_L,
+	//15  SWITCH_A,
+	//16  SWITCH_B,
+	//17  SWITCH_C]
 }

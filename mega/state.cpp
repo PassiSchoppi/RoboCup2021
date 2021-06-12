@@ -17,6 +17,7 @@ uint8_t moveTo = 5;
 bool overHalfOfRamp = false;
 bool mapIsFine = true;
 bool frontIsBlack = false;
+int numberOfStepsBeforBlack = 0;
 
 uint8_t nothing()
 {
@@ -230,6 +231,7 @@ void stateChange()
 				mapBlackFieldFront();
 				frontIsBlack = true;
 				state = 10;
+				numberOfStepsBeforBlack = motorAverageSteps();
 			}
 			break;
 		
@@ -372,9 +374,9 @@ void stateChange()
 		case 10:
 			//kurz zurück fahren
 			motorBrake();
-			motorResetAllSteps();
 			motorDriveTo(BACK, BASESPEED);
-			while(motorStepsMade(0)<35){}
+			while(motorStepsMade(0) < numberOfStepsBeforBlack * 2){}
+			numberOfStepsBeforBlack = 0;
 			motorResetAllSteps();
 			motorBrake();
 			// stabilize und dann neu entscheiden

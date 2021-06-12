@@ -18,7 +18,7 @@
 
 
 // ## GLOBAL VARIABLES (see config.h) ##
-volatile uint8_t sensorData[15];
+volatile uint8_t sensorData[18];
 uint8_t state;
 uint8_t level;
 
@@ -51,8 +51,8 @@ void loop()
 	// motorDriveTo(BACK, BASESPEED);
 	// motorDriveSafe(SIGNUM(STEPSFORONE)*(uint8_t)(BASESPEED), 2, 0, 0);
 	// stabilize();
-	stateChange();
-	// output();
+	// stateChange();
+	output();
 	// mapDisplay();
 	// gyroInterrupt();
 	// Serial.print(gyroX());Serial.print(" ");
