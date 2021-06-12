@@ -16,6 +16,7 @@ uint8_t nextState=0;
 uint8_t moveTo = 5;
 bool overHalfOfRamp = false;
 bool mapIsFine = true;
+bool frontIsBlack = false;
 
 uint8_t nothing()
 {
@@ -40,6 +41,7 @@ void stateChange()
 		case 1:
 			
 			motorBrake();
+			motorResetAllSteps();
 			// Serial.println("new status");
 			LEDSetColor(WHITE);
 			
@@ -47,7 +49,7 @@ void stateChange()
 
 			if(mapIsFine)
 			{
-				mapIsFine = mapIsMapFine();
+				mapIsFine = true; //mapIsMapFine();
 			}
 
 			if(mapIsFine)
@@ -55,8 +57,8 @@ void stateChange()
 				mapUpdateField();
 			}
 
-			//if ( !DOMAP )
-			if(mapIsFine)
+			// if ( !DOMAP )
+			if( !mapIsFine )
 			{
 				// ## get direction to drive to ##
 				// 																		RECHTSUMFAHRUNG
@@ -66,27 +68,27 @@ void stateChange()
 					// rechts drehen dann gerade aus
 					// Serial.println("Rechts abbiegen!");
 					state = 2;
-					moveTo = RIGHT;
 					// mapMoveTo(RIGHT);
-					break;
+					Serial.println("checngin state to: RIGHT");
+					return;
 				}
-				if(!wallExists(FRONT))
+				if(!wallExists(FRONT) && !frontIsBlack)
 				{
 					// gerade aus
 					// Serial.println("Gerade aus!");
 					state = 3;
-					moveTo = FRONT;
 					// mapMoveTo(FRONT);
-					break;
+					Serial.println("checngin state to: FRONT");
+					return;
 				}
 				if(!wallExists(LEFT))
 				{
 					// links drehen dann gerade aus
 					// Serial.println("Links abbiegen!");
 					state = 4;
-					moveTo = LEFT;
 					// mapMoveTo(LEFT);
-					break;
+					Serial.println("checngin state to: LEFT");
+					return;
 				}
 				// wenn rechts und forne und links eine wand ist aber hinten keine
 				if(!wallExists(BACK))
@@ -94,14 +96,16 @@ void stateChange()
 					// 2x links drehen dann gerade aus
 					// Serial.println("Nach hinten!");
 					state = 5;
-					moveTo = BACK;
 					// mapMoveTo(BACK);
-					break;
+					Serial.println("checngin state to: BACK");
+					return;
 				}
 				
 				// wenn überall Wände sind:::
 				state = 1;
+				frontIsBlack = false;
 				LEDSetColor(OFF);
+				break;
 			}
 			else
 			{
@@ -168,7 +172,12 @@ void stateChange()
 				average = average + motorStepsMade(i);
 			}
 			average = average/4;
-			if( average>STEPSFORONE )
+			//6   FL,
+			//7   FC,
+			//8   FR,
+			int plusToDis;
+			plusToDis = 10;
+			if( average>STEPSFORONE || (sensorData[6]>PERFECTDISTTOW-plusToDis && sensorData[7]>PERFECTDISTTOW-plusToDis && sensorData[8]>PERFECTDISTTOW-plusToDis) )
 			{
 				motorBrake();
 				motorResetAllSteps();
@@ -176,7 +185,7 @@ void stateChange()
 				state = 8;
 			}
 						
-			// wenn zu nah an einer Wand
+			// wenn zu nah an einer Wand oder obstacle
 			if( sensorData[7]>120 )
 			{
 				// kurz zurück und dann neu entscheiden
@@ -219,6 +228,7 @@ void stateChange()
 			if( sensorData[13]>MAXWHITE || sensorData[14]>MAXWHITE )
 			{
 				mapBlackFieldFront();
+				frontIsBlack = true;
 				state = 10;
 			}
 			break;

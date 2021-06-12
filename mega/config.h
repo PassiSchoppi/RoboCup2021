@@ -6,7 +6,7 @@
 #define DOMAP 					true
 #define DODRIVINGCORECTION 		true
 #define CORECTIONAGGRESSIVE 	1
-#define DOVICTIMEDETECTION 		true
+#define DOVICTIMEDETECTION 		false
 #define DORAMPDETECTION         true
 #define DORAMPONMAP             false
 #define SMOOTHENSENSORDATA 		5 // 15
@@ -57,11 +57,17 @@ extern uint8_t level;  // ebene fläche
 
 #define STEPSFORONE 	135
 #define STEPSFORHALF 	90
-#define STEPFFORRIGHT 	70
-#define STEPSFORLEFT 	70
+/*#define STEPFFORRIGHT 	70
+#define STEPSFORLEFT 	70*/
+#define STEPFFORRIGHT 	73
+#define STEPSFORLEFT 	73
 
-#define MAXWHITE 		220
-#define MINWHITE 		150
+
+// #define MAXWHITE 		220
+// #define MINWHITE 		150
+
+#define MAXWHITE 		240
+#define MINWHITE 		50
 
 #define OFF 			0
 #define WHITE 			1

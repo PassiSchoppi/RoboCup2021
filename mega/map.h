@@ -4,6 +4,7 @@
 #include <Arduino.h>
 #include "config.h"
 #include "sensor.h"
+#include "led.h"
 #include "wall.h"
 
 struct Vector

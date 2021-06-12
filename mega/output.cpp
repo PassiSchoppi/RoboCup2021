@@ -38,8 +38,8 @@ void output()
 	Serial.print(" R: ");Serial.println(sensorData[12]);
 	// # LIGHT #
 	Serial.print("Light:");
-	Serial.print(" R: ");Serial.print(sensorData[13]);
-	Serial.print(" L: ");Serial.println(sensorData[14]);
+	*/Serial.print(" R: ");Serial.print(sensorData[13]);
+	Serial.print(" L: ");Serial.println(sensorData[14]);/*
 	// # ISWALL #
 	Serial.print("Walls:");
 	Serial.print(" F: ");Serial.print(wallExists(FRONT));

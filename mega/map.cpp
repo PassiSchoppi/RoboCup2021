@@ -1,6 +1,7 @@
 #include "map.h"
 
 
+
 // 2D Array of Fields
 Field Map[NUMBEROFSTORIES][MAPSIZE][MAPSIZE];
 
@@ -216,6 +217,22 @@ void mapUpdateField()
 	// silver field
 	if( sensorData[13]<MINWHITE || sensorData[14]<MINWHITE )
 	{
+		LEDSetColor(WHITE);
+		delay(100);
+		LEDSetColor(OFF);
+		delay(100);
+		LEDSetColor(WHITE);
+		delay(100);
+		LEDSetColor(OFF);
+		delay(100);
+		LEDSetColor(WHITE);
+		delay(100);
+		LEDSetColor(OFF);
+		delay(100);
+		LEDSetColor(WHITE);
+		delay(100);
+		LEDSetColor(OFF);
+		delay(100);
 		mapSilverField();
 	}
 
@@ -288,23 +305,27 @@ void mapBlackFieldFront()
 	Map[robot_is_on_story][ robot_is_at.X ][ robot_is_at.Y ].visited = true;
 	Map[robot_is_on_story][ robot_is_at.X ][ robot_is_at.Y ].isBlack = true;
 	// robot_is_at.X -= 1;
-	switch( mapDirectionToCompas( robot_is_facing ) ) {
+	switch( robot_is_facing ) {
 		case NOTH:
-			robot_is_at.Y -= 1;
-			break;
-		case EAST:
-			robot_is_at.X += 1;
-			break;
-		case SOUTH:
+			Serial.println("Black at North");
 			robot_is_at.Y += 1;
 			break;
-		case WEST:
+		case EAST:
+			Serial.println("Black at East");
 			robot_is_at.X -= 1;
 			break;
+		case SOUTH:
+			Serial.println("Black at South");
+			robot_is_at.Y -= 1;
+			break;
+		case WEST:
+			Serial.println("Black at West");
+			robot_is_at.X += 1;
+			break;
 	}
-	// mapMoveTo(FRONT);
-	// mapMoveTo(FRONT);
-	// mapMoveTo(BACK);
+	/*mapMoveTo(BACK);
+	mapMoveTo(BACK);
+	mapMoveTo(FRONT);*/
 	Serial.println("moving...");
 	Serial.println( robot_is_at.X);
 	Serial.println( robot_is_at.Y);
@@ -566,6 +587,16 @@ uint8_t mapWhereToDrive()
 	if( !Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[ WEST ] )
 		if( !Map[robot_is_on_story][robot_is_at.X - 1][robot_is_at.Y].isBlack )
 			distancesForCompas[ WEST ] = Map[robot_is_on_story][robot_is_at.X-1][robot_is_at.Y].distanceToUnvisited;
+	
+	Serial.println("distances of sourounding fields:");
+	for(int i=0; i<4; i++)
+	{
+		Serial.print(i);
+		Serial.print(" : ");
+		Serial.println(distancesForCompas[ i ]);
+	}
+	Serial.println("going to:");
+	Serial.println(indexofSmallestElement( distancesForCompas ));
 
 	return( indexofSmallestElement( distancesForCompas ) );
 }
