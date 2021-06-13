@@ -427,25 +427,28 @@ void stateChange()
 				LEDSetColor(RED);
 				delay(1000);
 				
-				// abwurf
-				kitdropperSetTo(POSMIDD);
-				delay(1000);
+				// abwurf only if switch to run program is ON
+				if(sensorData[16]){
+					kitdropperSetTo(POSMIDD);
+					delay(1000);
+					
 
-				// seenVic = true;
-				// mark current field as victim
-				mapVictimNewAtCurrentField();
-				
-				if( victimIsLeftNotRight )
-				{
-					kitdropperSetTo(POSLEFT);
+					// seenVic = true;
+					// mark current field as victim
+					mapVictimNewAtCurrentField();
+					
+					if( victimIsLeftNotRight )
+					{
+						kitdropperSetTo(POSLEFT);
+					}
+					else
+					{
+						kitdropperSetTo(POSRIGHT);
+					}
+					// 2 sekunden warten und dann zurück zu mitte
+					delay(2000);
+					kitdropperSetTo(POSMIDD);
 				}
-				else
-				{
-					kitdropperSetTo(POSRIGHT);
-				}
-				// 2 sekunden warten und dann zurück zu mitte
-				delay(2000);
-				kitdropperSetTo(POSMIDD);
 			}
 			
 			// zurück zu dem was er gerade gemacht hat
