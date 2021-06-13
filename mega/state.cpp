@@ -14,7 +14,6 @@ uint8_t lastState=0;
 uint8_t nextState=0;
 // bool seenVic = false;
 uint8_t moveTo = 5;
-bool overHalf = false;
 bool overHalfOfRamp = false;
 bool mapIsFine = true;
 bool frontIsBlack = false;
@@ -242,9 +241,8 @@ void stateChange()
 					state = 1;
 				}
 				Serial.println("letzzz gooo");
-				overHalf = false;
 				mapDisplay();
-				// mapMoveTo( mapCompasToDirection( compasToGoTo ) );
+				mapMoveTo( mapCompasToDirection( compasToGoTo ) );
 			}
 			break;
 		
@@ -258,17 +256,11 @@ void stateChange()
 				average = average + abs(motorStepsMade(i));
 			}
 			average = average/4;
-			if( !overHalf && average > STEPFFORRIGHT/2)
-			{
-				overHalf = true;
-				mapOnlyTurnTo(RIGHT);
-			}
 			if( average > STEPFFORRIGHT )
 			{
 				motorResetAllSteps();
 				motorBrake();
 				stabilize();
-				overHalf = false;
 				// gerade aus
 				state = 3;
 			}
@@ -291,11 +283,6 @@ void stateChange()
 				average = average + motorStepsMade(i);
 			}
 			average = average/4;
-			if( !overHalf && average > STEPFFORRIGHT/2)
-			{
-				overHalf = true;
-				mapOnlyMoveTo(FRONT);
-			}
 			//6   FL,
 			//7   FC,
 			//8   FR,
@@ -305,7 +292,6 @@ void stateChange()
 			{
 				motorBrake();
 				motorResetAllSteps();
-				overHalf = false;
 				// stabilize und dann neue entscheidung
 				state = 8;
 			}
@@ -315,7 +301,6 @@ void stateChange()
 			{
 				// kurz zurück und dann neu entscheiden
 				motorBrake();
-				overHalf = false;
 				state = 9;
 			}
 
@@ -327,7 +312,6 @@ void stateChange()
 				{
 					// motorResetAllSteps();
 					overHalfOfRamp = false;
-					overHalf = false;
 
 					// ramp down
 					state = 11;
@@ -338,7 +322,6 @@ void stateChange()
 				{
 					// motorResetAllSteps();
 					overHalfOfRamp = false;
-					overHalf = false;
 
 					// ramp up
 					state = 12;
@@ -355,13 +338,8 @@ void stateChange()
 			// if black tile
 			if( sensorData[13]>MAXWHITE || sensorData[14]>MAXWHITE )
 			{
-				if(overHalf){
-					mapBlackFieldFront();
-				}else{
-					mapBlackFieldCurrent();
-				}
+				mapBlackFieldFront();
 				frontIsBlack = true;
-				overHalf = false;
 				state = 10;
 				numberOfStepsBeforBlack = motorAverageSteps();
 			}
@@ -378,16 +356,10 @@ void stateChange()
 					average = average + abs(motorStepsMade(i));
 			}
 			average = average/4;
-			if(!overHalf && average > STEPSFORLEFT/2)
-			{
-				mapOnlyTurnTo(LEFT);
-				overHalf = true;
-			}
 			if(average > STEPSFORLEFT)
 			{
 				motorResetAllSteps();
 				stabilize();
-				overHalf = false;
 				// gerade aus
 				state = 3;
 			}
@@ -410,16 +382,10 @@ void stateChange()
 				average = average + abs(motorStepsMade(i));
 			}
 			average = average/4;
-			if(!overHalf && average > STEPSFORLEFT/2)
-			{
-				mapOnlyTurnTo(LEFT);
-				overHalf = true;
-			}
 			if(average > STEPSFORLEFT)
 			{
 				motorResetAllSteps();
 				stabilize();
-				overHalf = false;
 				// dann left und dann gerade aus
 				state = 4;
 			}
