@@ -180,31 +180,31 @@ void motorDriveTo(uint8_t direction, int speed)
 			kP = 1;
 			targetWallDistance = PERFECTDISTTOW;
 			int avoidObstacleBy;
-			avoidObstacleBy = -25;
+			avoidObstacleBy = 0.7;
 			int moreDistanceToWall;
 			moreDistanceToWall = 10;
 			
 			//6   FL,
 			//7   FC,
 			//8   FR,
-			// wenn nur vorne rechts ein obstacle
-			if(sensorData[6]<DISTANCETOWALL-moreDistanceToWall && sensorData[7]<DISTANCETOWALL-moreDistanceToWall && sensorData[8]>DISTANCETOWALL)
-			{
-				targetWallDistance = PERFECTDISTTOW + avoidObstacleBy;
-				Serial.println("obstacle on right");
-			}
-			// wenn nur vorne links ein obstacle
-			if(sensorData[6]>DISTANCETOWALL && sensorData[7]<DISTANCETOWALL-moreDistanceToWall && sensorData[8]<DISTANCETOWALL-moreDistanceToWall)
-			{
-				targetWallDistance = PERFECTDISTTOW - avoidObstacleBy;
-				Serial.println("obstacle on left");
-			}
 			//0   [LF,
 			//1   LB,
 			//2   RF,
 			//3   RB,			
 			if(wallExists(RIGHT))
 			{
+				// wenn nur vorne rechts ein obstacle
+				if(sensorData[6]<DISTANCETOWALL-moreDistanceToWall && sensorData[7]<DISTANCETOWALL-moreDistanceToWall && sensorData[8]>DISTANCETOWALL+moreDistanceToWall)
+				{
+					targetWallDistance = PERFECTDISTTOW * 0; // ( 1 - avoidObstacleBy);
+					Serial.println("obstacle on right");
+				}
+				// wenn nur vorne links ein obstacle
+				if(sensorData[6]>DISTANCETOWALL+moreDistanceToWall && sensorData[7]<DISTANCETOWALL-moreDistanceToWall && sensorData[8]<DISTANCETOWALL-moreDistanceToWall)
+				{
+					targetWallDistance = PERFECTDISTTOW * 3; // ( 1 + avoidObstacleBy);
+					Serial.println("obstacle on left");
+				}
 				errorP = (int)(sensorData[2]) - targetWallDistance;
 				sum = (int)(errorP * kP);
 				if( sum > speed )
@@ -221,6 +221,18 @@ void motorDriveTo(uint8_t direction, int speed)
 			}
 			else if (wallExists(LEFT))
 			{
+				// wenn nur vorne rechts ein obstacle
+				if(sensorData[6]<DISTANCETOWALL-moreDistanceToWall && sensorData[7]<DISTANCETOWALL-moreDistanceToWall && sensorData[8]>DISTANCETOWALL+moreDistanceToWall)
+				{
+					targetWallDistance = PERFECTDISTTOW * 3; // ( 1 + avoidObstacleBy);
+					Serial.println("obstacle on right");
+				}
+				// wenn nur vorne links ein obstacle
+				if(sensorData[6]>DISTANCETOWALL+moreDistanceToWall && sensorData[7]<DISTANCETOWALL-moreDistanceToWall && sensorData[8]<DISTANCETOWALL-moreDistanceToWall)
+				{
+					targetWallDistance = PERFECTDISTTOW * 0; // ( 1 - avoidObstacleBy);
+					Serial.println("obstacle on left");
+				}
 				errorP = (int)(sensorData[0]) - targetWallDistance;
 				sum = (int)(errorP * kP);
 				if( sum > speed )
