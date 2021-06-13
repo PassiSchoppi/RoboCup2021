@@ -415,11 +415,19 @@ void mapBlackFieldCurrent()
 
 void mapVictimNewAtCurrentField()
 {
+	Serial.println("new victim at:");
+	Serial.println(robot_is_at.X);
+	Serial.println(robot_is_at.Y);
 	Map[robot_is_on_story][ robot_is_at.X ][ robot_is_at.Y ].hasVictim = true;
 }
 
 bool mapVictimIsAtCurrentField()
 {
+	Serial.println("robot is at:");
+	Serial.println(robot_is_at.X);
+	Serial.println(robot_is_at.Y);
+	Serial.print("Field has victim: ");
+	Serial.println(Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].hasVictim);
 	return( Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].hasVictim );
 }
 
@@ -648,6 +656,8 @@ uint8_t indexofSmallestElement(uint8_t array[4])
 void mapReturnToHome()
 {
 	Map[0][5][5].visited = false;
+	Map[0][5][5].isBlack = false;
+	Map[0][5][5].isRamp = false;
 }
 
 
@@ -846,9 +856,9 @@ void mapDisplay()
 	for( uint8_t i=0; i<MAPSIZE; ++i )
 	{
 		if ( Map[s][i][o].directions[NOTH] )
-			Serial.print("@@@@@");
+			Serial.print("@@@@@@");
 		else
-			Serial.print("     ");
+			Serial.print("      ");
 	}
 	Serial.println();
 	// waende im WESTEN und OSTEN
@@ -876,6 +886,16 @@ void mapDisplay()
 
 		if ( Map[s][i][o].isBlack )
 			Serial.print("B");
+		else{
+			if ( i == lastVisitedSilver.X && o == lastVisitedSilver.Y ){
+				Serial.print("S");
+			}else{
+				Serial.print("_");
+			}
+		}
+
+		if ( Map[s][i][o].hasVictim )
+			Serial.print("M");
 		else
 			Serial.print("_");
 		
@@ -893,9 +913,9 @@ void mapDisplay()
 	for( uint8_t i=0; i<MAPSIZE; ++i )
 	{
 		if ( Map[s][i][o].directions[SOUTH] )
-			Serial.print("@@@@@");
+			Serial.print("@@@@@@");
 		else
-			Serial.print("     ");
+			Serial.print("      ");
 	}
 	Serial.println();
 	}

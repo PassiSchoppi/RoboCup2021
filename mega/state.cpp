@@ -14,6 +14,7 @@ uint8_t lastState=0;
 uint8_t nextState=0;
 // bool seenVic = false;
 uint8_t moveTo = 5;
+bool outOfField = false;
 bool overHalfOfRamp = false;
 bool mapIsFine = true;
 bool frontIsBlack = false;
@@ -50,7 +51,7 @@ void stateChange()
 			break;
 		
 		case 1:
-			
+			outOfField = false;
 			motorBrake();
 			motorResetAllSteps();
 			// Serial.println("new status");
@@ -283,6 +284,11 @@ void stateChange()
 				average = average + motorStepsMade(i);
 			}
 			average = average/4;
+			if(average > STEPSFORONE*0.45 && !outOfField){
+				LEDSetColor(RED);
+				delay(100);
+				outOfField = true;
+			}
 			//6   FL,
 			//7   FC,
 			//8   FR,
@@ -401,15 +407,31 @@ void stateChange()
 			// temp victim
 			// try for 5 seconds and blink
 			// wenn noch kein victim auf dem Feld ist
-			// if(!seenVic)
+			
+			Serial.println();
+			Serial.print("FOUND");
+			if (!outOfField){
+				mapOnlyMoveTo(BACK);
+			}
+
 			if ( !mapVictimIsAtCurrentField() )
 			{
+				Serial.println(" NEW VICTIM");
 				// zweites mal testen und seite herausfinden
 				bool victimIsLeftNotRight = false;
 				if ( sensorData[11]>VICTIMTEMP )
 				{
 					victimIsLeftNotRight = true;
+				}else if (sensorData[12]>VICTIMTEMP)
+				{
+					victimIsLeftNotRight = false;
+				}else{
+					Serial.println("DIDNT FOUND SECOND TEST");
+					Serial.println("RETURNING TO LAST STATE");
+					state = lastState;
+					break;
 				}
+				
 				// sekunde 1
 				motorBrake();
 				LEDSetColor(RED);
@@ -449,8 +471,15 @@ void stateChange()
 					delay(2000);
 					kitdropperSetTo(POSMIDD);
 				}
+			}else{
+				Serial.println(" OLD VICTIM");
 			}
 			
+			if(!outOfField){
+				mapOnlyMoveTo(FRONT);
+			}
+
+			Serial.println("RETURNING TO LAST STATE");
 			// zurück zu dem was er gerade gemacht hat
 			state = lastState;
 			break;
