@@ -200,10 +200,10 @@ void mapClear()
 				Map[ s ][ i ][ o ].hasVictim = false;
 				Map[ s ][ i ][ o ].isRamp = false;
 				Map[ s ][ i ][ o ].distanceToUnvisited = 0;
-				Map[ s ][ i ][ o ].directions[0] = 0;
-				Map[ s ][ i ][ o ].directions[1] = 0;
-				Map[ s ][ i ][ o ].directions[2] = 0;
-				Map[ s ][ i ][ o ].directions[3] = 0;
+				Map[ s ][ i ][ o ].directions[0] = 1;
+				Map[ s ][ i ][ o ].directions[1] = 1;
+				Map[ s ][ i ][ o ].directions[2] = 1;
+				Map[ s ][ i ][ o ].directions[3] = 1;
 			}
 		}
 	}
