@@ -361,6 +361,8 @@ void mapUpdateField()
 */
 void mapMoveTo(uint8_t directionToGo)
 {
+	Serial.print("Moving to compas: ");
+	Serial.println(mapDirectionToCompas( directionToGo ));
 	switch( mapDirectionToCompas( directionToGo ) ) {
 		case NOTH:
 			robot_is_at.Y -= 1;
@@ -384,8 +386,8 @@ void mapMoveTo(uint8_t directionToGo)
 
 void mapOnlyMoveTo(uint8_t directionToGo)
 {
-	LEDSetColor(RED);
-	delay(100);
+	Serial.print("Force Moving to compas: ");
+	Serial.println(mapDirectionToCompas( directionToGo ));
 	switch( mapDirectionToCompas( directionToGo ) ) {
 		case NOTH:
 			robot_is_at.Y -= 1;
@@ -405,22 +407,9 @@ void mapOnlyMoveTo(uint8_t directionToGo)
 
 void mapOnlyTurnTo(uint8_t directionToGo)
 {
-	LEDSetColor(RED);
-	delay(100);
-	switch( mapDirectionToCompas( directionToGo ) ) {
-		case NOTH:
-			robot_is_facing = NOTH;
-			break;
-		case EAST:
-			robot_is_facing = EAST;
-			break;
-		case SOUTH:
-			robot_is_facing = SOUTH;
-			break;
-		case WEST:
-			robot_is_facing = WEST;
-			break;
-	}
+	Serial.print("Force Turning to compas: ");
+	Serial.println(mapDirectionToCompas( directionToGo ));
+	robot_is_facing = mapDirectionToCompas( directionToGo );
 }
 
 /*
@@ -434,14 +423,31 @@ void mapOnlyTurnTo(uint8_t directionToGo)
 */
 void mapBlackFieldFront()
 {
-	Serial.println("found black");
+	Serial.println("found black while at:");
+	Serial.println( robot_is_at.X);
+	Serial.println( robot_is_at.Y);
+	mapOnlyMoveTo(FRONT);
+	Serial.println("the black field is at:");
+	Serial.println( robot_is_at.X);
+	Serial.println( robot_is_at.Y);
+	Map[robot_is_on_story][ robot_is_at.X ][ robot_is_at.Y ].visited = true;
+	Map[robot_is_on_story][ robot_is_at.X ][ robot_is_at.Y ].isBlack = true;
+	mapOnlyMoveTo(BACK);
+	Serial.println("done");
+}
+
+void mapBlackFieldCurrent()
+{
+	Serial.println("found black at:");
 	Serial.println( robot_is_at.X);
 	Serial.println( robot_is_at.Y);
 	Serial.println( robot_is_facing);
 	Map[robot_is_on_story][ robot_is_at.X ][ robot_is_at.Y ].visited = true;
 	Map[robot_is_on_story][ robot_is_at.X ][ robot_is_at.Y ].isBlack = true;
-	// robot_is_at.X -= 1;
-	switch( robot_is_facing ) {
+	
+	mapOnlyMoveTo(BACK);
+
+	/*switch( robot_is_facing ) {
 		case NOTH:
 			Serial.println("Black at North");
 			robot_is_at.Y += 1;
@@ -458,25 +464,11 @@ void mapBlackFieldFront()
 			Serial.println("Black at West");
 			robot_is_at.X += 1;
 			break;
-	}
-	/*mapMoveTo(BACK);
-	mapMoveTo(BACK);
-	mapMoveTo(FRONT);*/
-	Serial.println("moving...");
+	}*/
+	Serial.println("moving...now at:");
 	Serial.println( robot_is_at.X);
 	Serial.println( robot_is_at.Y);
 	Serial.println( robot_is_facing);
-	Serial.println("done");
-}
-
-void mapBlackFieldCurrent()
-{
-	Serial.println("found black");
-	Serial.println( robot_is_at.X);
-	Serial.println( robot_is_at.Y);
-	Serial.println( robot_is_facing);
-	Map[robot_is_on_story][ robot_is_at.X ][ robot_is_at.Y ].visited = true;
-	Map[robot_is_on_story][ robot_is_at.X ][ robot_is_at.Y ].isBlack = true;
 	Serial.println("done");
 }
 

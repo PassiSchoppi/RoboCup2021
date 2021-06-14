@@ -387,7 +387,12 @@ void stateChange()
 			// if black tile
 			if( sensorData[13]>MAXWHITE || sensorData[14]>MAXWHITE )
 			{
-				mapBlackFieldFront();
+				// THIS \/ is the right order!
+				if(outOfField){
+					mapBlackFieldCurrent();
+				}else{
+					mapBlackFieldFront();
+				}
 				frontIsBlack = true;
 				state = 10;
 				numberOfStepsBeforBlack = motorAverageSteps();
@@ -424,6 +429,7 @@ void stateChange()
 				motorResetAllSteps();
 				stabilize();
 				motorBrake();
+				overHalfOfTurn = false;
 				visVictim = raspiRead();
 				if(visVictim != 'e' && !mapVictimIsAtCurrentField())
 				{
@@ -471,6 +477,7 @@ void stateChange()
 				motorResetAllSteps();
 				stabilize();
 				motorBrake();
+				overHalfOfTurn = false;
 				visVictim = raspiRead();
 				if(visVictim != 'e' && !mapVictimIsAtCurrentField())
 				{
