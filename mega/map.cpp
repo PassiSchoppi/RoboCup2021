@@ -146,7 +146,6 @@ uint8_t mapDirectionToCompas(uint8_t directionI)
 void mapInit() 
 {
 	robot_is_facing = NOTH;
-	// FIXME: half of MAPSIZE
 	robot_is_at.X = STARTX;
 	robot_is_at.Y = STARTY;
 	lastVisitedSilver.X = robot_is_at.X;
@@ -154,7 +153,9 @@ void mapInit()
 	robot_is_on_story = 0;
 }
 
-
+// clears every information of the map
+// and puts robot back to start
+// FIXME needs to be testet
 void mapClear()
 {
 	lastVisitedSilver.X = STARTX;
@@ -179,38 +180,14 @@ void mapClear()
 	}
 }
 
-
-bool mapIsMapFine()
-{
-	if(    !(    wallExists(FRONT) && !Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[ mapDirectionToCompas( FRONT ) ]     )    )
-	{
-		return(false);
-	}
-	if(    !(    wallExists(RIGHT) && !Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[ mapDirectionToCompas( RIGHT ) ]     )    )
-	{
-		return(false);
-	}
-	if(    !(    wallExists(BACK) && !Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[ mapDirectionToCompas( BACK ) ]     )    )
-	{
-		return(false);
-	}
-	if(    !(    wallExists(LEFT) && !Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[ mapDirectionToCompas( LEFT ) ]     )    )
-	{
-		return(false);
-	}
-
-
-	return(true);
-}
-
-
+// sets current field as the last visited silver field
 void mapSilverField()
 {
 	lastVisitedSilver.X = robot_is_at.X;
 	lastVisitedSilver.Y = robot_is_at.Y;
 }
 
-
+// puts the robot back to last visited silver
 void mapSetBackToLastSilver()
 {
 	robot_is_at.X = lastVisitedSilver.X;
@@ -224,6 +201,7 @@ void mapUpdateField()
 	// Serial.println("updating field");
 
 	// add walls to current field
+	//  etage              X              Y                          compas                            wand
 	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[ mapDirectionToCompas( FRONT ) ] = wallExists(FRONT);
 	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[ mapDirectionToCompas( RIGHT ) ] = wallExists(RIGHT);
 	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[ mapDirectionToCompas( BACK ) ] = 	wallExists(BACK);
@@ -235,6 +213,7 @@ void mapUpdateField()
 	}*/
 	
 	// change walls of sourounding fields
+	//  etage              X
 	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y-1].directions[ SOUTH ] = 	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[NOTH];
 	Map[robot_is_on_story][robot_is_at.X+1][robot_is_at.Y].directions[ WEST ] = 	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[EAST];
 	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y+1].directions[ NOTH ] = 	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[SOUTH];
