@@ -2,11 +2,12 @@
 #define RASPI_H
 
 #include <Arduino.h>
-
+#include "led.h"
+#include "config.h"
 
 void raspiInit();
 
-void raspiRead();
+char raspiRead();
 
 
 #endif

@@ -24,8 +24,8 @@ void output()
 	Serial.print(" RV: ");Serial.print(sensorData[2]);
 	Serial.print(" RH: ");Serial.println(sensorData[3]);
 	Serial.print(" FL: ");Serial.print(sensorData[6]);
-	Serial.print(" FC: ");Serial.println(sensorData[7]);
-	Serial.print(" FR: ");Serial.print(sensorData[8]);
+	Serial.print(" FC: ");Serial.print(sensorData[7]);
+	Serial.print(" FR: ");Serial.println(sensorData[8]);
 	Serial.print(" BL: ");Serial.print(sensorData[9]);
 	Serial.print(" BR: ");Serial.println(sensorData[10]);
 	// # ACC #
@@ -34,8 +34,8 @@ void output()
 	Serial.print(" Z: ");Serial.println(sensorData[5]);
 	// # MELEXIS #
 	Serial.print("Melexis:");
-	Serial.print(" L: ");Serial.print(sensorData[11]);
-	Serial.print(" R: ");Serial.println(sensorData[12]);
+	*/Serial.print(" L: ");Serial.print(sensorData[11]);
+	Serial.print(" R: ");Serial.println(sensorData[12]);/*
 	// # LIGHT #
 	Serial.print("Light:");
 	Serial.print(" R: ");Serial.print(sensorData[13]);
@@ -47,9 +47,9 @@ void output()
 	Serial.print(" L: ");Serial.print(wallExists(LEFT));
 	Serial.print(" B: ");Serial.println(wallExists(BACK));
 	// # RAMP #
-	Serial.print("Level:");Serial.print(level);Serial.print(" | ");Serial.println(sensorData[4]);*/
+	Serial.print("Level:");Serial.print(level);Serial.print(" | ");Serial.println(sensorData[4]);
 	// # SWITCHES #
 	Serial.print(" A: ");Serial.print(sensorData[15]);
 	Serial.print(" B: ");Serial.print(sensorData[16]);
-	Serial.print(" C: ");Serial.println(sensorData[17]);
+	Serial.print(" C: ");Serial.println(sensorData[17]);*/
 }

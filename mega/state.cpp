@@ -8,6 +8,7 @@
 #include "stabilize.h"
 #include "map.h"
 #include "ramp.h"
+#include "raspi.h"
 
 int average;
 uint8_t lastState=0;
@@ -19,6 +20,8 @@ bool overHalfOfRamp = false;
 bool mapIsFine = true;
 bool frontIsBlack = false;
 int numberOfStepsBeforBlack = 0;
+char visVictim = ' ';
+uint8_t numberOfKits = ' ';
 
 uint8_t nothing()
 {
@@ -27,7 +30,8 @@ uint8_t nothing()
 
 void stateChange()
 {
-
+	Serial.print("state: ");
+	Serial.println(state);
 	// set back to last silver field
 	// mapIsFine = mapSetBackToLastSilver();
 
@@ -44,13 +48,15 @@ void stateChange()
 	switch(state) 
 	{
 		case 0:
+		{
 			// the end
 			motorBrake();
 			state = nothing();
 			LEDSetColor(OFF);
 			break;
-		
+		}
 		case 1:
+		{
 			outOfField = false;
 			motorBrake();
 			motorResetAllSteps();
@@ -246,8 +252,9 @@ void stateChange()
 				mapMoveTo( mapCompasToDirection( compasToGoTo ) );
 			}
 			break;
-		
+		}
 		case 2:
+		{
 			// turn right und dann gerade aus
 			LEDSetColor(GREEN);
 			motorDriveTo(RIGHT, BASESPEED);
@@ -266,14 +273,16 @@ void stateChange()
 				state = 3;
 			}
 			// wenn da ist ein Victim
-			if( sensorData[11]>VICTIMTEMP || sensorData[12]>VICTIMTEMP )
+			visVictim = raspiRead();
+			if( sensorData[11]>VICTIMTEMP || sensorData[12]>VICTIMTEMP || visVictim != ' ' )
 			{
 				lastState = state;
 				state = 6;
 			}
 			break;
-		
+		}
 		case 3:
+		{
 			// drive staight
 			LEDSetColor(BLUE);
 			motorDriveTo(FRONT, BASESPEED);
@@ -300,6 +309,7 @@ void stateChange()
 				motorResetAllSteps();
 				// stabilize und dann neue entscheidung
 				state = 8;
+				break;
 			}
 						
 			// wenn zu nah an einer Wand oder obstacle
@@ -308,6 +318,7 @@ void stateChange()
 				// kurz zurück und dann neu entscheiden
 				motorBrake();
 				state = 9;
+				break;
 			}
 
 			if(DORAMPDETECTION)
@@ -321,6 +332,7 @@ void stateChange()
 
 					// ramp down
 					state = 11;
+					break;
 				}
 
 				// wenn on ramp up
@@ -331,14 +343,17 @@ void stateChange()
 
 					// ramp up
 					state = 12;
+					break;
 				}
 			}
 			
 			// wenn Victim
-			if( sensorData[11]>VICTIMTEMP || sensorData[12]>VICTIMTEMP )
+			visVictim = raspiRead();
+			if( sensorData[11]>VICTIMTEMP || sensorData[12]>VICTIMTEMP || visVictim != ' ' )
 			{
 				lastState = state;
 				state = 6;
+				break;
 			}
 
 			// if black tile
@@ -348,10 +363,12 @@ void stateChange()
 				frontIsBlack = true;
 				state = 10;
 				numberOfStepsBeforBlack = motorAverageSteps();
+				break;
 			}
 			break;
-		
+		}
 		case 4:
+		{
 			// drive left dann gerade aus
 			LEDSetColor(TURQUOISE);
 			motorDriveTo(LEFT, BASESPEED);
@@ -370,14 +387,16 @@ void stateChange()
 				state = 3;
 			}
 			// wen victim
-			if( sensorData[11]>VICTIMTEMP || sensorData[12]>VICTIMTEMP )
+			visVictim = raspiRead();
+			if( sensorData[11]>VICTIMTEMP || sensorData[12]>VICTIMTEMP || visVictim != ' ' )
 			{
 				lastState = state;
 				state = 6;
 			}
 			break;
-		
+		}
 		case 5:
+		{
 			// drive left then left and then straight
 			LEDSetColor(TURQUOISE);
 			motorDriveTo(LEFT, BASESPEED);
@@ -396,14 +415,16 @@ void stateChange()
 				state = 4;
 			}
 			// wenn victim
-			if( sensorData[11]>VICTIMTEMP || sensorData[12]>VICTIMTEMP )
+			visVictim = raspiRead();
+			if( sensorData[11]>VICTIMTEMP || sensorData[12]>VICTIMTEMP || visVictim != ' ' )
 			{
 				lastState = state;
 				state = 6;
 			}
 			break;
-		
+		}
 		case 6:
+		{
 			// temp victim
 			// try for 5 seconds and blink
 			// wenn noch kein victim auf dem Feld ist
@@ -414,22 +435,46 @@ void stateChange()
 				mapOnlyMoveTo(BACK);
 			}
 
+			bool victimIsLeftNotRight = false;
 			if ( !mapVictimIsAtCurrentField() )
 			{
 				Serial.println(" NEW VICTIM");
 				// zweites mal testen und seite herausfinden
-				bool victimIsLeftNotRight = false;
-				if ( sensorData[11]>VICTIMTEMP )
-				{
-					victimIsLeftNotRight = true;
-				}else if (sensorData[12]>VICTIMTEMP)
-				{
-					victimIsLeftNotRight = false;
+				if(visVictim == ' '){
+					
+					if ( sensorData[11]>VICTIMTEMP )
+					{
+						victimIsLeftNotRight = true;
+					}else if (sensorData[12]>VICTIMTEMP)
+					{
+						victimIsLeftNotRight = false;
+					}else{
+						Serial.println("DIDNT FOUND SECOND TEST");
+						Serial.println("RETURNING TO LAST STATE");
+						state = lastState;
+						if(!outOfField){
+							mapOnlyMoveTo(FRONT);
+						}
+						break;
+					}
 				}else{
-					Serial.println("DIDNT FOUND SECOND TEST");
-					Serial.println("RETURNING TO LAST STATE");
-					state = lastState;
-					break;
+					if(visVictim == 'H' || visVictim == 'U' || visVictim == 'S' || 
+					   visVictim == 'G' || visVictim == 'Y' || visVictim == 'R'){
+						   victimIsLeftNotRight = false;
+					}else if (visVictim == 'h' || visVictim == 'u' || visVictim == 's' || 
+					   		  visVictim == 'g' || visVictim == 'y' || visVictim == 'r')
+					{
+						victimIsLeftNotRight = true;
+					}else{
+						Serial.println("NONE OF THE LETTERS WERE GIVEN");
+						Serial.println("RETURNING TO LAST STATE");
+						state = lastState;
+						if(!outOfField){
+							mapOnlyMoveTo(FRONT);
+						}
+						break;
+					}
+					
 				}
 				
 				// sekunde 1
@@ -451,25 +496,54 @@ void stateChange()
 				
 				// abwurf only if switch to run program is ON
 				if(sensorData[16]){
-					kitdropperSetTo(POSMIDD);
-					delay(1000);
-					
+					numberOfKits = 1;
+					if(visVictim != ' '){
+						if(visVictim == 'h' || visVictim == 'H'){
+							numberOfKits = 3;
+						}else if (visVictim == 's' || visVictim == 'S')
+						{
+							numberOfKits = 2;
+						}else if (visVictim == 'y' || visVictim == 'Y' ||
+						          visVictim == 'r' || visVictim == 'R')
+						{
+							numberOfKits = 1;
+						}else if (visVictim == 'u' || visVictim == 'U' ||
+						          visVictim == 'g' || visVictim == 'G')
+						{
+							numberOfKits = 0;
+						}else{
+							Serial.println("SOMETHING WENT WRONG");
+							state = lastState;
+							if(!outOfField){
+								mapOnlyMoveTo(FRONT);
+							}
+							return;
+						}
+						
+					}
 
-					// seenVic = true;
-					// mark current field as victim
-					mapVictimNewAtCurrentField();
-					
-					if( victimIsLeftNotRight )
-					{
-						kitdropperSetTo(POSLEFT);
+					for(uint8_t i = 0; i < numberOfKits; i++){
+
+						kitdropperSetTo(POSMIDD);
+						delay(1000);
+						
+
+						// seenVic = true;
+						// mark current field as victim
+						mapVictimNewAtCurrentField();
+						
+						if( victimIsLeftNotRight )
+						{
+							kitdropperSetTo(POSLEFT);
+						}
+						else
+						{
+							kitdropperSetTo(POSRIGHT);
+						}
+						// 2 sekunden warten und dann zurück zu mitte
+						delay(2000);
+						kitdropperSetTo(POSMIDD);
 					}
-					else
-					{
-						kitdropperSetTo(POSRIGHT);
-					}
-					// 2 sekunden warten und dann zurück zu mitte
-					delay(2000);
-					kitdropperSetTo(POSMIDD);
 				}
 			}else{
 				Serial.println(" OLD VICTIM");
@@ -483,13 +557,16 @@ void stateChange()
 			// zurück zu dem was er gerade gemacht hat
 			state = lastState;
 			break;
-		
+		}
 		case 7:
+		{
 			// freier State
 			break;
-		
+		}
 		case 8:
+		{
 			// stabilize und dann neu entscheiden
+			Serial.println("stabalizing");
 			LEDSetColor(PINK);
 			motorBrake();
 			stabilize();
@@ -500,8 +577,9 @@ void stateChange()
 			// Serial.println(*state);
 			// seenVic = false;
 			break;
-		
+		}
 		case 9:
+		{
 			//kurz zurück fahren
 			motorBrake();
 			motorResetAllSteps();
@@ -512,8 +590,9 @@ void stateChange()
 			// stabilize und dann neu entscheiden
 			state = 8;
 			break;
-
+		}
 		case 10:
+		{
 			//kurz zurück fahren
 			motorBrake();
 			motorDriveTo(BACK, BASESPEED);
@@ -524,7 +603,9 @@ void stateChange()
 			// stabilize und dann neu entscheiden
 			state = 8;
 			break;
+		}
 		case 11:
+		{
 			// ramp down
 			if(overHalfOfRamp){
 				LEDSetColor(WHITE);
@@ -552,13 +633,16 @@ void stateChange()
 			}
 
 			// wenn victim
-			if( sensorData[11]>VICTIMTEMP || sensorData[12]>VICTIMTEMP )
+			visVictim = raspiRead();
+			if( sensorData[11]>VICTIMTEMP || sensorData[12]>VICTIMTEMP || visVictim != ' ' )
 			{
 				lastState = state;
 				state = 6;
 			}
 			break;
+		}
 		case 12:
+		{
 			// ramp up
 			if(overHalfOfRamp){
 				LEDSetColor(WHITE);
@@ -593,13 +677,16 @@ void stateChange()
 			}
 
 			// wenn victim
-			if( sensorData[11]>VICTIMTEMP || sensorData[12]>VICTIMTEMP )
+			visVictim = raspiRead();
+			if( sensorData[11]>VICTIMTEMP || sensorData[12]>VICTIMTEMP || visVictim != ' ' )
 			{
 				lastState = state;
 				state = 6;
 			}
 			break;
+		}
 		case 13:
+		{
 			// kurz vorwärts fahren
 			motorBrake();
 			motorResetAllSteps();
@@ -610,5 +697,6 @@ void stateChange()
 			// stabilize und dann neu entscheiden
 			state = 8;
 			break;
+		}
 	}
 }

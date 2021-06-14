@@ -2,14 +2,17 @@
 
 void raspiInit()
 {
-	Serial2.begin(9600);
+	// Serial2.begin(9600);
 }
 
-void raspiRead()
+char raspiRead()
 {
-	while(Serial2.available())
+	char value;
+	value = ' ';
+	while(Serial.available())
 	{
-		Serial.print("Data: ");
-		Serial.println( Serial2.read() );
+		value = Serial.readStringUntil('\n')[0];
 	}
+	// return('h');
+	return(value);
 }

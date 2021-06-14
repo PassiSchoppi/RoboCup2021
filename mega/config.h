@@ -6,7 +6,6 @@
 #define DOMAP 					true
 #define DODRIVINGCORECTION 		true
 #define CORECTIONAGGRESSIVE 	1
-#define DOVICTIMEDETECTION 		false
 #define DORAMPDETECTION         true
 #define DORAMPONMAP             false
 #define SMOOTHENSENSORDATA 		5 // 15
@@ -45,11 +44,11 @@ extern uint8_t level;  // ebene fläche
 #define REST_OF_RAMP    30
 #define STEPSFORHALFARAMP   250
 
-#define VICTIMTEMP 		28
+#define VICTIMTEMP 		32
 
-#define POSLEFT 		70
+#define POSLEFT 		80
 #define POSMIDD 		120
-#define POSRIGHT 		150
+#define POSRIGHT 		140
 
 #define BASESPEED 		100
 
@@ -57,17 +56,18 @@ extern uint8_t level;  // ebene fläche
 
 #define STEPSFORONE 	135
 #define STEPSFORHALF 	90
-/*#define STEPFFORRIGHT 	70
-#define STEPSFORLEFT 	70*/
-#define STEPFFORRIGHT 	73
-#define STEPSFORLEFT 	73
+#define STEPFFORRIGHT 	70
+#define STEPSFORLEFT 	70
+/*#define STEPFFORRIGHT 	73 // für zuhause
+#define STEPSFORLEFT 	73*/
 
 
-// #define MAXWHITE 		220
-// #define MINWHITE 		150
-
-#define MAXWHITE 		240
+#define MAXWHITE 		220
 #define MINWHITE 		100
+
+// zuhause:
+// #define MAXWHITE 		240
+// #define MINWHITE 		100
 
 #define OFF 			0
 #define WHITE 			1

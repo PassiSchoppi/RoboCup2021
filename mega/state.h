@@ -5,7 +5,6 @@
 #include "config.h"
 #include "kitdropper.h"
 #include "map.h"
-#include "map.h"
 
 // extern uint8_t nextState = 0;
 
