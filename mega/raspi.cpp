@@ -8,14 +8,27 @@ void raspiInit()
 char raspiRead()
 {
 	char value;
+	int counter;
+	counter = 0;
 	value = ' ';
 	Serial.print('j');
-//	while(!Serial.available()){LEDSetColor(YELLOW);}
-	LEDSetColor(GREEN);
-	while(Serial.available())
+	// return('e');
+	while(!Serial.available() && counter<600)
 	{
-		value = Serial.readStringUntil('\n')[0];
+		++counter;
+		LEDSetColor(YELLOW);
+		delay(10);
 	}
-	return('e');
-	return(value);
+	if(!(counter<600)){
+		LEDSetColor(OFF);
+		delay(100);
+		return('e');  // (not test case)
+	}else{
+		LEDSetColor(GREEN);
+		while(Serial.available())
+		{
+			value = Serial.readStringUntil('\n')[0];
+		}
+		return(value);
+	}
 }

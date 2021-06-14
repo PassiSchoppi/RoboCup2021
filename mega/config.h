@@ -60,18 +60,19 @@ extern uint8_t level;  // ebene fläche
 
 #define STEPSFORONE 	135
 #define STEPSFORHALF 	90
-#define STEPFFORRIGHT 	70
-#define STEPSFORLEFT 	70
-/*#define STEPFFORRIGHT 	73 // für zuhause
-#define STEPSFORLEFT 	73*/
+/*#define STEPFFORRIGHT 	70
+#define STEPSFORLEFT 	70*/
+#define STEPFFORRIGHT 	73 // für zuhause
+#define STEPSFORLEFT 	73
 
+#define SEND            false
 
-#define MAXWHITE 		220
-#define MINWHITE 		100
+// #define MAXWHITE 		220
+// #define MINWHITE 		100
 
 // zuhause:
-// #define MAXWHITE 		240
-// #define MINWHITE 		100
+#define MAXWHITE 		240
+#define MINWHITE 		100
 
 #define OFF 			0
 #define WHITE 			1

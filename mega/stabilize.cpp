@@ -3,9 +3,10 @@
 
 void stabilize()
 {
+	if(SEND){Serial.println("stabalizing...");}
 	motorBrake();
 	
-	for(int i=0; i<40; ++i)
+	for(int i=0; i<1000; ++i)
 	{
 		/*if( wallExists(LEFT) )
 		{
@@ -37,32 +38,54 @@ void stabilize()
 
 			delay(500);
 		}*/
+		float factor;
+		factor = 0.01;
 		if( wallExists(LEFT) )
 		{
-			motorSetSpeed(1, 50*(sensorData[0]-sensorData[1])/abs(sensorData[0]-sensorData[1]));
-			motorSetSpeed(0, 50*(sensorData[0]-sensorData[1])/abs(sensorData[0]-sensorData[1]));
+			int speed = factor*(sensorData[0]-sensorData[1])*(sensorData[0]-sensorData[1])*(sensorData[0]-sensorData[1]);
+			if(speed > BASESPEED){
+				speed = BASESPEED;
+			}else if (speed < -BASESPEED)
+			{
+				speed = -BASESPEED;
+			}
+			motorSetSpeed(1, speed);
+			motorSetSpeed(0, speed);
 		}
 		if( wallExists(RIGHT) )
 		{
-			motorSetSpeed(2, 50*(sensorData[2]-sensorData[3])/abs(sensorData[2]-sensorData[3]));
-			motorSetSpeed(3, 50*(sensorData[3]-sensorData[3])/abs(sensorData[2]-sensorData[3]));
+			int speed = factor*(sensorData[2]-sensorData[3])*(sensorData[2]-sensorData[3])*(sensorData[2]-sensorData[3]);
+			if(speed > BASESPEED){
+				speed = BASESPEED;
+			}else if (speed < -BASESPEED)
+			{
+				speed = -BASESPEED;
+			}
+			motorSetSpeed(2, speed);
+			motorSetSpeed(3, speed);
 		}
 	}
 
 	// ausrichten an der hinteren Wand
 	if(wallExists(BACK))
 	{
+		float factor = 0.01;
 		int i = 0;
 		motorBrake();
-		while(sensorData[9]<sensorData[10] && i<1000){
-			motorDriveTo(LEFT, BASESPEED/3);
+		// links: 	      rechts:
+		//sensorData[9]<sensorData[10] && 
+		while(i<1000){
+			int speed;
+			speed = factor*(sensorData[9]-sensorData[10])*(sensorData[9]-sensorData[10])*(sensorData[9]-sensorData[10]);
+			if(speed > BASESPEED){
+				speed = BASESPEED;
+			}else if (speed < -BASESPEED)
+			{
+				speed = -BASESPEED;
+			}
+			motorDriveTo(LEFT, -speed);
+			motorDriveTo(RIGHT, speed);
 			++i;
-		}
-		motorBrake();
-		i = 1000;
-		while(sensorData[9]>sensorData[10] && i>0){
-			motorDriveTo(RIGHT, BASESPEED/3);
-			--i;
 		}
 		motorBrake();
 	}

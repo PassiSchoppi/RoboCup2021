@@ -8,6 +8,7 @@
 
 void output()
 {
+	if(SEND){
 /*	Serial.println("########################################");
 	// # STATE #
 	Serial.print("State: ");Serial.println(state);
@@ -27,15 +28,16 @@ void output()
 	Serial.print(" FC: ");Serial.print(sensorData[7]);
 	Serial.print(" FR: ");Serial.println(sensorData[8]);
 	Serial.print(" BL: ");Serial.print(sensorData[9]);
-	Serial.print(" BR: ");Serial.println(sensorData[10]);
+	Serial.print(" BR: ");Serial.print(sensorData[10]);*/
+	Serial.print(" E: ");Serial.println(sensorData[9]-sensorData[10]);/*
 	// # ACC #
 	Serial.print("Accelerometer:");
 	Serial.print(" Y: ");Serial.print(sensorData[4]);
 	Serial.print(" Z: ");Serial.println(sensorData[5]);
 	// # MELEXIS #
 	Serial.print("Melexis:");
-	*/Serial.print(" L: ");Serial.print(sensorData[11]);
-	Serial.print(" R: ");Serial.println(sensorData[12]);/*
+	Serial.print(" L: ");Serial.print(sensorData[11]);
+	Serial.print(" R: ");Serial.println(sensorData[12]);
 	// # LIGHT #
 	Serial.print("Light:");
 	Serial.print(" R: ");Serial.print(sensorData[13]);
@@ -52,4 +54,5 @@ void output()
 	Serial.print(" A: ");Serial.print(sensorData[15]);
 	Serial.print(" B: ");Serial.print(sensorData[16]);
 	Serial.print(" C: ");Serial.println(sensorData[17]);*/
+	}
 }
