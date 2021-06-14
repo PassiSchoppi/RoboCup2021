@@ -197,13 +197,13 @@ void motorDriveTo(uint8_t direction, int speed)
 				if(sensorData[6]<DISTANCETOWALL-moreDistanceToWall && sensorData[7]<DISTANCETOWALL-moreDistanceToWall && sensorData[8]>DISTANCETOWALL+moreDistanceToWall)
 				{
 					targetWallDistance = PERFECTDISTTOW * 0; // ( 1 - avoidObstacleBy);
-					Serial.println("obstacle on right");
+					// Serial.println("obstacle on right");
 				}
 				// wenn nur vorne links ein obstacle
 				if(sensorData[6]>DISTANCETOWALL+moreDistanceToWall && sensorData[7]<DISTANCETOWALL-moreDistanceToWall && sensorData[8]<DISTANCETOWALL-moreDistanceToWall)
 				{
 					targetWallDistance = PERFECTDISTTOW * 3; // ( 1 + avoidObstacleBy);
-					Serial.println("obstacle on left");
+					// Serial.println("obstacle on left");
 				}
 				errorP = (int)(sensorData[2]) - targetWallDistance;
 				sum = (int)(errorP * kP);
@@ -225,13 +225,13 @@ void motorDriveTo(uint8_t direction, int speed)
 				if(sensorData[6]<DISTANCETOWALL-moreDistanceToWall && sensorData[7]<DISTANCETOWALL-moreDistanceToWall && sensorData[8]>DISTANCETOWALL+moreDistanceToWall)
 				{
 					targetWallDistance = PERFECTDISTTOW * 3; // ( 1 + avoidObstacleBy);
-					Serial.println("obstacle on right");
+					// Serial.println("obstacle on right");
 				}
 				// wenn nur vorne links ein obstacle
 				if(sensorData[6]>DISTANCETOWALL+moreDistanceToWall && sensorData[7]<DISTANCETOWALL-moreDistanceToWall && sensorData[8]<DISTANCETOWALL-moreDistanceToWall)
 				{
 					targetWallDistance = PERFECTDISTTOW * 0; // ( 1 - avoidObstacleBy);
-					Serial.println("obstacle on left");
+					// Serial.println("obstacle on left");
 				}
 				errorP = (int)(sensorData[0]) - targetWallDistance;
 				sum = (int)(errorP * kP);
@@ -340,8 +340,8 @@ void motorDriveSafe(int16_t baseSpeed, float kP, float kI, float kD) {
 		errorP = (int)(sensorData[2]) - targetWallDistance;
 		errorI = errorI + errorP;
 		errorD = sensorData[3] - sensorData[2];
-		Serial.println();
-		Serial.print("P: ");Serial.print(errorP);Serial.print(" I: ");Serial.print(errorI);Serial.print(" D: ");Serial.print(errorD);Serial.print(" SUM: ");Serial.println(errorD+errorI+errorP);
+		// Serial.println();
+		// Serial.print("P: ");Serial.print(errorP);Serial.print(" I: ");Serial.print(errorI);Serial.print(" D: ");Serial.print(errorD);Serial.print(" SUM: ");Serial.println(errorD+errorI+errorP);
     } else if(wallExists(LEFT)) {
         errorP = -((int)(sensorData[0]) - targetWallDistance);
         errorI = errorI + errorP;

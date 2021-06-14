@@ -9,7 +9,11 @@
 #define DORAMPDETECTION         true
 #define DORAMPONMAP             false
 #define SMOOTHENSENSORDATA 		5 // 15
-#define MAPSIZE 				10
+
+#define MAPSIZE 				16
+#define STARTX                  8
+#define STARTY                  8
+
 #define NUMBEROFSTORIES         1
 #define LENGTHOFSKIP 			10
 
@@ -46,11 +50,11 @@ extern uint8_t level;  // ebene fläche
 
 #define VICTIMTEMP 		32
 
-#define POSLEFT 		80
+#define POSLEFT 		70
 #define POSMIDD 		120
-#define POSRIGHT 		140
+#define POSRIGHT 		150
 
-#define BASESPEED 		100
+#define BASESPEED 		110
 
 #define P 				30
 

@@ -147,11 +147,36 @@ void mapInit()
 {
 	robot_is_facing = NOTH;
 	// FIXME: half of MAPSIZE
-	robot_is_at.X = 5;
-	robot_is_at.Y = 5;
+	robot_is_at.X = STARTX;
+	robot_is_at.Y = STARTY;
 	lastVisitedSilver.X = robot_is_at.X;
 	lastVisitedSilver.Y = robot_is_at.Y;
 	robot_is_on_story = 0;
+}
+
+
+void mapClear()
+{
+	lastVisitedSilver.X = STARTX;
+	lastVisitedSilver.Y = STARTY;
+	robot_is_at.X = STARTX;
+	robot_is_at.Y = STARTY;
+	robot_is_facing = NOTH;
+	for ( uint8_t s=0; s<NUMBEROFSTORIES; ++s ){
+		for ( uint8_t i=0; i<MAPSIZE; ++i ){
+			for ( uint8_t o=0; o<MAPSIZE; ++o ){
+				Map[ s ][ i ][ o ].visited = false;
+				Map[ s ][ i ][ o ].isBlack = false;
+				Map[ s ][ i ][ o ].hasVictim = false;
+				Map[ s ][ i ][ o ].isRamp = false;
+				Map[ s ][ i ][ o ].distanceToUnvisited = 0;
+				Map[ s ][ i ][ o ].directions[0] = 0;
+				Map[ s ][ i ][ o ].directions[1] = 0;
+				Map[ s ][ i ][ o ].directions[2] = 0;
+				Map[ s ][ i ][ o ].directions[3] = 0;
+			}
+		}
+	}
 }
 
 
@@ -218,9 +243,9 @@ void mapUpdateField()
 	// silver field
 	if( sensorData[13]<MINWHITE || sensorData[14]<MINWHITE )
 	{
-		Serial.println("detected silver tile... robot is at:");
-		Serial.println(robot_is_at.X);
-		Serial.println(robot_is_at.Y);
+		// Serial.println("detected silver tile... robot is at:");
+		// Serial.println(robot_is_at.X);
+		// Serial.println(robot_is_at.Y);
 
 		if((robot_is_at.X != lastVisitedSilver.X) || (robot_is_at.Y != lastVisitedSilver.Y)){
 			LEDSetColor(WHITE);
@@ -325,8 +350,8 @@ void mapMoveTo(uint8_t directionToGo)
 
 void mapOnlyMoveTo(uint8_t directionToGo)
 {
-	LEDSetColor(RED);
-	delay(100);
+	// LEDSetColor(RED);
+	// delay(100);
 	switch( mapDirectionToCompas( directionToGo ) ) {
 		case NOTH:
 			robot_is_at.Y -= 1;
@@ -346,8 +371,8 @@ void mapOnlyMoveTo(uint8_t directionToGo)
 
 void mapOnlyTurnTo(uint8_t directionToGo)
 {
-	LEDSetColor(RED);
-	delay(100);
+	// LEDSetColor(RED);
+	// delay(100);
 	switch( mapDirectionToCompas( directionToGo ) ) {
 		case NOTH:
 			robot_is_facing = NOTH;
@@ -367,67 +392,67 @@ void mapOnlyTurnTo(uint8_t directionToGo)
 
 void mapBlackFieldFront()
 {
-	Serial.println("found black");
-	Serial.println( robot_is_at.X);
-	Serial.println( robot_is_at.Y);
-	Serial.println( robot_is_facing);
+	// Serial.println("found black");
+	// Serial.println( robot_is_at.X);
+	// Serial.println( robot_is_at.Y);
+	// Serial.println( robot_is_facing);
 	Map[robot_is_on_story][ robot_is_at.X ][ robot_is_at.Y ].visited = true;
 	Map[robot_is_on_story][ robot_is_at.X ][ robot_is_at.Y ].isBlack = true;
 	// robot_is_at.X -= 1;
 	switch( robot_is_facing ) {
 		case NOTH:
-			Serial.println("Black at North");
+			// Serial.println("Black at North");
 			robot_is_at.Y += 1;
 			break;
 		case EAST:
-			Serial.println("Black at East");
+			// Serial.println("Black at East");
 			robot_is_at.X -= 1;
 			break;
 		case SOUTH:
-			Serial.println("Black at South");
+			// Serial.println("Black at South");
 			robot_is_at.Y -= 1;
 			break;
 		case WEST:
-			Serial.println("Black at West");
+			// Serial.println("Black at West");
 			robot_is_at.X += 1;
 			break;
 	}
 	/*mapMoveTo(BACK);
 	mapMoveTo(BACK);
 	mapMoveTo(FRONT);*/
-	Serial.println("moving...");
-	Serial.println( robot_is_at.X);
-	Serial.println( robot_is_at.Y);
-	Serial.println( robot_is_facing);
-	Serial.println("done");
+	// Serial.println("moving...");
+	// Serial.println( robot_is_at.X);
+	// Serial.println( robot_is_at.Y);
+	// Serial.println( robot_is_facing);
+	// Serial.println("done");
 }
 
 void mapBlackFieldCurrent()
 {
-	Serial.println("found black");
-	Serial.println( robot_is_at.X);
-	Serial.println( robot_is_at.Y);
-	Serial.println( robot_is_facing);
+	// Serial.println("found black");
+	// Serial.println( robot_is_at.X);
+	// Serial.println( robot_is_at.Y);
+	// Serial.println( robot_is_facing);
 	Map[robot_is_on_story][ robot_is_at.X ][ robot_is_at.Y ].visited = true;
 	Map[robot_is_on_story][ robot_is_at.X ][ robot_is_at.Y ].isBlack = true;
-	Serial.println("done");
+	// Serial.println("done");
 }
 
 void mapVictimNewAtCurrentField()
 {
-	Serial.println("new victim at:");
-	Serial.println(robot_is_at.X);
-	Serial.println(robot_is_at.Y);
+	// Serial.println("new victim at:");
+	// Serial.println(robot_is_at.X);
+	// Serial.println(robot_is_at.Y);
 	Map[robot_is_on_story][ robot_is_at.X ][ robot_is_at.Y ].hasVictim = true;
 }
 
 bool mapVictimIsAtCurrentField()
 {
-	Serial.println("robot is at:");
-	Serial.println(robot_is_at.X);
-	Serial.println(robot_is_at.Y);
-	Serial.print("Field has victim: ");
-	Serial.println(Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].hasVictim);
+	// Serial.println("robot is at:");
+	// Serial.println(robot_is_at.X);
+	// Serial.println(robot_is_at.Y);
+	// Serial.print("Field has victim: ");
+	// Serial.println(Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].hasVictim);
 	return( Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].hasVictim );
 }
 
@@ -472,7 +497,7 @@ void calcDistanceRecursively(uint8_t s, uint8_t x, uint8_t y, uint8_t num)
 							Map[ storiesThatMatch.Y ][ x ][ y + 1 ].distanceToUnvisited = num + 1;
 							calcDistanceRecursively(storiesThatMatch.X, x, y + 1, num + 2);
 						}else{
-							Serial.println("something went very wrong...");
+							// Serial.println("something went very wrong...");
 						}
 					}else{
 						//Serial.println("distance is not 0 and not bigger than num+1 ::: north");
@@ -518,7 +543,7 @@ void calcDistanceRecursively(uint8_t s, uint8_t x, uint8_t y, uint8_t num)
 							Map[ storiesThatMatch.Y ][ x + 1 ][ y ].distanceToUnvisited = num + 1;
 							calcDistanceRecursively(storiesThatMatch.X, x + 1, y, num + 2);
 						}else{
-							Serial.println("something went very wrong...");
+							// Serial.println("something went very wrong...");
 						}
 					}else{
 						calcDistanceRecursively(s, x + 1, y, num + 1);
@@ -555,7 +580,7 @@ void calcDistanceRecursively(uint8_t s, uint8_t x, uint8_t y, uint8_t num)
 							Map[ storiesThatMatch.Y ][ x ][ y - 1 ].distanceToUnvisited = num + 1;
 							calcDistanceRecursively(storiesThatMatch.X, x, y - 1, num + 2);
 						}else{
-							Serial.println("something went very wrong...");
+							// Serial.println("something went very wrong...");
 						}
 					}else{
 						// Serial.println("should work...");
@@ -601,7 +626,7 @@ void calcDistanceRecursively(uint8_t s, uint8_t x, uint8_t y, uint8_t num)
 							Map[ storiesThatMatch.Y ][ x - 1 ][ y ].distanceToUnvisited = num + 1;
 							calcDistanceRecursively(storiesThatMatch.X, x - 1, y, num + 2);
 						}else{
-							Serial.println("something went very wrong...");
+							// Serial.println("something went very wrong...");
 						}
 					}else{
 						calcDistanceRecursively(s, x - 1, y, num + 1);
@@ -655,9 +680,9 @@ uint8_t indexofSmallestElement(uint8_t array[4])
 
 void mapReturnToHome()
 {
-	Map[0][5][5].visited = false;
-	Map[0][5][5].isBlack = false;
-	Map[0][5][5].isRamp = false;
+	Map[0][STARTX][STARTY].visited = false;
+	Map[0][STARTX][STARTY].isBlack = false;
+	Map[0][STARTX][STARTY].isRamp = false;
 }
 
 
@@ -678,15 +703,15 @@ uint8_t mapWhereToDrive()
 		if( !Map[robot_is_on_story][robot_is_at.X - 1][robot_is_at.Y].isBlack )
 			distancesForCompas[ WEST ] = Map[robot_is_on_story][robot_is_at.X-1][robot_is_at.Y].distanceToUnvisited;
 	
-	Serial.println("distances of sourounding fields:");
+	// Serial.println("distances of sourounding fields:");
 	for(int i=0; i<4; i++)
 	{
-		Serial.print(i);
-		Serial.print(" : ");
-		Serial.println(distancesForCompas[ i ]);
+		// Serial.print(i);
+		// Serial.print(" : ");
+		// Serial.println(distancesForCompas[ i ]);
 	}
-	Serial.println("going to:");
-	Serial.println(indexofSmallestElement( distancesForCompas ));
+	// Serial.println("going to:");
+	// Serial.println(indexofSmallestElement( distancesForCompas ));
 
 	return( indexofSmallestElement( distancesForCompas ) );
 }
@@ -714,8 +739,8 @@ void mapRampAtCurrentField()
 		// put virtual robot on new story
 		robot_is_on_story = 1;
 		// NO NO NO NO KEEP THE COORDINATES
-		// robot_is_at.X = 5;
-		// robot_is_at.Y = 5;
+		// robot_is_at.X = STARTX;
+		// robot_is_at.Y = STARTY;
 
 		Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].isRamp = true;
 		// set walls acordingly
@@ -836,7 +861,7 @@ void mapDisplay()
 
 
 
-
+/*
 	Serial.println("Robot is at:");
 	Serial.println( robot_is_at.X);
 	Serial.println( robot_is_at.Y);
@@ -920,4 +945,5 @@ void mapDisplay()
 	Serial.println();
 	}
 	}
+	*/
 }

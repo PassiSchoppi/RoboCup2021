@@ -37,6 +37,7 @@ void mapSilverField();
 void mapSetBackToLastSilver();
 
 void mapInit();
+void mapClear();
 void mapUpdateField();
 void mapMoveTo(uint8_t directionToGo);
 

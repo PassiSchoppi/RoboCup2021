@@ -74,7 +74,7 @@ float melexisTemperature(uint8_t address)
 
 int melexisChangeAddress(uint8_t newAddress)
 {
-	Serial.print("new address: ");Serial.println(newAddress);
+	// Serial.print("new address: ");Serial.println(newAddress);
 	i2c_start_wait(0x00 + I2C_WRITE);   		// Send start condition and write bit.
     i2c_write(0x2E);    			            // Send command for device to return address (0x2E).
     i2c_write(0x00);                			// Send low byte zero to erase.

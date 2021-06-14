@@ -34,8 +34,8 @@ void output()
 	Serial.print(" Z: ");Serial.println(sensorData[5]);
 	// # MELEXIS #
 	Serial.print("Melexis:");
-	*/Serial.print(" L: ");Serial.print(sensorData[11]);
-	Serial.print(" R: ");Serial.println(sensorData[12]);/*
+	Serial.print(" L: ");Serial.print(sensorData[11]);
+	Serial.print(" R: ");Serial.println(sensorData[12]);
 	// # LIGHT #
 	Serial.print("Light:");
 	Serial.print(" R: ");Serial.print(sensorData[13]);
