@@ -16,12 +16,13 @@ uint8_t nextState=0;
 // bool seenVic = false;
 uint8_t moveTo = 5;
 bool outOfField = false;
+bool overHalfOfTurn = false;
 bool overHalfOfRamp = false;
 bool mapIsFine = true;
 bool frontIsBlack = false;
 int numberOfStepsBeforBlack = 0;
-char visVictim = ' ';
-uint8_t numberOfKits = ' ';
+char visVictim = 'e';
+uint8_t numberOfKits = 0;
 
 uint8_t nothing()
 {
@@ -67,6 +68,7 @@ void stateChange()
 		case 1:
 		{
 			outOfField = false;
+			overHalfOfTurn = false;
 			motorBrake();
 			motorResetAllSteps();
 			// Serial.println("new status");
@@ -178,6 +180,14 @@ void stateChange()
 					// rechts drehen dann gerade aus
 					// Serial.println("Rechts abbiegen!");
 					state = 2;
+					
+				visVictim = raspiRead();
+				if(visVictim != 'e' && !mapVictimIsAtCurrentField())
+				{
+					lastState = state;
+					state = 6;
+					return;
+				}
 					// mapMoveTo(RIGHT);
 					// Serial.println("checngin state to: RIGHT");
 					return;
@@ -187,6 +197,14 @@ void stateChange()
 					// gerade aus
 					// Serial.println("Gerade aus!");
 					state = 3;
+					
+				visVictim = raspiRead();
+				if(visVictim != 'e' && !mapVictimIsAtCurrentField())
+				{
+					lastState = state;
+					state = 6;
+					return;
+				}
 					// mapMoveTo(FRONT);
 					// Serial.println("checngin state to: FRONT");
 					return;
@@ -196,6 +214,14 @@ void stateChange()
 					// links drehen dann gerade aus
 					// Serial.println("Links abbiegen!");
 					state = 4;
+					
+				visVictim = raspiRead();
+				if(visVictim != 'e' && !mapVictimIsAtCurrentField())
+				{
+					lastState = state;
+					state = 6;
+					return;
+				}
 					// mapMoveTo(LEFT);
 					// Serial.println("checngin state to: LEFT");
 					frontIsBlack = false;
@@ -207,12 +233,20 @@ void stateChange()
 					// 2x links drehen dann gerade aus
 					// Serial.println("Nach hinten!");
 					state = 5;
+					
+				visVictim = raspiRead();
+				if(visVictim != 'e' && !mapVictimIsAtCurrentField())
+				{
+					lastState = state;
+					state = 6;
+					return;
+				}
 					// mapMoveTo(BACK);
 					// Serial.println("checngin state to: BACK");
 					frontIsBlack = false;
 					return;
 				}
-				
+
 				// wenn überall Wände sind:::
 				state = 1;
 				frontIsBlack = false;
@@ -224,14 +258,6 @@ void stateChange()
 				//                                                                             MAP
 				motorResetAllSteps();
 				mapUpdateField();
-
-				visVictim = raspiRead();
-				if(visVictim != 'e' && !mapVictimIsAtCurrentField())
-				{
-					lastState = 1;
-					state = 6;
-					return;
-				}
 
 				uint8_t compasToGoTo = mapWhereToDrive();
 				// Serial.print("going: ");
@@ -256,6 +282,15 @@ void stateChange()
 						state = 1;
 						break;
 				}
+
+				visVictim = raspiRead();
+				if(visVictim != 'e' && !mapVictimIsAtCurrentField())
+				{
+					lastState = state;
+					state = 6;
+					return;
+				}
+
 				if( mapCompasToDirection( compasToGoTo ) == 5 )
 				{
 					// Serial.println("ARE WE HOME JET????");
@@ -265,7 +300,7 @@ void stateChange()
 				}
 				// Serial.println("letzzz gooo");
 				mapDisplay();
-				mapMoveTo( mapCompasToDirection( compasToGoTo ) );
+				// mapMoveTo( mapCompasToDirection( compasToGoTo ) );
 			}
 			break;
 		}
@@ -280,6 +315,10 @@ void stateChange()
 				average = average + abs(motorStepsMade(i));
 			}
 			average = average/4;
+			if(average>STEPFFORRIGHT*0.45 && !overHalfOfTurn){
+				overHalfOfTurn = true;
+				mapOnlyTurnTo(RIGHT);
+			}
 			if( average > STEPFFORRIGHT )
 			{
 				motorResetAllSteps();
@@ -298,7 +337,7 @@ void stateChange()
 			}
 			// wenn da ist ein Victim
 			// visVictim = raspiRead();
-			if( sensorData[11]>VICTIMTEMP || sensorData[12]>VICTIMTEMP)// || visVictim != ' ' )
+			if( sensorData[11]>VICTIMTEMP || sensorData[12]>VICTIMTEMP)// || visVictim != 'e' )
 			{
 				lastState = state;
 				state = 6;
@@ -308,6 +347,7 @@ void stateChange()
 		case 3:
 		{
 			// drive staight
+			// Serial.println("driving straigt");
 			LEDSetColor(BLUE);
 			motorDriveTo(FRONT, BASESPEED);
 			// gerade aus bis average > STEPSFORONE
@@ -320,6 +360,7 @@ void stateChange()
 			if(average > STEPSFORONE*0.45 && !outOfField){
 				LEDSetColor(RED);
 				delay(100);
+				mapOnlyMoveTo(FRONT);
 				outOfField = true;
 			}
 			//6   FL,
@@ -373,8 +414,9 @@ void stateChange()
 			
 			// wenn Victim
 			// visVictim = raspiRead();
-			if( sensorData[11]>VICTIMTEMP || sensorData[12]>VICTIMTEMP)// || visVictim != ' ' )
+			if( (sensorData[11]>VICTIMTEMP || sensorData[12]>VICTIMTEMP)&&!mapVictimIsAtCurrentField() )// || visVictim != 'e' )
 			{
+				Serial.println("maybe victim ?");
 				lastState = state;
 				state = 6;
 				break;
@@ -403,6 +445,10 @@ void stateChange()
 					average = average + abs(motorStepsMade(i));
 			}
 			average = average/4;
+			if(average>STEPSFORLEFT*0.45 && !overHalfOfTurn){
+				overHalfOfTurn = true;
+				mapOnlyTurnTo(LEFT);
+			}
 			if(average > STEPSFORLEFT)
 			{
 				motorResetAllSteps();
@@ -420,7 +466,7 @@ void stateChange()
 			}
 			// wen victim
 			// visVictim = raspiRead();
-			if( sensorData[11]>VICTIMTEMP || sensorData[12]>VICTIMTEMP)// || visVictim != ' ' )
+			if( sensorData[11]>VICTIMTEMP || sensorData[12]>VICTIMTEMP)// || visVictim != 'e' )
 			{
 				lastState = state;
 				state = 6;
@@ -439,6 +485,10 @@ void stateChange()
 				average = average + abs(motorStepsMade(i));
 			}
 			average = average/4;
+			if(average>STEPSFORLEFT*0.45 && !overHalfOfTurn){
+				overHalfOfTurn = true;
+				mapOnlyTurnTo(LEFT);
+			}
 			if(average > STEPSFORLEFT)
 			{
 				motorResetAllSteps();
@@ -456,7 +506,7 @@ void stateChange()
 			}
 			// wenn victim
 			//visVictim = raspiRead();
-			if( sensorData[11]>VICTIMTEMP || sensorData[12]>VICTIMTEMP)// || visVictim != ' ' )
+			if( sensorData[11]>VICTIMTEMP || sensorData[12]>VICTIMTEMP)// || visVictim != 'e' )
 			{
 				lastState = state;
 				state = 6;
@@ -471,16 +521,13 @@ void stateChange()
 			
 			// Serial.println();
 			// Serial.print("FOUND");
-			if (!outOfField){
-				mapOnlyMoveTo(BACK);
-			}
 
 			bool victimIsLeftNotRight = false;
 			if ( !mapVictimIsAtCurrentField() )
 			{
-				// Serial.println(" NEW VICTIM");
+				Serial.println(" NEW VICTIM");
 				// zweites mal testen und seite herausfinden
-				if(visVictim == ' '){
+				if(visVictim == 'e'){
 					
 					if ( sensorData[11]>VICTIMTEMP )
 					{
@@ -489,12 +536,9 @@ void stateChange()
 					{
 						victimIsLeftNotRight = false;
 					}else{
-						// Serial.println("DIDNT FOUND SECOND TEST");
-						// Serial.println("RETURNING TO LAST STATE");
+						Serial.println("DIDNT FOUND SECOND TEST");
+						Serial.println("RETURNING TO LAST STATE");
 						state = lastState;
-						if(!outOfField){
-							mapOnlyMoveTo(FRONT);
-						}
 						break;
 					}
 				}else{
@@ -506,12 +550,9 @@ void stateChange()
 					{
 						victimIsLeftNotRight = true;
 					}else{
-						// Serial.println("NONE OF THE LETTERS WERE GIVEN");
-						// Serial.println("RETURNING TO LAST STATE");
+						Serial.println("NONE OF THE LETTERS WERE GIVEN");
+						Serial.println("RETURNING TO LAST STATE");
 						state = lastState;
-						if(!outOfField){
-							mapOnlyMoveTo(FRONT);
-						}
 						break;
 					}
 					
@@ -520,11 +561,8 @@ void stateChange()
 				if((victimIsLeftNotRight && !wallExists(LEFT)) ||
 				   (!victimIsLeftNotRight && !wallExists(RIGHT)))
 				{
-					// Serial.println("victim not on a wall");
+					Serial.println("victim not on a wall");
 					state = lastState;
-					if(!outOfField){
-						mapOnlyMoveTo(FRONT);
-					}
 					return;
 				}
 				
@@ -548,7 +586,7 @@ void stateChange()
 				// abwurf only if switch to run program is ON
 				if(sensorData[16]){
 					numberOfKits = 1;
-					if(visVictim != ' '){
+					if(visVictim != 'e'){
 						if(visVictim == 'h' || visVictim == 'H'){
 							numberOfKits = 3;
 						}else if (visVictim == 's' || visVictim == 'S')
@@ -563,11 +601,8 @@ void stateChange()
 						{
 							numberOfKits = 0;
 						}else{
-							// Serial.println("SOMETHING WENT WRONG");
+							Serial.println("SOMETHING WENT WRONG");
 							state = lastState;
-							if(!outOfField){
-								mapOnlyMoveTo(FRONT);
-							}
 							return;
 						}
 						
@@ -577,6 +612,7 @@ void stateChange()
 					mapVictimNewAtCurrentField();
 
 					for(uint8_t i = 0; i < numberOfKits; i++){
+						Serial.println("KIT");
 
 						kitdropperSetTo(POSMIDD);
 						delay(1000);
@@ -595,13 +631,12 @@ void stateChange()
 					}
 				}
 			}else{
-				// Serial.println(" OLD VICTIM");
+				Serial.println(" OLD VICTIM");
+				Serial.println("returning to last state:");
+				Serial.println(lastState);
+				state = lastState;
 			}
 			
-			if(!outOfField){
-				mapOnlyMoveTo(FRONT);
-			}
-
 			// Serial.println("RETURNING TO LAST STATE");
 			// zurück zu dem was er gerade gemacht hat
 			state = lastState;
@@ -683,7 +718,7 @@ void stateChange()
 
 			// wenn victim
 			//visVictim = raspiRead();
-			if( sensorData[11]>VICTIMTEMP || sensorData[12]>VICTIMTEMP)// || visVictim != ' ' )
+			if( sensorData[11]>VICTIMTEMP || sensorData[12]>VICTIMTEMP)// || visVictim != 'e' )
 			{
 				lastState = state;
 				state = 6;
@@ -727,7 +762,7 @@ void stateChange()
 
 			// wenn victim
 			// visVictim = raspiRead();
-			if( sensorData[11]>VICTIMTEMP || sensorData[12]>VICTIMTEMP)// || visVictim != ' ' )
+			if( sensorData[11]>VICTIMTEMP || sensorData[12]>VICTIMTEMP)// || visVictim != 'e' )
 			{
 				lastState = state;
 				state = 6;

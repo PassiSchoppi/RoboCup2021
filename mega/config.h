@@ -54,7 +54,7 @@ extern uint8_t level;  // ebene fläche
 #define POSMIDD 		120
 #define POSRIGHT 		150
 
-#define BASESPEED 		110
+#define BASESPEED 		100
 
 #define P 				30
 
