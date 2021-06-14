@@ -35,7 +35,15 @@ void stateChange()
 	// Serial.println(state);
 	// set back to last silver field
 	// mapIsFine = mapSetBackToLastSilver();
-
+/*
+ ▄▄▄▄▄▄▄ ▄     ▄ ▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄ ▄▄   ▄▄ ▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄ 
+█       █ █ ▄ █ █   █       █       █  █ █  █       █       █
+█  ▄▄▄▄▄█ ██ ██ █   █▄     ▄█       █  █▄█  █    ▄▄▄█  ▄▄▄▄▄█
+█ █▄▄▄▄▄█       █   █ █   █ █     ▄▄█       █   █▄▄▄█ █▄▄▄▄▄ 
+█▄▄▄▄▄  █       █   █ █   █ █    █  █   ▄   █    ▄▄▄█▄▄▄▄▄  █
+ ▄▄▄▄▄█ █   ▄   █   █ █   █ █    █▄▄█  █ █  █   █▄▄▄ ▄▄▄▄▄█ █
+█▄▄▄▄▄▄▄█▄▄█ █▄▄█▄▄▄█ █▄▄▄█ █▄▄▄▄▄▄▄█▄▄█ █▄▄█▄▄▄▄▄▄▄█▄▄▄▄▄▄▄█
+*/
 	if(sensorData[16] == 0) // PAUSE / LACK OF PROGRESS SWITCH
 	{
 		LEDSetColor(WHITE);
@@ -67,6 +75,15 @@ void stateChange()
 		}
 		case 1:
 		{
+			/*
+			 ▄▄▄▄▄▄  ▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄ ▄▄▄▄▄▄▄ ▄▄    ▄ 
+			█      ██       █       █   █       █   █       █  █  █ █
+			█  ▄    █    ▄▄▄█       █   █  ▄▄▄▄▄█   █   ▄   █   █▄█ █
+			█ █ █   █   █▄▄▄█     ▄▄█   █ █▄▄▄▄▄█   █  █ █  █       █
+			█ █▄█   █    ▄▄▄█    █  █   █▄▄▄▄▄  █   █  █▄█  █  ▄    █
+			█       █   █▄▄▄█    █▄▄█   █▄▄▄▄▄█ █   █       █ █ █   █
+			█▄▄▄▄▄▄██▄▄▄▄▄▄▄█▄▄▄▄▄▄▄█▄▄▄█▄▄▄▄▄▄▄█▄▄▄█▄▄▄▄▄▄▄█▄█  █▄▄█
+			*/
 			outOfField = false;
 			overHalfOfTurn = false;
 			motorBrake();
@@ -89,92 +106,15 @@ void stateChange()
 			if( !DOMAP || !sensorData[15] )
 			{
 				// ## get direction to drive to ##
-				// 																		RECHTSUMFAHRUNG
-				
-				/*uint8_t mostLeftFree;
-				uint8_t mostLeftWall;
-				mostLeftWall = 5;
-				mostLeftFree = 5;
-				if(mostLeftWall==5 && wallExists(RIGHT)){
-					mostLeftWall = RIGHT;
-				}
-				if(mostLeftWall==5 && wallExists(FRONT) || frontIsBlack){
-					mostLeftWall = FRONT;
-				}
-				if(mostLeftWall==5 && wallExists(LEFT)){
-					mostLeftWall = LEFT;
-				}
-				if(mostLeftWall==5 && wallExists(BACK)){
-					mostLeftWall = BACK;
-				}
-				if(mostLeftWall==5){
-					state = 2;
-				}
-				switch (mostLeftWall)
-				{
-				case RIGHT:
-					if(mostLeftFree==5 && (!wallExists(FRONT) || !frontIsBlack)){
-						mostLeftFree = FRONT;
-					}
-					if(mostLeftFree==5 && !wallExists(LEFT)){
-						mostLeftFree = LEFT;
-					}
-					if(mostLeftFree==5 && !wallExists(BACK)){
-						mostLeftFree = BACK;
-					}
-					break;
-				case FRONT:
-					if(mostLeftFree==5 && !wallExists(LEFT)){
-						mostLeftFree = LEFT;
-					}
-					if(mostLeftFree==5 && !wallExists(BACK)){
-						mostLeftFree = BACK;
-					}
-					if(mostLeftFree==5 && !wallExists(RIGHT)){
-						mostLeftFree = RIGHT;
-					}
-					break;
-				case LEFT:
-					if(mostLeftFree==5 && !wallExists(BACK)){
-						mostLeftFree = BACK;
-					}
-					if(mostLeftFree==5 && !wallExists(RIGHT)){
-						mostLeftFree = RIGHT;
-					}
-					if(mostLeftFree==5 && (!wallExists(FRONT) || !frontIsBlack)){
-						mostLeftFree = FRONT;
-					}
-					break;
-				case BACK:
-					if(mostLeftFree==5 && !wallExists(RIGHT)){
-						mostLeftFree = RIGHT;
-					}
-					if(mostLeftFree==5 && (!wallExists(FRONT) || !frontIsBlack)){
-						mostLeftFree = FRONT;
-					}
-					if(mostLeftFree==5 && !wallExists(LEFT)){
-						mostLeftFree = LEFT;
-					}
-					break;
-				}
-				switch (mostLeftFree)
-				{
-				case RIGHT:
-					state = 2;
-					break;
-				case FRONT:
-					state = 3;
-					break;
-				case LEFT:
-					state = 4;
-					break;
-				case BACK:
-					state = 5;
-					break;
-				case 5:
-					state = 0;
-				}*/
-				
+				/*   ▄     ▄ ▄▄▄▄▄▄ ▄▄▄     ▄▄▄        ▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄     ▄▄▄     ▄▄▄▄▄▄▄ ▄     ▄ ▄▄▄▄▄▄▄ ▄▄▄▄▄▄   
+					█ █ ▄ █ █      █   █   █   █      █       █       █   █   █   █   █       █ █ ▄ █ █       █   ▄  █  
+					█ ██ ██ █  ▄   █   █   █   █      █    ▄▄▄█   ▄   █   █   █   █   █   ▄   █ ██ ██ █    ▄▄▄█  █ █ █  
+					█       █ █▄█  █   █   █   █      █   █▄▄▄█  █ █  █   █   █   █   █  █ █  █       █   █▄▄▄█   █▄▄█▄ 
+					█       █      █   █▄▄▄█   █▄▄▄   █    ▄▄▄█  █▄█  █   █▄▄▄█   █▄▄▄█  █▄█  █       █    ▄▄▄█    ▄▄  █
+					█   ▄   █  ▄   █       █       █  █   █   █       █       █       █       █   ▄   █   █▄▄▄█   █  █ █
+					█▄▄█ █▄▄█▄█ █▄▄█▄▄▄▄▄▄▄█▄▄▄▄▄▄▄█  █▄▄▄█   █▄▄▄▄▄▄▄█▄▄▄▄▄▄▄█▄▄▄▄▄▄▄█▄▄▄▄▄▄▄█▄▄█ █▄▄█▄▄▄▄▄▄▄█▄▄▄█  █▄█
+				*/
+								
 				if(!wallExists(RIGHT) && !frontIsBlack)
 				{
 					// rechts drehen dann gerade aus
@@ -255,7 +195,14 @@ void stateChange()
 			}
 			else
 			{
-				//                                                                             MAP
+				/* 	 ▄▄   ▄▄ ▄▄▄▄▄▄ ▄▄▄▄▄▄▄ 
+					█  █▄█  █      █       █
+					█       █  ▄   █    ▄  █
+					█       █ █▄█  █   █▄█ █
+					█       █      █    ▄▄▄█
+					█ ██▄██ █  ▄   █   █    
+					█▄█   █▄█▄█ █▄▄█▄▄▄█    
+					*/
 				motorResetAllSteps();
 				mapUpdateField();
 
@@ -306,7 +253,15 @@ void stateChange()
 		}
 		case 2:
 		{
-			// turn right und dann gerade aus
+			/*
+			 ▄▄▄▄▄▄   ▄▄▄ ▄▄▄▄▄▄▄ ▄▄   ▄▄ ▄▄▄▄▄▄▄    ▄▄▄▄▄▄▄ ▄▄   ▄▄ ▄▄▄▄▄▄▄ ▄▄    ▄    ▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄▄▄▄   ▄▄▄▄▄▄ ▄▄▄ ▄▄▄▄▄▄▄ ▄▄   ▄▄ ▄▄▄▄▄▄▄ 
+			█   ▄  █ █   █       █  █ █  █       █  █       █  █ █  █       █  █  █ █  █       █       █   ▄  █ █      █   █       █  █ █  █       █
+			█  █ █ █ █   █   ▄▄▄▄█  █▄█  █▄     ▄█  █▄     ▄█  █▄█  █    ▄▄▄█   █▄█ █  █  ▄▄▄▄▄█▄     ▄█  █ █ █ █  ▄   █   █   ▄▄▄▄█  █▄█  █▄     ▄█
+			█   █▄▄█▄█   █  █  ▄▄█       █ █   █      █   █ █       █   █▄▄▄█       █  █ █▄▄▄▄▄  █   █ █   █▄▄█▄█ █▄█  █   █  █  ▄▄█       █ █   █  
+			█    ▄▄  █   █  █ █  █   ▄   █ █   █      █   █ █   ▄   █    ▄▄▄█  ▄    █  █▄▄▄▄▄  █ █   █ █    ▄▄  █      █   █  █ █  █   ▄   █ █   █  
+			█   █  █ █   █  █▄▄█ █  █ █  █ █   █      █   █ █  █ █  █   █▄▄▄█ █ █   █   ▄▄▄▄▄█ █ █   █ █   █  █ █  ▄   █   █  █▄▄█ █  █ █  █ █   █  
+			█▄▄▄█  █▄█▄▄▄█▄▄▄▄▄▄▄█▄▄█ █▄▄█ █▄▄▄█      █▄▄▄█ █▄▄█ █▄▄█▄▄▄▄▄▄▄█▄█  █▄▄█  █▄▄▄▄▄▄▄█ █▄▄▄█ █▄▄▄█  █▄█▄█ █▄▄█▄▄▄█▄▄▄▄▄▄▄█▄▄█ █▄▄█ █▄▄▄█  
+			*/
 			LEDSetColor(GREEN);
 			motorDriveTo(RIGHT, BASESPEED);
 			// drive RIGHT until average > STEPFFORRIGHT
@@ -346,7 +301,14 @@ void stateChange()
 		}
 		case 3:
 		{
-			// drive staight
+			/*   ▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄▄▄▄   ▄▄▄▄▄▄ ▄▄▄ ▄▄▄▄▄▄▄ ▄▄   ▄▄ ▄▄▄▄▄▄▄ 
+				█       █       █   ▄  █ █      █   █       █  █ █  █       █
+				█  ▄▄▄▄▄█▄     ▄█  █ █ █ █  ▄   █   █   ▄▄▄▄█  █▄█  █▄     ▄█
+				█ █▄▄▄▄▄  █   █ █   █▄▄█▄█ █▄█  █   █  █  ▄▄█       █ █   █  
+				█▄▄▄▄▄  █ █   █ █    ▄▄  █      █   █  █ █  █   ▄   █ █   █  
+				 ▄▄▄▄▄█ █ █   █ █   █  █ █  ▄   █   █  █▄▄█ █  █ █  █ █   █  
+				█▄▄▄▄▄▄▄█ █▄▄▄█ █▄▄▄█  █▄█▄█ █▄▄█▄▄▄█▄▄▄▄▄▄▄█▄▄█ █▄▄█ █▄▄▄█  
+				*/
 			// Serial.println("driving straigt");
 			LEDSetColor(BLUE);
 			motorDriveTo(FRONT, BASESPEED);
@@ -435,7 +397,15 @@ void stateChange()
 		}
 		case 4:
 		{
-			// drive left dann gerade aus
+			/*
+			 ▄▄▄     ▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄    ▄▄▄▄▄▄▄ ▄▄   ▄▄ ▄▄▄▄▄▄▄ ▄▄    ▄    ▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄▄▄▄   ▄▄▄▄▄▄ ▄▄▄ ▄▄▄▄▄▄▄ ▄▄   ▄▄ ▄▄▄▄▄▄▄ 
+			█   █   █       █       █       █  █       █  █ █  █       █  █  █ █  █       █       █   ▄  █ █      █   █       █  █ █  █       █
+			█   █   █    ▄▄▄█    ▄▄▄█▄     ▄█  █▄     ▄█  █▄█  █    ▄▄▄█   █▄█ █  █  ▄▄▄▄▄█▄     ▄█  █ █ █ █  ▄   █   █   ▄▄▄▄█  █▄█  █▄     ▄█
+			█   █   █   █▄▄▄█   █▄▄▄  █   █      █   █ █       █   █▄▄▄█       █  █ █▄▄▄▄▄  █   █ █   █▄▄█▄█ █▄█  █   █  █  ▄▄█       █ █   █  
+			█   █▄▄▄█    ▄▄▄█    ▄▄▄█ █   █      █   █ █   ▄   █    ▄▄▄█  ▄    █  █▄▄▄▄▄  █ █   █ █    ▄▄  █      █   █  █ █  █   ▄   █ █   █  
+			█       █   █▄▄▄█   █     █   █      █   █ █  █ █  █   █▄▄▄█ █ █   █   ▄▄▄▄▄█ █ █   █ █   █  █ █  ▄   █   █  █▄▄█ █  █ █  █ █   █  
+			█▄▄▄▄▄▄▄█▄▄▄▄▄▄▄█▄▄▄█     █▄▄▄█      █▄▄▄█ █▄▄█ █▄▄█▄▄▄▄▄▄▄█▄█  █▄▄█  █▄▄▄▄▄▄▄█ █▄▄▄█ █▄▄▄█  █▄█▄█ █▄▄█▄▄▄█▄▄▄▄▄▄▄█▄▄█ █▄▄█ █▄▄▄█  
+			*/
 			LEDSetColor(TURQUOISE);
 			motorDriveTo(LEFT, BASESPEED);
 			// Left until average > STEPSFORLEFT
@@ -475,7 +445,14 @@ void stateChange()
 		}
 		case 5:
 		{
-			// drive left then left and then straight
+		/*	 ▄▄▄▄▄▄▄ ▄▄   ▄▄    ▄▄▄     ▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄    ▄▄▄▄▄▄▄ ▄▄   ▄▄ ▄▄▄▄▄▄▄ ▄▄    ▄    ▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄▄▄▄   ▄▄▄▄▄▄ ▄▄▄ ▄▄▄▄▄▄▄ ▄▄   ▄▄ ▄▄▄▄▄▄▄ 
+			█       █  █▄█  █  █   █   █       █       █       █  █       █  █ █  █       █  █  █ █  █       █       █   ▄  █ █      █   █       █  █ █  █       █
+			█▄▄▄▄   █       █  █   █   █    ▄▄▄█    ▄▄▄█▄     ▄█  █▄     ▄█  █▄█  █    ▄▄▄█   █▄█ █  █  ▄▄▄▄▄█▄     ▄█  █ █ █ █  ▄   █   █   ▄▄▄▄█  █▄█  █▄     ▄█
+			 ▄▄▄▄█  █       █  █   █   █   █▄▄▄█   █▄▄▄  █   █      █   █ █       █   █▄▄▄█       █  █ █▄▄▄▄▄  █   █ █   █▄▄█▄█ █▄█  █   █  █  ▄▄█       █ █   █  
+			█ ▄▄▄▄▄▄██     █   █   █▄▄▄█    ▄▄▄█    ▄▄▄█ █   █      █   █ █   ▄   █    ▄▄▄█  ▄    █  █▄▄▄▄▄  █ █   █ █    ▄▄  █      █   █  █ █  █   ▄   █ █   █  
+			█ █▄▄▄▄▄█   ▄   █  █       █   █▄▄▄█   █     █   █      █   █ █  █ █  █   █▄▄▄█ █ █   █   ▄▄▄▄▄█ █ █   █ █   █  █ █  ▄   █   █  █▄▄█ █  █ █  █ █   █  
+			█▄▄▄▄▄▄▄█▄▄█ █▄▄█  █▄▄▄▄▄▄▄█▄▄▄▄▄▄▄█▄▄▄█     █▄▄▄█      █▄▄▄█ █▄▄█ █▄▄█▄▄▄▄▄▄▄█▄█  █▄▄█  █▄▄▄▄▄▄▄█ █▄▄▄█ █▄▄▄█  █▄█▄█ █▄▄█▄▄▄█▄▄▄▄▄▄▄█▄▄█ █▄▄█ █▄▄▄█  
+			*/
 			LEDSetColor(TURQUOISE);
 			motorDriveTo(LEFT, BASESPEED);
 			// left bis average = STEPSFORLEFT
@@ -515,7 +492,15 @@ void stateChange()
 		}
 		case 6:
 		{
-			// temp victim
+			/*
+			 ▄▄   ▄▄ ▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄ ▄▄   ▄▄ 
+			█  █ █  █   █       █       █   █  █▄█  █
+			█  █▄█  █   █       █▄     ▄█   █       █
+			█       █   █     ▄▄█ █   █ █   █       █
+			█       █   █    █    █   █ █   █       █
+			 █     ██   █    █▄▄  █   █ █   █ ██▄██ █
+			  █▄▄▄█ █▄▄▄█▄▄▄▄▄▄▄█ █▄▄▄█ █▄▄▄█▄█   █▄█
+			*/
 			// try for 5 seconds and blink
 			// wenn noch kein victim auf dem Feld ist
 			
@@ -649,7 +634,14 @@ void stateChange()
 		}
 		case 8:
 		{
-			// stabilize und dann neu entscheiden
+			/*   ▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄ ▄▄▄     ▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄ 
+				█       █       █      █  ▄    █   █   █   █   █       █       █
+				█  ▄▄▄▄▄█▄     ▄█  ▄   █ █▄█   █   █   █   █   █▄▄▄▄   █    ▄▄▄█
+				█ █▄▄▄▄▄  █   █ █ █▄█  █       █   █   █   █   █▄▄▄▄█  █   █▄▄▄ 
+				█▄▄▄▄▄  █ █   █ █      █  ▄   ██   █   █▄▄▄█   █ ▄▄▄▄▄▄█    ▄▄▄█
+				 ▄▄▄▄▄█ █ █   █ █  ▄   █ █▄█   █   █       █   █ █▄▄▄▄▄█   █▄▄▄ 
+				█▄▄▄▄▄▄▄█ █▄▄▄█ █▄█ █▄▄█▄▄▄▄▄▄▄█▄▄▄█▄▄▄▄▄▄▄█▄▄▄█▄▄▄▄▄▄▄█▄▄▄▄▄▄▄█
+				*/
 			// Serial.println("stabalizing");
 			LEDSetColor(PINK);
 			motorBrake();
@@ -664,7 +656,15 @@ void stateChange()
 		}
 		case 9:
 		{
-			//kurz zurück fahren
+			/*
+			 ▄▄▄▄▄▄▄ ▄▄   ▄▄ ▄▄▄▄▄▄▄ ▄▄▄▄▄▄   ▄▄▄▄▄▄▄    ▄▄▄▄▄▄▄ ▄▄▄▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄   ▄ 
+			█       █  █ █  █       █   ▄  █ █       █  █  ▄    █      █       █   █ █ █
+			█  ▄▄▄▄▄█  █▄█  █   ▄   █  █ █ █ █▄     ▄█  █ █▄█   █  ▄   █       █   █▄█ █
+			█ █▄▄▄▄▄█       █  █ █  █   █▄▄█▄  █   █    █       █ █▄█  █     ▄▄█      ▄█
+			█▄▄▄▄▄  █   ▄   █  █▄█  █    ▄▄  █ █   █    █  ▄   ██      █    █  █     █▄ 
+			 ▄▄▄▄▄█ █  █ █  █       █   █  █ █ █   █    █ █▄█   █  ▄   █    █▄▄█    ▄  █
+			█▄▄▄▄▄▄▄█▄▄█ █▄▄█▄▄▄▄▄▄▄█▄▄▄█  █▄█ █▄▄▄█    █▄▄▄▄▄▄▄█▄█ █▄▄█▄▄▄▄▄▄▄█▄▄▄█ █▄█
+			*/
 			motorBrake();
 			motorResetAllSteps();
 			motorDriveTo(BACK, BASESPEED);
@@ -677,7 +677,14 @@ void stateChange()
 		}
 		case 10:
 		{
-			//kurz zurück fahren
+			/*   ▄▄▄▄▄▄▄ ▄▄▄▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄   ▄    ▄▄▄▄▄▄▄ ▄▄▄▄▄▄   ▄▄▄▄▄▄▄ ▄▄   ▄▄    ▄▄▄▄▄▄▄ ▄▄▄     ▄▄▄▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄   ▄ 
+				█  ▄    █      █       █   █ █ █  █       █   ▄  █ █       █  █▄█  █  █  ▄    █   █   █      █       █   █ █ █
+				█ █▄█   █  ▄   █       █   █▄█ █  █    ▄▄▄█  █ █ █ █   ▄   █       █  █ █▄█   █   █   █  ▄   █       █   █▄█ █
+				█       █ █▄█  █     ▄▄█      ▄█  █   █▄▄▄█   █▄▄█▄█  █ █  █       █  █       █   █   █ █▄█  █     ▄▄█      ▄█
+				█  ▄   ██      █    █  █     █▄   █    ▄▄▄█    ▄▄  █  █▄█  █       █  █  ▄   ██   █▄▄▄█      █    █  █     █▄ 
+				█ █▄█   █  ▄   █    █▄▄█    ▄  █  █   █   █   █  █ █       █ ██▄██ █  █ █▄█   █       █  ▄   █    █▄▄█    ▄  █
+				█▄▄▄▄▄▄▄█▄█ █▄▄█▄▄▄▄▄▄▄█▄▄▄█ █▄█  █▄▄▄█   █▄▄▄█  █▄█▄▄▄▄▄▄▄█▄█   █▄█  █▄▄▄▄▄▄▄█▄▄▄▄▄▄▄█▄█ █▄▄█▄▄▄▄▄▄▄█▄▄▄█ █▄█
+				*/
 			motorBrake();
 			motorDriveTo(BACK, BASESPEED);
 			while(motorStepsMade(0) < (numberOfStepsBeforBlack * 2)){}
@@ -690,7 +697,15 @@ void stateChange()
 		}
 		case 11:
 		{
-			// ramp down
+			/*
+			 ▄▄▄▄▄▄   ▄▄▄▄▄▄ ▄▄   ▄▄ ▄▄▄▄▄▄▄    ▄▄▄▄▄▄  ▄▄▄▄▄▄▄ ▄     ▄ ▄▄    ▄ 
+			█   ▄  █ █      █  █▄█  █       █  █      ██       █ █ ▄ █ █  █  █ █
+			█  █ █ █ █  ▄   █       █    ▄  █  █  ▄    █   ▄   █ ██ ██ █   █▄█ █
+			█   █▄▄█▄█ █▄█  █       █   █▄█ █  █ █ █   █  █ █  █       █       █
+			█    ▄▄  █      █       █    ▄▄▄█  █ █▄█   █  █▄█  █       █  ▄    █
+			█   █  █ █  ▄   █ ██▄██ █   █      █       █       █   ▄   █ █ █   █
+			█▄▄▄█  █▄█▄█ █▄▄█▄█   █▄█▄▄▄█      █▄▄▄▄▄▄██▄▄▄▄▄▄▄█▄▄█ █▄▄█▄█  █▄▄█
+			*/
 			if(overHalfOfRamp){
 				LEDSetColor(WHITE);
 			}else
@@ -727,7 +742,15 @@ void stateChange()
 		}
 		case 12:
 		{
-			// ramp up
+			/*
+			 ▄▄▄▄▄▄   ▄▄▄▄▄▄ ▄▄   ▄▄ ▄▄▄▄▄▄▄    ▄▄   ▄▄ ▄▄▄▄▄▄▄ 
+			█   ▄  █ █      █  █▄█  █       █  █  █ █  █       █
+			█  █ █ █ █  ▄   █       █    ▄  █  █  █ █  █    ▄  █
+			█   █▄▄█▄█ █▄█  █       █   █▄█ █  █  █▄█  █   █▄█ █
+			█    ▄▄  █      █       █    ▄▄▄█  █       █    ▄▄▄█
+			█   █  █ █  ▄   █ ██▄██ █   █      █       █   █    
+			█▄▄▄█  █▄█▄█ █▄▄█▄█   █▄█▄▄▄█      █▄▄▄▄▄▄▄█▄▄▄█    
+			*/
 			if(overHalfOfRamp){
 				LEDSetColor(WHITE);
 				motorDriveTo(RAMPSTATE, BASESPEED*1.5);

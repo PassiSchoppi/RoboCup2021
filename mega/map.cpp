@@ -1,6 +1,8 @@
 #include "map.h"
 
 
+// ascii art at: https://textfancy.com/ascii-art/
+
 
 // 2D Array of Fields
 Field Map[NUMBEROFSTORIES][MAPSIZE][MAPSIZE];
@@ -11,6 +13,15 @@ uint8_t robot_is_on_story;
 Vector robot_is_at;
 Vector lastVisitedSilver;
 
+/*
+ ▄▄▄▄▄▄  ▄▄▄ ▄▄▄▄▄▄   ▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄ ▄▄▄▄▄▄▄ ▄▄    ▄    ▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄ ▄▄    ▄ ▄▄   ▄▄ ▄▄▄▄▄▄▄ ▄▄▄▄▄▄   ▄▄▄▄▄▄▄ ▄▄▄ ▄▄▄▄▄▄▄ ▄▄    ▄ 
+█      ██   █   ▄  █ █       █       █       █   █       █  █  █ █  █       █       █  █  █ █  █ █  █       █   ▄  █ █       █   █       █  █  █ █
+█  ▄    █   █  █ █ █ █    ▄▄▄█       █▄     ▄█   █   ▄   █   █▄█ █  █       █   ▄   █   █▄█ █  █▄█  █    ▄▄▄█  █ █ █ █  ▄▄▄▄▄█   █   ▄   █   █▄█ █
+█ █ █   █   █   █▄▄█▄█   █▄▄▄█     ▄▄█ █   █ █   █  █ █  █       █  █     ▄▄█  █ █  █       █       █   █▄▄▄█   █▄▄█▄█ █▄▄▄▄▄█   █  █ █  █       █
+█ █▄█   █   █    ▄▄  █    ▄▄▄█    █    █   █ █   █  █▄█  █  ▄    █  █    █  █  █▄█  █  ▄    █       █    ▄▄▄█    ▄▄  █▄▄▄▄▄  █   █  █▄█  █  ▄    █
+█       █   █   █  █ █   █▄▄▄█    █▄▄  █   █ █   █       █ █ █   █  █    █▄▄█       █ █ █   ██     ██   █▄▄▄█   █  █ █▄▄▄▄▄█ █   █       █ █ █   █
+█▄▄▄▄▄▄██▄▄▄█▄▄▄█  █▄█▄▄▄▄▄▄▄█▄▄▄▄▄▄▄█ █▄▄▄█ █▄▄▄█▄▄▄▄▄▄▄█▄█  █▄▄█  █▄▄▄▄▄▄▄█▄▄▄▄▄▄▄█▄█  █▄▄█ █▄▄▄█ █▄▄▄▄▄▄▄█▄▄▄█  █▄█▄▄▄▄▄▄▄█▄▄▄█▄▄▄▄▄▄▄█▄█  █▄▄█
+*/
 // translates compas to direction
 uint8_t mapCompasToDirection(uint8_t compasI)
 {
@@ -143,6 +154,15 @@ uint8_t mapDirectionToCompas(uint8_t directionI)
 	}
 }
 
+/*
+ ▄▄▄ ▄▄    ▄ ▄▄▄ ▄▄▄▄▄▄▄ 
+█   █  █  █ █   █       █
+█   █   █▄█ █   █▄     ▄█
+█   █       █   █ █   █  
+█   █  ▄    █   █ █   █  
+█   █ █ █   █   █ █   █  
+█▄▄▄█▄█  █▄▄█▄▄▄█ █▄▄▄█  
+*/
 void mapInit() 
 {
 	robot_is_facing = NOTH;
@@ -153,6 +173,15 @@ void mapInit()
 	robot_is_on_story = 0;
 }
 
+/*
+ ▄▄▄▄▄▄▄ ▄▄▄     ▄▄▄▄▄▄▄ ▄▄▄▄▄▄ ▄▄▄▄▄▄   
+█       █   █   █       █      █   ▄  █  
+█       █   █   █    ▄▄▄█  ▄   █  █ █ █  
+█     ▄▄█   █   █   █▄▄▄█ █▄█  █   █▄▄█▄ 
+█    █  █   █▄▄▄█    ▄▄▄█      █    ▄▄  █
+█    █▄▄█       █   █▄▄▄█  ▄   █   █  █ █
+█▄▄▄▄▄▄▄█▄▄▄▄▄▄▄█▄▄▄▄▄▄▄█▄█ █▄▄█▄▄▄█  █▄█
+*/
 // clears every information of the map
 // and puts robot back to start
 // FIXME needs to be testet
@@ -180,6 +209,15 @@ void mapClear()
 	}
 }
 
+/*
+▄▄▄▄▄▄▄ ▄▄▄ ▄▄▄     ▄▄   ▄▄ ▄▄▄▄▄▄▄ ▄▄▄▄▄▄      ▄▄▄▄▄▄▄ ▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄     ▄▄▄▄▄▄  
+█       █   █   █   █  █ █  █       █   ▄  █    █       █   █       █   █   █      █ 
+█  ▄▄▄▄▄█   █   █   █  █▄█  █    ▄▄▄█  █ █ █    █    ▄▄▄█   █    ▄▄▄█   █   █  ▄    █
+█ █▄▄▄▄▄█   █   █   █       █   █▄▄▄█   █▄▄█▄   █   █▄▄▄█   █   █▄▄▄█   █   █ █ █   █
+█▄▄▄▄▄  █   █   █▄▄▄█       █    ▄▄▄█    ▄▄  █  █    ▄▄▄█   █    ▄▄▄█   █▄▄▄█ █▄█   █
+▄▄▄▄▄█  █   █       ██     ██   █▄▄▄█   █  █ █  █   █   █   █   █▄▄▄█       █       █
+█▄▄▄▄▄▄▄█▄▄▄█▄▄▄▄▄▄▄█ █▄▄▄█ █▄▄▄▄▄▄▄█▄▄▄█  █▄█  █▄▄▄█   █▄▄▄█▄▄▄▄▄▄▄█▄▄▄▄▄▄▄█▄▄▄▄▄▄█ 
+*/
 // sets current field as the last visited silver field
 void mapSilverField()
 {
@@ -195,7 +233,15 @@ void mapSetBackToLastSilver()
 	robot_is_facing = NOTH;
 }
 
-
+/*
+ ▄▄   ▄▄ ▄▄▄▄▄▄▄ ▄▄▄▄▄▄  ▄▄▄▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄    ▄▄▄▄▄▄▄ ▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄     ▄▄▄▄▄▄  
+█  █ █  █       █      ██      █       █       █  █       █   █       █   █   █      █ 
+█  █ █  █    ▄  █  ▄    █  ▄   █▄     ▄█    ▄▄▄█  █    ▄▄▄█   █    ▄▄▄█   █   █  ▄    █
+█  █▄█  █   █▄█ █ █ █   █ █▄█  █ █   █ █   █▄▄▄   █   █▄▄▄█   █   █▄▄▄█   █   █ █ █   █
+█       █    ▄▄▄█ █▄█   █      █ █   █ █    ▄▄▄█  █    ▄▄▄█   █    ▄▄▄█   █▄▄▄█ █▄█   █
+█       █   █   █       █  ▄   █ █   █ █   █▄▄▄   █   █   █   █   █▄▄▄█       █       █
+█▄▄▄▄▄▄▄█▄▄▄█   █▄▄▄▄▄▄██▄█ █▄▄█ █▄▄▄█ █▄▄▄▄▄▄▄█  █▄▄▄█   █▄▄▄█▄▄▄▄▄▄▄█▄▄▄▄▄▄▄█▄▄▄▄▄▄█ 
+*/
 void mapUpdateField()
 {
 	// Serial.println("updating field");
@@ -213,7 +259,7 @@ void mapUpdateField()
 	}*/
 	
 	// change walls of sourounding fields
-	//  etage              X
+	//					 wand eines anliegenden Feldes                        =                     wand welche an dieses Feld angrenztz
 	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y-1].directions[ SOUTH ] = 	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[NOTH];
 	Map[robot_is_on_story][robot_is_at.X+1][robot_is_at.Y].directions[ WEST ] = 	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[EAST];
 	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y+1].directions[ NOTH ] = 	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[SOUTH];
@@ -222,10 +268,11 @@ void mapUpdateField()
 	// silver field
 	if( sensorData[13]<MINWHITE || sensorData[14]<MINWHITE )
 	{
-		Serial.println("detected silver tile... robot is at:");
-		Serial.println(robot_is_at.X);
+		Serial.print("detected silver tile... robot is at: ");
+		Serial.print(robot_is_at.X);Serial.print(" | ");
 		Serial.println(robot_is_at.Y);
 
+		// zeigt an ob dieses Felb bereits als Siber markiert wurde
 		if((robot_is_at.X != lastVisitedSilver.X) || (robot_is_at.Y != lastVisitedSilver.Y)){
 			LEDSetColor(WHITE);
 			delay(100);
@@ -303,7 +350,15 @@ void mapUpdateField()
 	}
 }
 
-
+/*
+ ▄▄   ▄▄ ▄▄▄▄▄▄▄ ▄▄   ▄▄ ▄▄▄ ▄▄    ▄ ▄▄▄▄▄▄▄ 
+█  █▄█  █       █  █ █  █   █  █  █ █       █
+█       █   ▄   █  █▄█  █   █   █▄█ █   ▄▄▄▄█
+█       █  █ █  █       █   █       █  █  ▄▄ 
+█       █  █▄█  █       █   █  ▄    █  █ █  █
+█ ██▄██ █       ██     ██   █ █ █   █  █▄▄█ █
+█▄█   █▄█▄▄▄▄▄▄▄█ █▄▄▄█ █▄▄▄█▄█  █▄▄█▄▄▄▄▄▄▄█
+*/
 void mapMoveTo(uint8_t directionToGo)
 {
 	switch( mapDirectionToCompas( directionToGo ) ) {
@@ -368,7 +423,15 @@ void mapOnlyTurnTo(uint8_t directionToGo)
 	}
 }
 
-
+/*
+ ▄▄▄▄▄▄▄ ▄▄▄     ▄▄▄▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄   ▄    ▄▄▄▄▄▄▄ ▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄     ▄▄▄▄▄▄  
+█  ▄    █   █   █      █       █   █ █ █  █       █   █       █   █   █      █ 
+█ █▄█   █   █   █  ▄   █       █   █▄█ █  █    ▄▄▄█   █    ▄▄▄█   █   █  ▄    █
+█       █   █   █ █▄█  █     ▄▄█      ▄█  █   █▄▄▄█   █   █▄▄▄█   █   █ █ █   █
+█  ▄   ██   █▄▄▄█      █    █  █     █▄   █    ▄▄▄█   █    ▄▄▄█   █▄▄▄█ █▄█   █
+█ █▄█   █       █  ▄   █    █▄▄█    ▄  █  █   █   █   █   █▄▄▄█       █       █
+█▄▄▄▄▄▄▄█▄▄▄▄▄▄▄█▄█ █▄▄█▄▄▄▄▄▄▄█▄▄▄█ █▄█  █▄▄▄█   █▄▄▄█▄▄▄▄▄▄▄█▄▄▄▄▄▄▄█▄▄▄▄▄▄█ 
+*/
 void mapBlackFieldFront()
 {
 	Serial.println("found black");
@@ -417,6 +480,15 @@ void mapBlackFieldCurrent()
 	Serial.println("done");
 }
 
+/*
+ ▄▄   ▄▄ ▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄ ▄▄   ▄▄ 
+█  █ █  █   █       █       █   █  █▄█  █
+█  █▄█  █   █       █▄     ▄█   █       █
+█       █   █     ▄▄█ █   █ █   █       █
+█       █   █    █    █   █ █   █       █
+ █     ██   █    █▄▄  █   █ █   █ ██▄██ █
+  █▄▄▄█ █▄▄▄█▄▄▄▄▄▄▄█ █▄▄▄█ █▄▄▄█▄█   █▄█
+*/
 void mapVictimNewAtCurrentField()
 {
 	Serial.println("new victim at:");
@@ -435,6 +507,15 @@ bool mapVictimIsAtCurrentField()
 	return( Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].hasVictim );
 }
 
+/*
+ ▄▄▄▄▄▄  ▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄▄▄▄ ▄▄    ▄ ▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄ 
+█      ██   █       █       █      █  █  █ █       █       █       █
+█  ▄    █   █  ▄▄▄▄▄█▄     ▄█  ▄   █   █▄█ █       █    ▄▄▄█  ▄▄▄▄▄█
+█ █ █   █   █ █▄▄▄▄▄  █   █ █ █▄█  █       █     ▄▄█   █▄▄▄█ █▄▄▄▄▄ 
+█ █▄█   █   █▄▄▄▄▄  █ █   █ █      █  ▄    █    █  █    ▄▄▄█▄▄▄▄▄  █
+█       █   █▄▄▄▄▄█ █ █   █ █  ▄   █ █ █   █    █▄▄█   █▄▄▄ ▄▄▄▄▄█ █
+█▄▄▄▄▄▄██▄▄▄█▄▄▄▄▄▄▄█ █▄▄▄█ █▄█ █▄▄█▄█  █▄▄█▄▄▄▄▄▄▄█▄▄▄▄▄▄▄█▄▄▄▄▄▄▄█
+*/
 void calcDistanceRecursively(uint8_t s, uint8_t x, uint8_t y, uint8_t num)
 {
 	/*Serial.print("recursion call:");
@@ -657,14 +738,6 @@ uint8_t indexofSmallestElement(uint8_t array[4])
 }
 
 
-void mapReturnToHome()
-{
-	Map[0][STARTX][STARTY].visited = false;
-	Map[0][STARTX][STARTY].isBlack = false;
-	Map[0][STARTX][STARTY].isRamp = false;
-}
-
-
 uint8_t mapWhereToDrive() 
 {
 	uint8_t distancesForCompas[4] = {0, 0, 0, 0};
@@ -696,6 +769,31 @@ uint8_t mapWhereToDrive()
 }
 
 
+/*
+ ▄▄   ▄▄ ▄▄▄▄▄▄▄ ▄▄   ▄▄ ▄▄▄▄▄▄▄ 
+█  █ █  █       █  █▄█  █       █
+█  █▄█  █   ▄   █       █    ▄▄▄█
+█       █  █ █  █       █   █▄▄▄ 
+█   ▄   █  █▄█  █       █    ▄▄▄█
+█  █ █  █       █ ██▄██ █   █▄▄▄ 
+█▄▄█ █▄▄█▄▄▄▄▄▄▄█▄█   █▄█▄▄▄▄▄▄▄█
+*/
+void mapReturnToHome()
+{
+	Map[0][STARTX][STARTY].visited = false;
+	Map[0][STARTX][STARTY].isBlack = false;
+	Map[0][STARTX][STARTY].isRamp = false;
+}
+
+/*
+ ▄▄▄▄▄▄   ▄▄▄▄▄▄ ▄▄   ▄▄ ▄▄▄▄▄▄▄ 
+█   ▄  █ █      █  █▄█  █       █
+█  █ █ █ █  ▄   █       █    ▄  █
+█   █▄▄█▄█ █▄█  █       █   █▄█ █
+█    ▄▄  █      █       █    ▄▄▄█
+█   █  █ █  ▄   █ ██▄██ █   █    
+█▄▄▄█  █▄█▄█ █▄▄█▄█   █▄█▄▄▄█    
+*/
 void mapRampAtCurrentField()
 {
 	Vector possibleRamp = mapStoriesThatConnectAt(robot_is_at);
@@ -775,7 +873,15 @@ Vector mapStoriesThatConnectAt(Vector rampCoordinates)
 	return(stories);
 }
 
-
+/*
+ ▄▄▄▄▄▄  ▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄     ▄▄▄▄▄▄ ▄▄   ▄▄ 
+█      ██   █       █       █   █   █      █  █ █  █
+█  ▄    █   █  ▄▄▄▄▄█    ▄  █   █   █  ▄   █  █▄█  █
+█ █ █   █   █ █▄▄▄▄▄█   █▄█ █   █   █ █▄█  █       █
+█ █▄█   █   █▄▄▄▄▄  █    ▄▄▄█   █▄▄▄█      █▄     ▄█
+█       █   █▄▄▄▄▄█ █   █   █       █  ▄   █ █   █  
+█▄▄▄▄▄▄██▄▄▄█▄▄▄▄▄▄▄█▄▄▄█   █▄▄▄▄▄▄▄█▄█ █▄▄█ █▄▄▄█  
+*/
 void mapDisplay()
 {
 	/*for( uint8_t s=0; s<NUMBEROFSTORIES; ++s )
