@@ -54,7 +54,7 @@ extern uint8_t level;  // ebene fläche
 #define POSMIDD 		120
 #define POSRIGHT 		150
 
-#define BASESPEED 		100
+#define BASESPEED 		120
 
 #define P 				30
 
@@ -65,6 +65,7 @@ extern uint8_t level;  // ebene fläche
 #define STEPFFORRIGHT 	73 // für zuhause
 #define STEPSFORLEFT 	73
 
+#define WAITINGTIME     5
 #define SEND            false
 
 // #define MAXWHITE 		220

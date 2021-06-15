@@ -12,8 +12,8 @@ char raspiRead()
 	counter = 0;
 	value = ' ';
 	Serial.print('j');
-	// return('e');
-	while(!Serial.available() && counter<600)
+	// return('h');
+	while(!Serial.available() && counter<(WAITINGTIME*100))
 	{
 		++counter;
 		LEDSetColor(YELLOW);

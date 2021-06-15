@@ -47,7 +47,7 @@ void stateChange()
 	if(sensorData[16] == 0) // PAUSE / LACK OF PROGRESS SWITCH
 	{
 		LEDSetColor(WHITE);
-		// Serial.println("pausing");
+		if(SEND){Serial.println("pausing");}
 		motorBrake();
 		mapSetBackToLastSilver();
 		state = 8;
@@ -57,7 +57,7 @@ void stateChange()
 	{
 		motorBrake();
 		motorResetAllSteps();
-		// Serial.println("resetting");
+		if(SEND){Serial.println("resetting");}
 		mapClear();
 		state = 8;
 		return;
@@ -175,8 +175,8 @@ void stateChange()
 				mapUpdateField();
 
 				uint8_t compasToGoTo = mapWhereToDrive();
-				// Serial.print("going: ");
-				// Serial.println(compasToGoTo);
+				if(SEND){Serial.print("!!! going to: ");
+				Serial.println(compasToGoTo);}
 				switch ( mapCompasToDirection( compasToGoTo ) ) {
 					case FRONT:
 					{
@@ -200,9 +200,9 @@ void stateChange()
 					}
 					case 5:
 					{
-						// Serial.println("ARE WE HOME JET????");
+						if(SEND){Serial.println("ARE WE HOME JET????");}
 						mapReturnToHome();
-						// Serial.println("SOON!!!!");
+						if(SEND){Serial.println("SOON!!!!");}
 						state = 1;
 						break;
 					}
@@ -601,7 +601,7 @@ void stateChange()
 				state = lastState;
 			}
 			
-			// Serial.println("RETURNING TO LAST STATE");
+			if(SEND){Serial.print("RETURNING TO LAST STATE: ");Serial.println(lastState);}
 			// zurück zu dem was er gerade gemacht hat
 			state = lastState;
 			break;
@@ -631,7 +631,7 @@ void stateChange()
 				visVictim = raspiRead();
 				if(visVictim != 'e' && !mapVictimIsAtCurrentField())
 				{
-					lastState = 4;
+					lastState = 1;
 					state = 6;
 					return;
 				}

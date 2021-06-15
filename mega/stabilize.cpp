@@ -6,7 +6,7 @@ void stabilize()
 	if(SEND){Serial.println("stabalizing...");}
 	motorBrake();
 	
-	for(int i=0; i<1000; ++i)
+	for(int i=0; i<2000; ++i)
 	{
 		/*if( wallExists(LEFT) )
 		{
@@ -39,7 +39,7 @@ void stabilize()
 			delay(500);
 		}*/
 		float factor;
-		factor = 0.01;
+		factor = 0.02;
 		if( wallExists(LEFT) )
 		{
 			int speed = factor*(sensorData[0]-sensorData[1])*(sensorData[0]-sensorData[1])*(sensorData[0]-sensorData[1]);
@@ -69,7 +69,7 @@ void stabilize()
 	// ausrichten an der hinteren Wand
 	if(wallExists(BACK))
 	{
-		float factor = 0.01;
+		float factor = 0.02;
 		int i = 0;
 		motorBrake();
 		// links: 	      rechts:
