@@ -48,11 +48,11 @@ extern uint8_t level;  // ebene fläche
 #define REST_OF_RAMP    30
 #define STEPSFORHALFARAMP   250
 
-#define VICTIMTEMP 		32
+#define VICTIMTEMP 		28
 
-#define POSLEFT 		70
+#define POSLEFT 		150
 #define POSMIDD 		120
-#define POSRIGHT 		150
+#define POSRIGHT 		70
 
 #define BASESPEED 		120
 
@@ -60,20 +60,22 @@ extern uint8_t level;  // ebene fläche
 
 #define STEPSFORONE 	135
 #define STEPSFORHALF 	90
-/*#define STEPFFORRIGHT 	70
-#define STEPSFORLEFT 	70*/
-#define STEPFFORRIGHT 	73 // für zuhause
-#define STEPSFORLEFT 	73
+#define STEPFFORRIGHT 	70
+#define STEPSFORLEFT 	70
+/*#define STEPFFORRIGHT 	73 // für zuhause
+#define STEPSFORLEFT 	73*/
 
 #define WAITINGTIME     5
 #define SEND            false
 
-// #define MAXWHITE 		220
-// #define MINWHITE 		100
+#define MAXTIMEINSTATE  3000
+
+#define MAXWHITE 		220
+#define MINWHITE 		110
 
 // zuhause:
-#define MAXWHITE 		240
-#define MINWHITE 		100
+// #define MAXWHITE 		240
+// #define MINWHITE 		100
 
 #define OFF 			0
 #define WHITE 			1

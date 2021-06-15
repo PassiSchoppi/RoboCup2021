@@ -11,6 +11,8 @@
 #include "raspi.h"
 
 int average;
+int timeSpentInOneStateB = 0;
+int timeSpentInOneState = 0;
 uint8_t lastState=0;
 uint8_t nextState=0;
 // bool seenVic = false;
@@ -31,6 +33,10 @@ uint8_t nothing()
 
 void stateChange()
 {
+	Serial.print("A: ");
+	Serial.print(timeSpentInOneState);
+	Serial.print(" B: ");
+	Serial.println(timeSpentInOneStateB);
 	// Serial.print("state: ");
 	// Serial.println(state);
 	// set back to last silver field
@@ -51,6 +57,8 @@ void stateChange()
 		motorBrake();
 		mapSetBackToLastSilver();
 		state = 8;
+		timeSpentInOneState = 0;
+		timeSpentInOneStateB = 0;
 		return;
 	}
 	if(sensorData[17] == 0)
@@ -60,6 +68,8 @@ void stateChange()
 		if(SEND){Serial.println("resetting");}
 		mapClear();
 		state = 8;
+		timeSpentInOneState = 0;
+		timeSpentInOneStateB = 0;
 		return;
 	}
 
@@ -71,6 +81,8 @@ void stateChange()
 			motorBrake();
 			state = nothing();
 			LEDSetColor(OFF);
+			timeSpentInOneState = 0;
+			timeSpentInOneStateB = 0;
 			break;
 		}
 		case 1:
@@ -84,7 +96,13 @@ void stateChange()
 			█       █   █▄▄▄█    █▄▄█   █▄▄▄▄▄█ █   █       █ █ █   █
 			█▄▄▄▄▄▄██▄▄▄▄▄▄▄█▄▄▄▄▄▄▄█▄▄▄█▄▄▄▄▄▄▄█▄▄▄█▄▄▄▄▄▄▄█▄█  █▄▄█
 			*/
+			++timeSpentInOneState;
+			if(timeSpentInOneState > 32750){
+				timeSpentInOneState = 0;
+				++timeSpentInOneStateB;
+			}
 			outOfField = false;
+			visVictim = 'e';
 			overHalfOfTurn = false;
 			motorBrake();
 			motorResetAllSteps();
@@ -119,6 +137,8 @@ void stateChange()
 				{
 					// rechts drehen dann gerade aus
 					// Serial.println("Rechts abbiegen!");
+					timeSpentInOneState = 0;
+					timeSpentInOneStateB = 0;
 					state = 2;
 					// mapMoveTo(RIGHT);
 					// Serial.println("checngin state to: RIGHT");
@@ -128,6 +148,8 @@ void stateChange()
 				{
 					// gerade aus
 					// Serial.println("Gerade aus!");
+					timeSpentInOneState = 0;
+					timeSpentInOneStateB = 0;
 					state = 3;
 					// mapMoveTo(FRONT);
 					// Serial.println("checngin state to: FRONT");
@@ -137,6 +159,8 @@ void stateChange()
 				{
 					// links drehen dann gerade aus
 					// Serial.println("Links abbiegen!");
+					timeSpentInOneState = 0;
+					timeSpentInOneStateB = 0;
 					state = 4;
 					// mapMoveTo(LEFT);
 					// Serial.println("checngin state to: LEFT");
@@ -148,6 +172,8 @@ void stateChange()
 				{
 					// 2x links drehen dann gerade aus
 					// Serial.println("Nach hinten!");
+					timeSpentInOneState = 0;
+					timeSpentInOneStateB = 0;
 					state = 5;
 					// mapMoveTo(BACK);
 					// Serial.println("checngin state to: BACK");
@@ -157,6 +183,8 @@ void stateChange()
 
 				// wenn überall Wände sind:::
 				state = 1;
+				timeSpentInOneState = 0;
+				timeSpentInOneStateB = 0;
 				frontIsBlack = false;
 				LEDSetColor(OFF);
 				break;
@@ -181,21 +209,29 @@ void stateChange()
 					case FRONT:
 					{
 						state = 3;
+						timeSpentInOneState = 0;
+						timeSpentInOneStateB = 0;
 						break;
 					}
 					case RIGHT:
 					{
 						state = 2;
+						timeSpentInOneState = 0;
+						timeSpentInOneStateB = 0;
 						break;
 					}
 					case BACK:
 					{
 						state = 5;
+						timeSpentInOneState = 0;
+						timeSpentInOneStateB = 0;
 						break;
 					}
 					case LEFT:
 					{
 						state = 4;
+						timeSpentInOneState = 0;
+						timeSpentInOneStateB = 0;
 						break;
 					}
 					case 5:
@@ -204,16 +240,10 @@ void stateChange()
 						mapReturnToHome();
 						if(SEND){Serial.println("SOON!!!!");}
 						state = 1;
+						timeSpentInOneState = 0;
+						timeSpentInOneStateB = 0;
 						break;
 					}
-				}
-
-				if( mapCompasToDirection( compasToGoTo ) == 5 )
-				{
-					// Serial.println("ARE WE HOME JET????");
-					mapReturnToHome();
-					// Serial.println("SOON!!!!");
-					state = 1;
 				}
 				// Serial.println("letzzz gooo");
 				mapDisplay();
@@ -232,6 +262,11 @@ void stateChange()
 			█   █  █ █   █  █▄▄█ █  █ █  █ █   █      █   █ █  █ █  █   █▄▄▄█ █ █   █   ▄▄▄▄▄█ █ █   █ █   █  █ █  ▄   █   █  █▄▄█ █  █ █  █ █   █  
 			█▄▄▄█  █▄█▄▄▄█▄▄▄▄▄▄▄█▄▄█ █▄▄█ █▄▄▄█      █▄▄▄█ █▄▄█ █▄▄█▄▄▄▄▄▄▄█▄█  █▄▄█  █▄▄▄▄▄▄▄█ █▄▄▄█ █▄▄▄█  █▄█▄█ █▄▄█▄▄▄█▄▄▄▄▄▄▄█▄▄█ █▄▄█ █▄▄▄█  
 			*/
+			++timeSpentInOneState;
+			if(timeSpentInOneState > 32750){
+				timeSpentInOneState = 0;
+				++timeSpentInOneStateB;
+			}
 			LEDSetColor(GREEN);
 			motorDriveTo(RIGHT, BASESPEED);
 			// drive RIGHT until average > STEPFFORRIGHT
@@ -242,9 +277,11 @@ void stateChange()
 			average = average/4;
 			if(average>STEPFFORRIGHT*0.45 && !overHalfOfTurn){
 				overHalfOfTurn = true;
+				LEDSetColor(RED);
+				delay(100);
 				mapOnlyTurnTo(RIGHT);
 			}
-			if( average > STEPFFORRIGHT )
+			if( average > STEPFFORRIGHT || timeSpentInOneState > MAXTIMEINSTATE )
 			{
 				motorResetAllSteps();
 				motorBrake();
@@ -256,10 +293,14 @@ void stateChange()
 					{
 						lastState = 3;
 						state = 6;
+						timeSpentInOneState = 0;
+						timeSpentInOneStateB = 0;
 						return;
 					}
 				}
 				// gerade aus
+				timeSpentInOneState = 0;
+				timeSpentInOneStateB = 0;
 				state = 3;
 			}
 			// wenn da ist ein Victim
@@ -267,6 +308,8 @@ void stateChange()
 			{
 				lastState = state;
 				state = 6;
+				timeSpentInOneState = 0;
+				timeSpentInOneStateB = 0;
 			}
 			break;
 		}
@@ -281,6 +324,11 @@ void stateChange()
 				█▄▄▄▄▄▄▄█ █▄▄▄█ █▄▄▄█  █▄█▄█ █▄▄█▄▄▄█▄▄▄▄▄▄▄█▄▄█ █▄▄█ █▄▄▄█  
 				*/
 			// Serial.println("driving straigt");
+			++timeSpentInOneState;
+			if(timeSpentInOneState > 32750){
+				timeSpentInOneState = 0;
+				++timeSpentInOneStateB;
+			}
 			LEDSetColor(BLUE);
 			motorDriveTo(FRONT, BASESPEED);
 			// gerade aus bis average > STEPSFORONE
@@ -307,15 +355,19 @@ void stateChange()
 				motorResetAllSteps();
 				// stabilize und dann neue entscheidung
 				state = 8;
+				timeSpentInOneState = 0;
+				timeSpentInOneStateB = 0;
 				break;
 			}
 						
 			// wenn zu nah an einer Wand oder obstacle
-			if( sensorData[7]>120 )
+			if( sensorData[7]>120 || timeSpentInOneState > MAXTIMEINSTATE )
 			{
 				// kurz zurück und dann neu entscheiden
 				motorBrake();
 				state = 9;
+				timeSpentInOneState = 0;
+				timeSpentInOneStateB = 0;
 				break;
 			}
 
@@ -330,6 +382,8 @@ void stateChange()
 
 					// ramp down
 					state = 11;
+					timeSpentInOneState = 0;
+					timeSpentInOneStateB = 0;
 					break;
 				}
 
@@ -341,16 +395,20 @@ void stateChange()
 
 					// ramp up
 					state = 12;
+					timeSpentInOneState = 0;
+					timeSpentInOneStateB = 0;
 					break;
 				}
 			}
 			
 			// wenn Victim
-			if( (sensorData[11]>VICTIMTEMP || sensorData[12]>VICTIMTEMP)&&!mapVictimIsAtCurrentField() )
+			if(sensorData[11]>VICTIMTEMP || sensorData[12]>VICTIMTEMP)
 			{
 				if(SEND){Serial.println("maybe victim ?");}
 				lastState = state;
 				state = 6;
+				timeSpentInOneState = 0;
+				timeSpentInOneStateB = 0;
 				break;
 			}
 
@@ -365,6 +423,8 @@ void stateChange()
 				}
 				frontIsBlack = true;
 				state = 10;
+				timeSpentInOneState = 0;
+				timeSpentInOneStateB = 0;
 				numberOfStepsBeforBlack = motorAverageSteps();
 				break;
 			}
@@ -381,6 +441,11 @@ void stateChange()
 			█       █   █▄▄▄█   █     █   █      █   █ █  █ █  █   █▄▄▄█ █ █   █   ▄▄▄▄▄█ █ █   █ █   █  █ █  ▄   █   █  █▄▄█ █  █ █  █ █   █  
 			█▄▄▄▄▄▄▄█▄▄▄▄▄▄▄█▄▄▄█     █▄▄▄█      █▄▄▄█ █▄▄█ █▄▄█▄▄▄▄▄▄▄█▄█  █▄▄█  █▄▄▄▄▄▄▄█ █▄▄▄█ █▄▄▄█  █▄█▄█ █▄▄█▄▄▄█▄▄▄▄▄▄▄█▄▄█ █▄▄█ █▄▄▄█  
 			*/
+			++timeSpentInOneState;
+			if(timeSpentInOneState > 32750){
+				timeSpentInOneState = 0;
+				++timeSpentInOneStateB;
+			}
 			LEDSetColor(TURQUOISE);
 			motorDriveTo(LEFT, BASESPEED);
 			// Left until average > STEPSFORLEFT
@@ -392,9 +457,11 @@ void stateChange()
 			average = average/4;
 			if(average>STEPSFORLEFT*0.45 && !overHalfOfTurn){
 				overHalfOfTurn = true;
+				LEDSetColor(RED);
+				delay(100);
 				mapOnlyTurnTo(LEFT);
 			}
-			if(average > STEPSFORLEFT)
+			if(average > STEPSFORLEFT || timeSpentInOneState > MAXTIMEINSTATE )
 			{
 				motorResetAllSteps();
 				stabilize();
@@ -406,10 +473,14 @@ void stateChange()
 					{
 						lastState = 3;
 						state = 6;
+						timeSpentInOneState = 0;
+						timeSpentInOneStateB = 0;
 						return;
 					}
 				}
 				// gerade aus
+				timeSpentInOneState = 0;
+				timeSpentInOneStateB = 0;
 				state = 3;
 			}
 			// wen victim
@@ -417,6 +488,8 @@ void stateChange()
 			{
 				lastState = state;
 				state = 6;
+				timeSpentInOneState = 0;
+				timeSpentInOneStateB = 0;
 			}
 			break;
 		}
@@ -430,6 +503,11 @@ void stateChange()
 			█ █▄▄▄▄▄█   ▄   █  █       █   █▄▄▄█   █     █   █      █   █ █  █ █  █   █▄▄▄█ █ █   █   ▄▄▄▄▄█ █ █   █ █   █  █ █  ▄   █   █  █▄▄█ █  █ █  █ █   █  
 			█▄▄▄▄▄▄▄█▄▄█ █▄▄█  █▄▄▄▄▄▄▄█▄▄▄▄▄▄▄█▄▄▄█     █▄▄▄█      █▄▄▄█ █▄▄█ █▄▄█▄▄▄▄▄▄▄█▄█  █▄▄█  █▄▄▄▄▄▄▄█ █▄▄▄█ █▄▄▄█  █▄█▄█ █▄▄█▄▄▄█▄▄▄▄▄▄▄█▄▄█ █▄▄█ █▄▄▄█  
 			*/
+			++timeSpentInOneState;
+			if(timeSpentInOneState > 32750){
+				timeSpentInOneState = 0;
+				++timeSpentInOneStateB;
+			}
 			LEDSetColor(TURQUOISE);
 			motorDriveTo(LEFT, BASESPEED);
 			// left bis average = STEPSFORLEFT
@@ -441,9 +519,11 @@ void stateChange()
 			average = average/4;
 			if(average>STEPSFORLEFT*0.45 && !overHalfOfTurn){
 				overHalfOfTurn = true;
+				LEDSetColor(RED);
+				delay(100);
 				mapOnlyTurnTo(LEFT);
 			}
-			if(average > STEPSFORLEFT)
+			if(average > STEPSFORLEFT || timeSpentInOneState > MAXTIMEINSTATE )
 			{
 				motorResetAllSteps();
 				stabilize();
@@ -455,17 +535,23 @@ void stateChange()
 					{
 						lastState = 4;
 						state = 6;
+						timeSpentInOneState = 0;
+						timeSpentInOneStateB = 0;
 						return;
 					}
 				}
 				// dann left und dann gerade aus
 				state = 4;
+				timeSpentInOneState = 0;
+				timeSpentInOneStateB = 0;
 			}
 			// wenn victim
 			if( sensorData[11]>VICTIMTEMP || sensorData[12]>VICTIMTEMP)
 			{
 				lastState = state;
 				state = 6;
+				timeSpentInOneState = 0;
+				timeSpentInOneStateB = 0;
 			}
 			break;
 		}
@@ -503,6 +589,8 @@ void stateChange()
 						if(SEND){Serial.println("DIDNT FOUND SECOND TEST");
 						Serial.println("RETURNING TO LAST STATE");}
 						state = lastState;
+						timeSpentInOneState = 0;
+						timeSpentInOneStateB = 0;
 						break;
 					}
 				}else{
@@ -515,8 +603,12 @@ void stateChange()
 						victimIsLeftNotRight = true;
 					}else{
 						if(SEND){Serial.println("NONE OF THE LETTERS WERE GIVEN");
-						Serial.println("RETURNING TO LAST STATE");}
+						Serial.println("RETURNING TO LAST STATE. The letter was:");
+						Serial.println(visVictim);}
 						state = lastState;
+						timeSpentInOneState = 0;
+
+						timeSpentInOneStateB = 0;
 						break;
 					}
 					
@@ -527,6 +619,9 @@ void stateChange()
 				{
 					if(SEND){Serial.println("victim not on a wall");}
 					state = lastState;
+					timeSpentInOneState = 0;
+
+					timeSpentInOneStateB = 0;
 					return;
 				}
 				
@@ -567,6 +662,9 @@ void stateChange()
 						}else{
 							if(SEND){Serial.println("SOMETHING WENT WRONG");}
 							state = lastState;
+							timeSpentInOneState = 0;
+
+							timeSpentInOneStateB = 0;
 							return;
 						}
 						
@@ -599,11 +697,17 @@ void stateChange()
 				Serial.println("returning to last state:");
 				Serial.println(lastState);}
 				state = lastState;
+				timeSpentInOneState = 0;
+
+				timeSpentInOneStateB = 0;
 			}
 			
 			if(SEND){Serial.print("RETURNING TO LAST STATE: ");Serial.println(lastState);}
 			// zurück zu dem was er gerade gemacht hat
 			state = lastState;
+			timeSpentInOneState = 0;
+
+			timeSpentInOneStateB = 0;
 			break;
 		}
 		case 7:
@@ -621,6 +725,12 @@ void stateChange()
 				 ▄▄▄▄▄█ █ █   █ █  ▄   █ █▄█   █   █       █   █ █▄▄▄▄▄█   █▄▄▄ 
 				█▄▄▄▄▄▄▄█ █▄▄▄█ █▄█ █▄▄█▄▄▄▄▄▄▄█▄▄▄█▄▄▄▄▄▄▄█▄▄▄█▄▄▄▄▄▄▄█▄▄▄▄▄▄▄█
 				*/
+			++timeSpentInOneState;
+			if(timeSpentInOneState > 32750){
+				timeSpentInOneState = 0;
+
+				++timeSpentInOneStateB;
+			}
 			// Serial.println("stabalizing");
 			LEDSetColor(PINK);
 			motorBrake();
@@ -633,9 +743,15 @@ void stateChange()
 				{
 					lastState = 1;
 					state = 6;
+					timeSpentInOneState = 0;
+
+					timeSpentInOneStateB = 0;
 					return;
 				}
 			}
+			timeSpentInOneState = 0;
+
+			timeSpentInOneStateB = 0;
 			state = 1;
 			// Serial.print("state: ");
 			// Serial.println(*state);
@@ -656,11 +772,21 @@ void stateChange()
 			motorBrake();
 			motorResetAllSteps();
 			motorDriveTo(BACK, BASESPEED);
-			while(motorStepsMade(0)<15){}
+			while(motorStepsMade(0)<15 && timeSpentInOneState < MAXTIMEINSTATE ){
+				++timeSpentInOneState;
+				if(timeSpentInOneState > 32750){
+					timeSpentInOneState = 0;
+
+					++timeSpentInOneStateB;
+				}
+			}
 			motorResetAllSteps();
 			motorBrake();
 			// stabilize und dann neu entscheiden
 			state = 8;
+			timeSpentInOneState = 0;
+
+			timeSpentInOneStateB = 0;
 			break;
 		}
 		case 10:
@@ -675,12 +801,21 @@ void stateChange()
 				*/
 			motorBrake();
 			motorDriveTo(BACK, BASESPEED);
-			while(motorStepsMade(0) < (numberOfStepsBeforBlack * 2)){}
+			while(motorStepsMade(0) < (numberOfStepsBeforBlack * 2) && timeSpentInOneStateB < MAXTIMEINSTATE ){
+				++timeSpentInOneState;
+				if(timeSpentInOneState > 32750){
+					timeSpentInOneState = 0;
+
+					++timeSpentInOneStateB;
+				}
+			}
 			numberOfStepsBeforBlack = 0;
 			motorResetAllSteps();
 			motorBrake();
 			// stabilize und dann neu entscheiden
 			state = 8;
+			timeSpentInOneState = 0;
+			timeSpentInOneStateB = 0;
 			break;
 		}
 		case 11:
@@ -694,6 +829,12 @@ void stateChange()
 			█   █  █ █  ▄   █ ██▄██ █   █      █       █       █   ▄   █ █ █   █
 			█▄▄▄█  █▄█▄█ █▄▄█▄█   █▄█▄▄▄█      █▄▄▄▄▄▄██▄▄▄▄▄▄▄█▄▄█ █▄▄█▄█  █▄▄█
 			*/
+			++timeSpentInOneState;
+			if(timeSpentInOneState > 32750){
+				timeSpentInOneState = 0;
+
+				++timeSpentInOneStateB;
+			}
 			if(overHalfOfRamp){
 				LEDSetColor(WHITE);
 			}else
@@ -712,6 +853,9 @@ void stateChange()
 			// when level
 			if( sensorData[4] > level - RAMP_THRESHOLD )
 			{
+				timeSpentInOneState = 0;
+
+				timeSpentInOneStateB = 0;
 				// kurz vorwärts fahren dann neu entscheiden
 				state = 13;
 				if(!overHalfOfRamp){
@@ -724,6 +868,9 @@ void stateChange()
 			{
 				lastState = state;
 				state = 6;
+				timeSpentInOneState = 0;
+
+				timeSpentInOneStateB = 0;
 			}
 			break;
 		}
@@ -738,6 +885,12 @@ void stateChange()
 			█   █  █ █  ▄   █ ██▄██ █   █      █       █   █    
 			█▄▄▄█  █▄█▄█ █▄▄█▄█   █▄█▄▄▄█      █▄▄▄▄▄▄▄█▄▄▄█    
 			*/
+			++timeSpentInOneState;
+			if(timeSpentInOneState > 32750){
+				timeSpentInOneState = 0;
+
+				++timeSpentInOneStateB;
+			}
 			if(overHalfOfRamp){
 				LEDSetColor(WHITE);
 				motorDriveTo(RAMPSTATE, BASESPEED*1.5);
@@ -763,6 +916,9 @@ void stateChange()
 			// when level
 			if( sensorData[4] < level + RAMP_THRESHOLD )
 			{
+				timeSpentInOneState = 0;
+
+				timeSpentInOneStateB = 0;
 				// kurz vorwärts fahren dann neu entscheiden
 				state = 13;
 				if(!overHalfOfRamp){
@@ -773,6 +929,9 @@ void stateChange()
 			// wenn victim
 			if( sensorData[11]>VICTIMTEMP || sensorData[12]>VICTIMTEMP)
 			{
+				timeSpentInOneState = 0;
+
+				timeSpentInOneStateB = 0;
 				lastState = state;
 				state = 6;
 			}
@@ -784,9 +943,18 @@ void stateChange()
 			motorBrake();
 			motorResetAllSteps();
 			motorDriveTo(FRONT, BASESPEED);
-			while(motorStepsMade(0)<REST_OF_RAMP){}
+			while(motorStepsMade(0)<REST_OF_RAMP && timeSpentInOneState < MAXTIMEINSTATE ){
+				++timeSpentInOneState;
+				if(timeSpentInOneState > 32750){
+					timeSpentInOneState = 0;
+					++timeSpentInOneStateB;
+				}
+			}
 			motorResetAllSteps();
 			motorBrake();
+			timeSpentInOneState = 0;
+
+			timeSpentInOneStateB = 0;
 			// stabilize und dann neu entscheiden
 			state = 8;
 			break;

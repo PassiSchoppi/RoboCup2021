@@ -53,7 +53,17 @@ void loop()
 	// stabilize();
 	// raspiRead();
 	stateChange();
-	// output();
+	
+	/*kitdropperSetTo(POSMIDD);
+	delay(1000);
+	kitdropperSetTo(POSLEFT);
+	delay(1000);
+	kitdropperSetTo(POSMIDD);
+	delay(1000);
+	kitdropperSetTo(POSRIGHT);
+	delay(1000);*/
+
+	output();
 	// mapDisplay();
 	// gyroInterrupt();
 	// Serial.print(gyroX());Serial.print(" ");
