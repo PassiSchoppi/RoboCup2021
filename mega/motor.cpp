@@ -197,13 +197,11 @@ void motorDriveTo(uint8_t direction, int speed)
 				if(sensorData[6]<DISTANCETOWALL-moreDistanceToWall && sensorData[7]<DISTANCETOWALL-moreDistanceToWall && sensorData[8]>DISTANCETOWALL+moreDistanceToWall)
 				{
 					targetWallDistance = PERFECTDISTTOW * 0; // ( 1 - avoidObstacleBy);
-					// Serial.println("obstacle on right");
 				}
 				// wenn nur vorne links ein obstacle
 				if(sensorData[6]>DISTANCETOWALL+moreDistanceToWall && sensorData[7]<DISTANCETOWALL-moreDistanceToWall && sensorData[8]<DISTANCETOWALL-moreDistanceToWall)
 				{
 					targetWallDistance = PERFECTDISTTOW * 3; // ( 1 + avoidObstacleBy);
-					// Serial.println("obstacle on left");
 				}
 				errorP = (int)(sensorData[2]) - targetWallDistance;
 				sum = (int)(errorP * kP);

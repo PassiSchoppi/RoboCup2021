@@ -48,7 +48,7 @@ extern uint8_t level;  // ebene fläche
 #define REST_OF_RAMP    30
 #define STEPSFORHALFARAMP   250
 
-#define VICTIMTEMP 		28
+#define VICTIMTEMP 		32
 
 #define POSLEFT 		150
 #define POSMIDD 		120
@@ -71,7 +71,7 @@ extern uint8_t level;  // ebene fläche
 #define MAXTIMEINSTATE  3000
 
 #define MAXWHITE 		220
-#define MINWHITE 		110
+#define MINWHITE 		100
 
 // zuhause:
 // #define MAXWHITE 		240

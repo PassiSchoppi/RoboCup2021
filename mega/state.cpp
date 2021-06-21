@@ -25,6 +25,7 @@ bool frontIsBlack = false;
 int numberOfStepsBeforBlack = 0;
 char visVictim = 'e';
 uint8_t numberOfKits = 0;
+bool obstacleSum = false;
 
 uint8_t nothing()
 {
@@ -33,10 +34,10 @@ uint8_t nothing()
 
 void stateChange()
 {
-	Serial.print("A: ");
+	/*Serial.print("A: ");
 	Serial.print(timeSpentInOneState);
 	Serial.print(" B: ");
-	Serial.println(timeSpentInOneStateB);
+	Serial.println(timeSpentInOneStateB);*/
 	// Serial.print("state: ");
 	// Serial.println(state);
 	// set back to last silver field
@@ -103,6 +104,7 @@ void stateChange()
 			}
 			outOfField = false;
 			visVictim = 'e';
+			obstacleSum = false;
 			overHalfOfTurn = false;
 			motorBrake();
 			motorResetAllSteps();
@@ -349,6 +351,9 @@ void stateChange()
 			//8   FR,
 			int plusToDis;
 			plusToDis = 13;
+			if(obstacleSum){
+				average -= 25;
+			}
 			if( average>STEPSFORONE || (sensorData[6]>PERFECTDISTTOW-plusToDis && sensorData[7]>PERFECTDISTTOW-plusToDis && sensorData[8]>PERFECTDISTTOW-plusToDis) )
 			{
 				motorBrake();
@@ -358,6 +363,19 @@ void stateChange()
 				timeSpentInOneState = 0;
 				timeSpentInOneStateB = 0;
 				break;
+			}
+
+			int moreDistanceToWall;
+			moreDistanceToWall = 0;
+
+			if(!obstacleSum && sensorData[6]<DISTANCETOWALL-moreDistanceToWall && sensorData[7]<DISTANCETOWALL-moreDistanceToWall && sensorData[8]>DISTANCETOWALL+moreDistanceToWall)
+			{
+				obstacleSum = true;
+			}
+			// wenn nur vorne links ein obstacle
+			if(!obstacleSum && sensorData[6]>DISTANCETOWALL+moreDistanceToWall && sensorData[7]<DISTANCETOWALL-moreDistanceToWall && sensorData[8]<DISTANCETOWALL-moreDistanceToWall)
+			{
+				obstacleSum = true;
 			}
 						
 			// wenn zu nah an einer Wand oder obstacle

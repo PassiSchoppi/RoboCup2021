@@ -16,14 +16,14 @@ void output()
 	Serial.print("Motor:");
 	Serial.print(" VL: ");Serial.print(motorStepsMade(0));
 	Serial.print(" HL: ");Serial.print(motorStepsMade(1));
-	Serial.print(" VR: ");Serial.print(motorStepsMade(2));
+	Serial.print(" VR: ");Serial.println(motorStepsMade(2));
 	Serial.print(" HR: ");Serial.println(motorStepsMade(3));
 	// # SIDE SHARPS #
 	Serial.print("Sharps:");
-	Serial.print(" LV: ");Serial.print(sensorData[0]);
+	*/Serial.print(" LV: ");Serial.print(sensorData[0]);
 	Serial.print(" LH: ");Serial.print(sensorData[1]);
 	Serial.print(" RV: ");Serial.print(sensorData[2]);
-	Serial.print(" RH: ");Serial.println(sensorData[3]);
+	Serial.print(" RH: ");Serial.println(sensorData[3]);/*
 	Serial.print(" FL: ");Serial.print(sensorData[6]);
 	Serial.print(" FC: ");Serial.print(sensorData[7]);
 	Serial.print(" FR: ");Serial.println(sensorData[8]);
@@ -36,8 +36,8 @@ void output()
 	Serial.print(" Z: ");Serial.println(sensorData[5]);
 	// # MELEXIS #
 	Serial.print("Melexis:");
-	*/Serial.print(" L: ");Serial.print(sensorData[11]);
-	Serial.print(" R: ");Serial.println(sensorData[12]);/*
+	Serial.print(" L: ");Serial.print(sensorData[11]);
+	Serial.print(" R: ");Serial.println(sensorData[12]);
 	// # LIGHT #
 	Serial.print("Light:");
 	Serial.print(" R: ");Serial.print(sensorData[13]);
