@@ -2,11 +2,11 @@
 #define CONFIG_H
 
 // ## SETTINGS ##
-#define DOBLACKTILEDETECTION 	true
+#define DOBLACKTILEDETECTION 	false
 #define DOMAP 					true
-#define DODRIVINGCORECTION 		true
+#define DODRIVINGCORECTION 		false
 #define CORECTIONAGGRESSIVE 	1
-#define DORAMPDETECTION         true
+#define DORAMPDETECTION         false
 #define DORAMPONMAP             false
 #define SMOOTHENSENSORDATA 		5 // 15
 
@@ -48,10 +48,10 @@ extern uint8_t level;  // ebene fläche
 #define REST_OF_RAMP    30
 #define STEPSFORHALFARAMP   250
 
-#define VICTIMTEMP 		32
+#define VICTIMTEMP 		-1
 
 #define POSLEFT 		150
-#define POSMIDD 		120
+#define POSMIDD 		115
 #define POSRIGHT 		70
 
 #define BASESPEED 		120
@@ -65,8 +65,8 @@ extern uint8_t level;  // ebene fläche
 /*#define STEPFFORRIGHT 	73 // für zuhause
 #define STEPSFORLEFT 	73*/
 
-#define WAITINGTIME     5
-#define SEND            false
+#define WAITINGTIME     0
+#define SEND            true
 
 #define MAXTIMEINSTATE  3000
 

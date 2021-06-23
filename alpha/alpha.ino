@@ -47,9 +47,9 @@ void loop()
 	if(Serial.available())
 	{
 		kitdropperDeg = Serial.read();
+		servoPulse(3, kitdropperDeg);
+		delay(50);
 	}
-
-	servoPulse(3, kitdropperDeg);
 }
 
 void servoPulse (int servo, int angle)

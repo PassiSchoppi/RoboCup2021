@@ -305,14 +305,6 @@ void stateChange()
 				timeSpentInOneStateB = 0;
 				state = 3;
 			}
-			// wenn da ist ein Victim
-			if( sensorData[11]>VICTIMTEMP || sensorData[12]>VICTIMTEMP)
-			{
-				lastState = state;
-				state = 6;
-				timeSpentInOneState = 0;
-				timeSpentInOneStateB = 0;
-			}
 			break;
 		}
 		case 3:
@@ -365,18 +357,21 @@ void stateChange()
 				break;
 			}
 
-			int moreDistanceToWall;
-			moreDistanceToWall = 0;
-
+			/*int moreDistanceToWall;
+			moreDistanceToWall = 15;
+			
+			// obstacle only on right
 			if(!obstacleSum && sensorData[6]<DISTANCETOWALL-moreDistanceToWall && sensorData[7]<DISTANCETOWALL-moreDistanceToWall && sensorData[8]>DISTANCETOWALL+moreDistanceToWall)
 			{
-				obstacleSum = true;
+				state = 15;
+				break;
 			}
 			// wenn nur vorne links ein obstacle
 			if(!obstacleSum && sensorData[6]>DISTANCETOWALL+moreDistanceToWall && sensorData[7]<DISTANCETOWALL-moreDistanceToWall && sensorData[8]<DISTANCETOWALL-moreDistanceToWall)
 			{
-				obstacleSum = true;
-			}
+				state = 16;
+				break;
+			}*/
 						
 			// wenn zu nah an einer Wand oder obstacle
 			if( sensorData[7]>120 || timeSpentInOneState > MAXTIMEINSTATE )
@@ -419,17 +414,6 @@ void stateChange()
 				}
 			}
 			
-			// wenn Victim
-			if(sensorData[11]>VICTIMTEMP || sensorData[12]>VICTIMTEMP)
-			{
-				if(SEND){Serial.println("maybe victim ?");}
-				lastState = state;
-				state = 6;
-				timeSpentInOneState = 0;
-				timeSpentInOneStateB = 0;
-				break;
-			}
-
 			// if black tile
 			if( sensorData[13]>MAXWHITE || sensorData[14]>MAXWHITE )
 			{
@@ -501,14 +485,6 @@ void stateChange()
 				timeSpentInOneStateB = 0;
 				state = 3;
 			}
-			// wen victim
-			if( sensorData[11]>VICTIMTEMP || sensorData[12]>VICTIMTEMP)
-			{
-				lastState = state;
-				state = 6;
-				timeSpentInOneState = 0;
-				timeSpentInOneStateB = 0;
-			}
 			break;
 		}
 		case 5:
@@ -563,14 +539,6 @@ void stateChange()
 				timeSpentInOneState = 0;
 				timeSpentInOneStateB = 0;
 			}
-			// wenn victim
-			if( sensorData[11]>VICTIMTEMP || sensorData[12]>VICTIMTEMP)
-			{
-				lastState = state;
-				state = 6;
-				timeSpentInOneState = 0;
-				timeSpentInOneStateB = 0;
-			}
 			break;
 		}
 		case 6:
@@ -591,48 +559,28 @@ void stateChange()
 			// Serial.print("FOUND");
 
 			bool victimIsLeftNotRight = false;
-			if ( !mapVictimIsAtCurrentField() )
+			if ( mapVictimIsAtCurrentField() != 69 )
 			{
-				if(SEND){Serial.println(" NEW VICTIM");}
+				// if(SEND){Serial.println(" NEW VICTIM");}
 				// zweites mal testen und seite herausfinden
-				if(visVictim == 'e'){
-					
-					if ( sensorData[11]>VICTIMTEMP )
-					{
-						victimIsLeftNotRight = true;
-					}else if (sensorData[12]>VICTIMTEMP)
-					{
-						victimIsLeftNotRight = false;
-					}else{
-						if(SEND){Serial.println("DIDNT FOUND SECOND TEST");
-						Serial.println("RETURNING TO LAST STATE");}
-						state = lastState;
-						timeSpentInOneState = 0;
-						timeSpentInOneStateB = 0;
-						break;
-					}
-				}else{
-					if(visVictim == 'H' || visVictim == 'U' || visVictim == 'S' || 
-					   visVictim == 'G' || visVictim == 'Y' || visVictim == 'R'){
-						   victimIsLeftNotRight = false;
-					}else if (visVictim == 'h' || visVictim == 'u' || visVictim == 's' || 
-					   		  visVictim == 'g' || visVictim == 'y' || visVictim == 'r')
-					{
-						victimIsLeftNotRight = true;
-					}else{
-						if(SEND){Serial.println("NONE OF THE LETTERS WERE GIVEN");
-						Serial.println("RETURNING TO LAST STATE. The letter was:");
-						Serial.println(visVictim);}
-						state = lastState;
-						timeSpentInOneState = 0;
 
-						timeSpentInOneStateB = 0;
-						break;
-					}
-					
+				if(mapDirectionToCompas(RIGHT) == mapVictimAtWall())
+				{
+					victimIsLeftNotRight = false;
+				}else if (mapDirectionToCompas(LEFT) == mapVictimAtWall())
+				{
+					victimIsLeftNotRight = true;
+				}
+				else{
+					// if(SEND){Serial.println("DIDNT FOUND SECOND TEST");
+					// Serial.println("RETURNING TO LAST STATE");}
+					state = lastState;
+					timeSpentInOneState = 0;
+					timeSpentInOneStateB = 0;
+					break;
 				}
 
-				if((victimIsLeftNotRight && !wallExists(LEFT)) ||
+				/*if((victimIsLeftNotRight && !wallExists(LEFT)) ||
 				   (!victimIsLeftNotRight && !wallExists(RIGHT)))
 				{
 					if(SEND){Serial.println("victim not on a wall");}
@@ -641,7 +589,9 @@ void stateChange()
 
 					timeSpentInOneStateB = 0;
 					return;
-				}
+				}*/
+
+				// turn left/right 45 deg
 				
 				// sekunde 1
 				motorBrake();
@@ -662,8 +612,8 @@ void stateChange()
 				
 				// abwurf only if switch to run program is ON
 				if(sensorData[16]){
-					numberOfKits = 1;
-					if(visVictim != 'e'){
+					numberOfKits = mapVictimIsAtCurrentField();
+					/*if(visVictim != 'e'){
 						if(visVictim == 'h' || visVictim == 'H'){
 							numberOfKits = 3;
 						}else if (visVictim == 's' || visVictim == 'S')
@@ -686,34 +636,100 @@ void stateChange()
 							return;
 						}
 						
-					}
+					}*/
 
 					// mark current field as victim
-					mapVictimNewAtCurrentField();
+					
+					Serial.print("kits at this field: ");Serial.println(numberOfKits);
 
 					for(uint8_t i = 0; i < numberOfKits; i++){
-						if(SEND){Serial.println("KIT");}
+						//if(SEND){
+							// Serial.println("KIT");
+						//}
 
-						kitdropperSetTo(POSMIDD);
+						kitdropperSetTo(POSMIDD+5);
+						kitdropperSetTo(POSMIDD-5);
+						kitdropperSetTo(POSMIDD+5);
+						kitdropperSetTo(POSMIDD-5);
+						kitdropperSetTo(POSMIDD+5);
+						kitdropperSetTo(POSMIDD-5);
+						kitdropperSetTo(POSMIDD+5);
+						kitdropperSetTo(POSMIDD-5);
+						kitdropperSetTo(POSMIDD+5);
+						kitdropperSetTo(POSMIDD-5);
+						kitdropperSetTo(POSMIDD+5);
+						kitdropperSetTo(POSMIDD-5);
+						kitdropperSetTo(POSMIDD+5);
+						kitdropperSetTo(POSMIDD-5);
+						kitdropperSetTo(POSMIDD+5);
+						kitdropperSetTo(POSMIDD-5);
 						delay(1000);
+
+						mapVictimNewAtCurrentField();
 						
 						if( victimIsLeftNotRight )
 						{
-							kitdropperSetTo(POSLEFT);
+							kitdropperSetTo(POSLEFT+5);
+							kitdropperSetTo(POSLEFT-5);
+							kitdropperSetTo(POSLEFT+5);
+							kitdropperSetTo(POSLEFT-5);
+							kitdropperSetTo(POSLEFT+5);
+							kitdropperSetTo(POSLEFT-5);
+							kitdropperSetTo(POSLEFT+5);
+							kitdropperSetTo(POSLEFT-5);
+							kitdropperSetTo(POSLEFT+5);
+							kitdropperSetTo(POSLEFT-5);
+							kitdropperSetTo(POSLEFT+5);
+							kitdropperSetTo(POSLEFT-5);
+							kitdropperSetTo(POSLEFT+5);
+							kitdropperSetTo(POSLEFT-5);
+							kitdropperSetTo(POSLEFT+5);
+							kitdropperSetTo(POSLEFT-5);
 						}
 						else
 						{
-							kitdropperSetTo(POSRIGHT);
+							kitdropperSetTo(POSRIGHT+5);
+							kitdropperSetTo(POSRIGHT-5);
+							kitdropperSetTo(POSRIGHT+5);
+							kitdropperSetTo(POSRIGHT-5);
+							kitdropperSetTo(POSRIGHT+5);
+							kitdropperSetTo(POSRIGHT-5);
+							kitdropperSetTo(POSRIGHT+5);
+							kitdropperSetTo(POSRIGHT-5);
+							kitdropperSetTo(POSRIGHT+5);
+							kitdropperSetTo(POSRIGHT-5);
+							kitdropperSetTo(POSRIGHT+5);
+							kitdropperSetTo(POSRIGHT-5);
+							kitdropperSetTo(POSRIGHT+5);
+							kitdropperSetTo(POSRIGHT-5);
+							kitdropperSetTo(POSRIGHT+5);
+							kitdropperSetTo(POSRIGHT-5);
 						}
 						// 2 sekunden warten und dann zurück zu mitte
 						delay(2000);
-						kitdropperSetTo(POSMIDD);
+						kitdropperSetTo(POSMIDD+5);
+						kitdropperSetTo(POSMIDD-5);
+						kitdropperSetTo(POSMIDD+5);
+						kitdropperSetTo(POSMIDD-5);
+						kitdropperSetTo(POSMIDD+5);
+						kitdropperSetTo(POSMIDD-5);
+						kitdropperSetTo(POSMIDD+5);
+						kitdropperSetTo(POSMIDD-5);
+						kitdropperSetTo(POSMIDD+5);
+						kitdropperSetTo(POSMIDD-5);
+						kitdropperSetTo(POSMIDD+5);
+						kitdropperSetTo(POSMIDD-5);
+						kitdropperSetTo(POSMIDD+5);
+						kitdropperSetTo(POSMIDD-5);
+						kitdropperSetTo(POSMIDD+5);
+						kitdropperSetTo(POSMIDD-5);
+						delay(2000);
 					}
 				}
 			}else{
-				if(SEND){Serial.println(" OLD VICTIM");
-				Serial.println("returning to last state:");
-				Serial.println(lastState);}
+				// if(SEND){Serial.println(" OLD VICTIM");
+				// Serial.println("returning to last state:");
+				// Serial.println(lastState);}
 				state = lastState;
 				timeSpentInOneState = 0;
 
@@ -756,15 +772,13 @@ void stateChange()
 			motorBrake();
 			motorResetAllSteps();
 			if(wallExists(LEFT) || wallExists(RIGHT)){
-				visVictim = raspiRead();
-				if(visVictim != 'e' && !mapVictimIsAtCurrentField())
+				// wenn victim
+				if( sensorData[11]>VICTIMTEMP || sensorData[12]>VICTIMTEMP)
 				{
-					lastState = 1;
+					lastState = state;
 					state = 6;
 					timeSpentInOneState = 0;
-
 					timeSpentInOneStateB = 0;
-					return;
 				}
 			}
 			timeSpentInOneState = 0;
@@ -853,6 +867,7 @@ void stateChange()
 
 				++timeSpentInOneStateB;
 			}
+			if(SEND){Serial.println("ramp down...");}
 			if(overHalfOfRamp){
 				LEDSetColor(WHITE);
 			}else
@@ -909,6 +924,7 @@ void stateChange()
 
 				++timeSpentInOneStateB;
 			}
+			if(SEND){Serial.println("ramp up...");}
 			if(overHalfOfRamp){
 				LEDSetColor(WHITE);
 				motorDriveTo(RAMPSTATE, BASESPEED*1.5);
@@ -975,6 +991,74 @@ void stateChange()
 			timeSpentInOneStateB = 0;
 			// stabilize und dann neu entscheiden
 			state = 8;
+			break;
+		}
+		case 14:
+		{
+			/*
+			 ▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄     ▄▄▄▄▄▄▄ 
+			█       █  ▄    █       █       █      █       █   █   █       █
+			█   ▄   █ █▄█   █  ▄▄▄▄▄█▄     ▄█  ▄   █       █   █   █    ▄▄▄█
+			█  █ █  █       █ █▄▄▄▄▄  █   █ █ █▄█  █     ▄▄█   █   █   █▄▄▄ 
+			█  █▄█  █  ▄   ██▄▄▄▄▄  █ █   █ █      █    █  █   █▄▄▄█    ▄▄▄█
+			█       █ █▄█   █▄▄▄▄▄█ █ █   █ █  ▄   █    █▄▄█       █   █▄▄▄ 
+			█▄▄▄▄▄▄▄█▄▄▄▄▄▄▄█▄▄▄▄▄▄▄█ █▄▄▄█ █▄█ █▄▄█▄▄▄▄▄▄▄█▄▄▄▄▄▄▄█▄▄▄▄▄▄▄█ on left
+			*/
+			// drive back a bit
+			motorBrake();
+			int stepsAtBegining;
+			stepsAtBegining = motorAverageSteps();
+			motorResetAllSteps();
+			motorDriveTo(BACK, BASESPEED);
+			while(motorAverageSteps()<stepsAtBegining){
+			}
+			motorBrake();
+			motorDriveTo(RIGHT, BASESPEED);
+			motorResetAllSteps();
+			while(motorAverageSteps()<(stepsAtBegining/4)+10){
+			}
+			motorBrake();
+			motorDriveTo(FRONT, BASESPEED);
+			motorResetAllSteps();
+			while(motorAverageSteps()<stepsAtBegining){
+			}
+			motorBrake();
+			motorResetAllSteps();
+			state = 3;
+			break;
+		}
+		case 15:
+		{
+			/*
+			 ▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄     ▄▄▄▄▄▄▄ 
+			█       █  ▄    █       █       █      █       █   █   █       █
+			█   ▄   █ █▄█   █  ▄▄▄▄▄█▄     ▄█  ▄   █       █   █   █    ▄▄▄█
+			█  █ █  █       █ █▄▄▄▄▄  █   █ █ █▄█  █     ▄▄█   █   █   █▄▄▄ 
+			█  █▄█  █  ▄   ██▄▄▄▄▄  █ █   █ █      █    █  █   █▄▄▄█    ▄▄▄█
+			█       █ █▄█   █▄▄▄▄▄█ █ █   █ █  ▄   █    █▄▄█       █   █▄▄▄ 
+			█▄▄▄▄▄▄▄█▄▄▄▄▄▄▄█▄▄▄▄▄▄▄█ █▄▄▄█ █▄█ █▄▄█▄▄▄▄▄▄▄█▄▄▄▄▄▄▄█▄▄▄▄▄▄▄█ on right
+			*/
+			// drive back a bit
+			motorBrake();
+			int stepsAtBegining;
+			stepsAtBegining = motorAverageSteps();
+			motorResetAllSteps();
+			motorDriveTo(BACK, BASESPEED);
+			while(motorAverageSteps()<stepsAtBegining){
+			}
+			motorBrake();
+			motorDriveTo(LEFT, BASESPEED);
+			motorResetAllSteps();
+			while(motorAverageSteps()<(stepsAtBegining/4)+10){
+			}
+			motorBrake();
+			motorDriveTo(FRONT, BASESPEED);
+			motorResetAllSteps();
+			while(motorAverageSteps()<stepsAtBegining){
+			}
+			motorBrake();
+			motorResetAllSteps();
+			state = 3;
 			break;
 		}
 	}

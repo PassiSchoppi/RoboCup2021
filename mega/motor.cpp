@@ -193,16 +193,6 @@ void motorDriveTo(uint8_t direction, int speed)
 			//3   RB,			
 			if(wallExists(RIGHT))
 			{
-				// wenn nur vorne rechts ein obstacle
-				if(sensorData[6]<DISTANCETOWALL-moreDistanceToWall && sensorData[7]<DISTANCETOWALL-moreDistanceToWall && sensorData[8]>DISTANCETOWALL+moreDistanceToWall)
-				{
-					targetWallDistance = PERFECTDISTTOW * 0; // ( 1 - avoidObstacleBy);
-				}
-				// wenn nur vorne links ein obstacle
-				if(sensorData[6]>DISTANCETOWALL+moreDistanceToWall && sensorData[7]<DISTANCETOWALL-moreDistanceToWall && sensorData[8]<DISTANCETOWALL-moreDistanceToWall)
-				{
-					targetWallDistance = PERFECTDISTTOW * 3; // ( 1 + avoidObstacleBy);
-				}
 				errorP = (int)(sensorData[2]) - targetWallDistance;
 				sum = (int)(errorP * kP);
 				if( sum > speed )
@@ -219,18 +209,6 @@ void motorDriveTo(uint8_t direction, int speed)
 			}
 			else if (wallExists(LEFT))
 			{
-				// wenn nur vorne rechts ein obstacle
-				if(sensorData[6]<DISTANCETOWALL-moreDistanceToWall && sensorData[7]<DISTANCETOWALL-moreDistanceToWall && sensorData[8]>DISTANCETOWALL+moreDistanceToWall)
-				{
-					targetWallDistance = PERFECTDISTTOW * 3; // ( 1 + avoidObstacleBy);
-					// Serial.println("obstacle on right");
-				}
-				// wenn nur vorne links ein obstacle
-				if(sensorData[6]>DISTANCETOWALL+moreDistanceToWall && sensorData[7]<DISTANCETOWALL-moreDistanceToWall && sensorData[8]<DISTANCETOWALL-moreDistanceToWall)
-				{
-					targetWallDistance = PERFECTDISTTOW * 0; // ( 1 - avoidObstacleBy);
-					// Serial.println("obstacle on left");
-				}
 				errorP = (int)(sensorData[0]) - targetWallDistance;
 				sum = (int)(errorP * kP);
 				if( sum > speed )

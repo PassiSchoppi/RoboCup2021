@@ -19,11 +19,18 @@ struct Field
 	bool directions[4] = {1, 1, 1, 1};
 	bool visited = false;
 	bool isBlack = false;
-	bool hasVictim = false;
+	int8_t numberOfKits = 69;
+	uint8_t victimOnWall = 0;
 	bool isRamp = false;
 	uint8_t distanceToUnvisited = 0;
 
 };
+
+
+
+void mapPreMap();
+
+uint8_t mapVictimAtWall();
 
 // Utility functions
 uint8_t mapDirectionToCompas(uint8_t directionI);
@@ -54,7 +61,7 @@ Vector mapStoriesThatConnectAt(Vector rampCoordinates);
 
 void calcDistanceRecursively(uint8_t s, uint8_t x, uint8_t y, uint8_t num);
 
-bool mapVictimIsAtCurrentField();
+uint8_t mapVictimIsAtCurrentField();
 uint8_t mapWhereToDrive();
 void mapDisplay();
 

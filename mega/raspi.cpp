@@ -11,6 +11,12 @@ char raspiRead()
 	int counter;
 	counter = 0;
 	value = ' ';
+
+
+	return('e');
+
+
+
 	if(wallExists(RIGHT) && !wallExists(LEFT)){
 		Serial.print('J');
 	}else if (wallExists(LEFT) && !wallExists(RIGHT))

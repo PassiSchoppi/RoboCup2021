@@ -35,6 +35,14 @@ void setup()
 	sensorRead();
 	melexisInit();
 	mapInit();
+
+
+
+	mapPreMap();
+
+
+
+
 	timerInit(); // 2 second delay
 	kitdropperInit();
 	raspiInit();
@@ -47,22 +55,33 @@ void setup()
 
 void loop() 
 {
+	// mapDisplay();
 	//digitalWrite(13, !digitalRead(13));
 	// motorDriveTo(BACK, BASESPEED);
 	// motorDriveSafe(SIGNUM(STEPSFORONE)*(uint8_t)(BASESPEED), 2, 0, 0);
 	// stabilize();
 	// raspiRead();
-	stateChange();
-	
-	/*kitdropperSetTo(POSMIDD);
+	/*servoPulse(21, POSMIDD);
 	delay(1000);
+	servoPulse(21, POSLEFT);
+	delay(1000);
+	servoPulse(21, POSMIDD);
+	delay(1000);
+	servoPulse(21, POSRIGHT);
+	delay(1000);*/
+	stateChange();
+	//motorDriveTo(FRONT, 50);
+	// LEDSetColor(RED);
+	//kitdropperSetTo(POSMIDD);
+	// delay(1000);
+/*
 	kitdropperSetTo(POSLEFT);
 	delay(1000);
 	kitdropperSetTo(POSMIDD);
 	delay(1000);
 	kitdropperSetTo(POSRIGHT);
-	delay(1000);*/
-
+	delay(1000);
+*/
 	output();
 	// mapDisplay();
 	// gyroInterrupt();

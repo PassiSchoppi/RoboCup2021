@@ -13,6 +13,75 @@ uint8_t robot_is_on_story;
 Vector robot_is_at;
 Vector lastVisitedSilver;
 
+
+
+
+
+
+void mapPreMap(){
+	// linke reihe nach oben
+	Map[0][8][8].directions[NOTH] = false;
+	Map[0][8][7].directions[SOUTH] = false;
+	Map[0][8][7].directions[NOTH] = false;
+	Map[0][8][6].directions[SOUTH] = false;
+	Map[0][8][6].directions[NOTH] = false;
+	Map[0][8][5].directions[SOUTH] = false;
+	// openings von linker reihe nach rechts
+	Map[0][8][7].directions[EAST] = false;
+	Map[0][9][7].directions[WEST] = false;
+	Map[0][8][5].directions[EAST] = false;
+	Map[0][9][5].directions[WEST] = false;
+	// 2te reihe links unten nach oben
+	Map[0][9][8].directions[NOTH] = false;
+	Map[0][9][8].directions[EAST] = false;
+	Map[0][9][7].directions[NOTH] = false;
+	Map[0][9][7].directions[SOUTH] = false;
+	Map[0][9][7].directions[WEST] = false;
+	Map[0][9][6].directions[NOTH] = false;
+	Map[0][9][6].directions[EAST] = false;
+	Map[0][9][6].directions[SOUTH] = false;
+	Map[0][9][5].directions[EAST] = false;
+	Map[0][9][5].directions[SOUTH] = false;
+	Map[0][9][5].directions[WEST] = false;
+	// 3te reihe von links nach oben
+	Map[0][10][8].directions[EAST] = false;
+	Map[0][10][8].directions[WEST] = false;
+	Map[0][10][7].directions[NOTH] = false;
+	Map[0][10][7].directions[EAST] = false;
+	Map[0][10][6].directions[SOUTH] = false;
+	Map[0][10][6].directions[WEST] = false;
+	Map[0][10][5].directions[EAST] = false;
+	Map[0][10][5].directions[WEST] = false;
+	// last row
+	Map[0][11][8].directions[NOTH] = false;
+	Map[0][11][8].directions[WEST] = false;
+	Map[0][11][7].directions[NOTH] = false;
+	Map[0][11][7].directions[SOUTH] = false;
+	Map[0][11][7].directions[WEST] = false;
+	Map[0][11][6].directions[NOTH] = false;
+	Map[0][11][6].directions[SOUTH] = false;
+	Map[0][11][5].directions[SOUTH] = false;
+	Map[0][11][5].directions[WEST] = false;
+
+	for(int x=8; x<12; x++){
+		for(int y=8; y>4; y--){
+			Map[0][x][y].visited = true;
+		}
+	}
+
+	Map[0][11][7].visited = false;
+	Map[0][11][7].victimOnWall = EAST;
+	Map[0][11][7].numberOfKits = 2;
+}
+
+
+
+
+
+
+
+
+
 /*
  ▄▄▄▄▄▄  ▄▄▄ ▄▄▄▄▄▄   ▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄ ▄▄▄▄▄▄▄ ▄▄    ▄    ▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄ ▄▄    ▄ ▄▄   ▄▄ ▄▄▄▄▄▄▄ ▄▄▄▄▄▄   ▄▄▄▄▄▄▄ ▄▄▄ ▄▄▄▄▄▄▄ ▄▄    ▄ 
 █      ██   █   ▄  █ █       █       █       █   █       █  █  █ █  █       █       █  █  █ █  █ █  █       █   ▄  █ █       █   █       █  █  █ █
@@ -197,7 +266,7 @@ void mapClear()
 			for ( uint8_t o=0; o<MAPSIZE; ++o ){
 				Map[ s ][ i ][ o ].visited = false;
 				Map[ s ][ i ][ o ].isBlack = false;
-				Map[ s ][ i ][ o ].hasVictim = false;
+				Map[ s ][ i ][ o ].numberOfKits = 69;
 				Map[ s ][ i ][ o ].isRamp = false;
 				Map[ s ][ i ][ o ].distanceToUnvisited = 0;
 				Map[ s ][ i ][ o ].directions[0] = 1;
@@ -248,11 +317,11 @@ void mapUpdateField()
 
 	// add walls to current field
 	//  etage              X              Y                          compas                            wand
-	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[ mapDirectionToCompas( FRONT ) ] = wallExists(FRONT);
+	/*Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[ mapDirectionToCompas( FRONT ) ] = wallExists(FRONT);
 	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[ mapDirectionToCompas( RIGHT ) ] = wallExists(RIGHT);
 	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[ mapDirectionToCompas( BACK ) ] = 	wallExists(BACK);
 	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[ mapDirectionToCompas( LEFT ) ] = 	wallExists(LEFT);
-
+*/
 	/*Serial.println("new walls:");
 	for ( uint8_t i=0; i<4; ++i ){
 		Serial.println(Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[i]);
@@ -260,13 +329,13 @@ void mapUpdateField()
 	
 	// change walls of sourounding fields
 	//					 wand eines anliegenden Feldes                        =                     wand welche an dieses Feld angrenztz
-	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y-1].directions[ SOUTH ] = 	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[NOTH];
+/*	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y-1].directions[ SOUTH ] = 	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[NOTH];
 	Map[robot_is_on_story][robot_is_at.X+1][robot_is_at.Y].directions[ WEST ] = 	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[EAST];
 	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y+1].directions[ NOTH ] = 	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[SOUTH];
 	Map[robot_is_on_story][robot_is_at.X-1][robot_is_at.Y].directions[ EAST ] = 	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].directions[WEST];
-
+*/
 	// silver field
-	if( sensorData[13]<MINWHITE || sensorData[14]<MINWHITE )
+/*	if( sensorData[13]<MINWHITE || sensorData[14]<MINWHITE )
 	{
 		if(SEND){Serial.print("detected silver tile... robot is at: ");
 		Serial.print(robot_is_at.X);Serial.print(" | ");
@@ -312,7 +381,7 @@ void mapUpdateField()
 			delay(100);
 		}
 	}
-
+*/
 	// mark current field as visited
 	Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].visited = true;
 
@@ -486,17 +555,22 @@ void mapVictimNewAtCurrentField()
 	if(SEND){Serial.println("new victim at:");
 	Serial.println(robot_is_at.X);
 	Serial.println(robot_is_at.Y);}
-	Map[robot_is_on_story][ robot_is_at.X ][ robot_is_at.Y ].hasVictim = true;
+	Map[robot_is_on_story][ robot_is_at.X ][ robot_is_at.Y ].numberOfKits = 69;
 }
 
-bool mapVictimIsAtCurrentField()
+uint8_t mapVictimIsAtCurrentField()
 {
-	if(SEND){Serial.println("robot is at:");
+	if(SEND){/*Serial.println("robot is at:");
 	Serial.println(robot_is_at.X);
 	Serial.println(robot_is_at.Y);
 	Serial.print("Field has victim: ");
-	Serial.println(Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].hasVictim);}
-	return( Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].hasVictim );
+	Serial.println(Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].numberOfKits );*/}
+	return( Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].numberOfKits );
+}
+
+uint8_t mapVictimAtWall()
+{
+	return( Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].victimOnWall );
 }
 
 /*
@@ -997,7 +1071,7 @@ void mapDisplay()
 			}
 		}
 
-		if ( Map[s][i][o].hasVictim )
+		if ( Map[s][i][o].numberOfKits != 69 )
 			Serial.print("M");
 		else
 			Serial.print("_");

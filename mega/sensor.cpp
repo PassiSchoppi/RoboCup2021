@@ -90,7 +90,7 @@ void sensorRead()
 	}
 
 	// 														MELEXIS
-	melexisInterrupt();
+	// melexisInterrupt();
 	sensorData[11]=((int)melexisGetValue(0));
 	sensorData[12]=((int)melexisGetValue(1));
 	
