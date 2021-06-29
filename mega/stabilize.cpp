@@ -120,11 +120,11 @@ void stabilize()
 		}
 	}*/
 
-	return;
+	// return;
 
 
 	
-	for(int i=0; i<2000; ++i)
+	for(int i=0; i<50; ++i)
 	{
 		/*if( wallExists(LEFT) )
 		{
@@ -160,27 +160,49 @@ void stabilize()
 		factor = 0.02;
 		if( wallExists(LEFT) )
 		{
-			int speed = factor*(sensorData[0]-sensorData[1])*(sensorData[0]-sensorData[1])*(sensorData[0]-sensorData[1]);
+			/*int speed = factor*(sensorData[0]-sensorData[1])*(sensorData[0]-sensorData[1])*(sensorData[0]-sensorData[1]);
 			if(speed > BASESPEED){
 				speed = BASESPEED;
 			}else if (speed < -BASESPEED)
 			{
 				speed = -BASESPEED;
+			}*/
+			if(sensorData[0]<sensorData[1]){
+				motorSetSpeed(0, -BASESPEED/2);
+				motorSetSpeed(1, -BASESPEED/2);
+				motorSetSpeed(2, BASESPEED/2);
+				motorSetSpeed(3, BASESPEED/2);
+			}else{
+				motorSetSpeed(0, BASESPEED/2);
+				motorSetSpeed(1, BASESPEED/2);
+				motorSetSpeed(2, -BASESPEED/2);
+				motorSetSpeed(3, -BASESPEED/2);
 			}
-			motorSetSpeed(1, speed);
-			motorSetSpeed(0, speed);
+			delay(10);
+			motorBrake();
 		}
 		if( wallExists(RIGHT) )
 		{
-			int speed = factor*(sensorData[2]-sensorData[3])*(sensorData[2]-sensorData[3])*(sensorData[2]-sensorData[3]);
+			/*int speed = factor*(sensorData[2]-sensorData[3])*(sensorData[2]-sensorData[3])*(sensorData[2]-sensorData[3]);
 			if(speed > BASESPEED){
 				speed = BASESPEED;
 			}else if (speed < -BASESPEED)
 			{
 				speed = -BASESPEED;
+			}*/
+			if(sensorData[2]>sensorData[3]){
+				motorSetSpeed(0, -BASESPEED/2);
+				motorSetSpeed(1, -BASESPEED/2);
+				motorSetSpeed(2, BASESPEED/2);
+				motorSetSpeed(3, BASESPEED/2);
+			}else{
+				motorSetSpeed(0, BASESPEED/2);
+				motorSetSpeed(1, BASESPEED/2);
+				motorSetSpeed(2, -BASESPEED/2);
+				motorSetSpeed(3, -BASESPEED/2);
 			}
-			motorSetSpeed(2, speed);
-			motorSetSpeed(3, speed);
+			delay(10);
+			motorBrake();
 		}
 	}
 
@@ -192,7 +214,7 @@ void stabilize()
 		motorBrake();
 		// links: 	      rechts:
 		//sensorData[9]<sensorData[10] && 
-		while(i<1000){
+		/*while(i<1000){
 			int speed;
 			speed = factor*(sensorData[9]-sensorData[10])*(sensorData[9]-sensorData[10])*(sensorData[9]-sensorData[10]);
 			if(speed > BASESPEED){
@@ -204,7 +226,38 @@ void stabilize()
 			motorDriveTo(LEFT, -speed);
 			motorDriveTo(RIGHT, speed);
 			++i;
+		}*/
+		if(sensorData[9]>sensorData[10]){
+			motorDriveTo(RIGHT, BASESPEED/2);
+		}else if (sensorData[9]<sensorData[10])
+		{
+			motorDriveTo(LEFT, BASESPEED/2);
+		}else
+		{
+			motorBrake();
+			// delay(1000);
 		}
+		delay(10);
+		motorBrake();
+
+		if(sensorData[9] > PERFECTDISTTOW+13 ){
+			motorDriveTo(FRONT, BASESPEED/2);
+		}else{
+			motorDriveTo(BACK, BASESPEED/2);
+		}
+		delay(20);
+		motorBrake();
+	}
+
+	if(wallExists(FRONT)){
+		int plusToDis;
+		plusToDis = 13;
+		if(!(sensorData[6]>PERFECTDISTTOW-plusToDis && sensorData[7]>PERFECTDISTTOW-plusToDis && sensorData[8]>PERFECTDISTTOW-plusToDis)){
+			motorDriveTo(FRONT, BASESPEED/2);
+		}else{
+			motorDriveTo(BACK, BASESPEED/2);
+		}
+		delay(20);
 		motorBrake();
 	}
 

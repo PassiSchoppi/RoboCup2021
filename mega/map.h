@@ -29,6 +29,7 @@ struct Field
 
 
 void mapPreMap();
+void mapPutVitimAt(uint8_t field, uint8_t orientation, uint8_t kits);
 
 uint8_t mapVictimAtWall();
 

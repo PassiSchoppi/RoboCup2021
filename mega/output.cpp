@@ -27,8 +27,8 @@ void output()
 	Serial.print(" FL: ");Serial.print(sensorData[6]);
 	Serial.print(" FC: ");Serial.print(sensorData[7]);
 	Serial.print(" FR: ");Serial.println(sensorData[8]);
-	Serial.print(" BL: ");Serial.print(sensorData[9]);
-	Serial.print(" BR: ");Serial.print(sensorData[10]);
+	*/Serial.print(" BL: ");Serial.print(sensorData[9]);
+	Serial.print(" BR: ");Serial.println(sensorData[10]);/*
 	Serial.print(" E: ");Serial.println(sensorData[9]-sensorData[10]);
 	// # ACC #
 	Serial.print("Accelerometer:");

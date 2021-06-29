@@ -49,18 +49,21 @@ void setup()
 	rampInit();
 	// gyroInit();
 
+	// mapPutVitimAt(2, 3, 2);
+
 	Serial.begin(115200);
 }
 
 
 void loop() 
 {
+	// raspiRead();
 	// mapDisplay();
 	//digitalWrite(13, !digitalRead(13));
 	// motorDriveTo(BACK, BASESPEED);
 	// motorDriveSafe(SIGNUM(STEPSFORONE)*(uint8_t)(BASESPEED), 2, 0, 0);
 	// stabilize();
-	// raspiRead();
+	// delay(1000);
 	/*servoPulse(21, POSMIDD);
 	delay(1000);
 	servoPulse(21, POSLEFT);
@@ -82,7 +85,7 @@ void loop()
 	kitdropperSetTo(POSRIGHT);
 	delay(1000);
 */
-	output();
+	// output();
 	// mapDisplay();
 	// gyroInterrupt();
 	// Serial.print(gyroX());Serial.print(" ");

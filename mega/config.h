@@ -58,7 +58,7 @@ extern uint8_t level;  // ebene fläche
 
 #define P 				30
 
-#define STEPSFORONE 	135
+#define STEPSFORONE 	133
 #define STEPSFORHALF 	90
 #define STEPFFORRIGHT 	70
 #define STEPSFORLEFT 	70
@@ -66,7 +66,7 @@ extern uint8_t level;  // ebene fläche
 #define STEPSFORLEFT 	73*/
 
 #define WAITINGTIME     0
-#define SEND            true
+#define SEND            false
 
 #define MAXTIMEINSTATE  3000
 

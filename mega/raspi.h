@@ -5,10 +5,11 @@
 #include "led.h"
 #include "config.h"
 #include "wall.h"
+#include "map.h"
 
 void raspiInit();
 
-char raspiRead();
+bool raspiRead();
 
 
 #endif

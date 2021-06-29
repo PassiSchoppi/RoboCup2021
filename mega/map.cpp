@@ -13,6 +13,8 @@ uint8_t robot_is_on_story;
 Vector robot_is_at;
 Vector lastVisitedSilver;
 
+int numberOfVictimsToBeFound = 2;
+
 
 
 
@@ -68,10 +70,6 @@ void mapPreMap(){
 			Map[0][x][y].visited = true;
 		}
 	}
-
-	Map[0][11][7].visited = false;
-	Map[0][11][7].victimOnWall = EAST;
-	Map[0][11][7].numberOfKits = 2;
 }
 
 
@@ -556,15 +554,16 @@ void mapVictimNewAtCurrentField()
 	Serial.println(robot_is_at.X);
 	Serial.println(robot_is_at.Y);}
 	Map[robot_is_on_story][ robot_is_at.X ][ robot_is_at.Y ].numberOfKits = 69;
+	numberOfVictimsToBeFound -= 1;
 }
 
 uint8_t mapVictimIsAtCurrentField()
 {
-	if(SEND){/*Serial.println("robot is at:");
+	Serial.println("robot is at:");
 	Serial.println(robot_is_at.X);
 	Serial.println(robot_is_at.Y);
 	Serial.print("Field has victim: ");
-	Serial.println(Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].numberOfKits );*/}
+	Serial.println(Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].numberOfKits );
 	return( Map[robot_is_on_story][robot_is_at.X][robot_is_at.Y].numberOfKits );
 }
 
@@ -846,9 +845,19 @@ uint8_t mapWhereToDrive()
 */
 void mapReturnToHome()
 {
-	Map[0][STARTX][STARTY].visited = false;
-	Map[0][STARTX][STARTY].isBlack = false;
-	Map[0][STARTX][STARTY].isRamp = false;
+	if(robot_is_at.X == STARTX && robot_is_at.Y == STARTY){
+		if(SEND){Serial.println("already home");}
+	}else{
+		if(SEND){Serial.println("not home jet");}
+		if(numberOfVictimsToBeFound < 1){
+			Serial.println(robot_is_at.X);Serial.println(robot_is_at.Y);
+			Map[0][STARTX][STARTY].visited = false;
+			Map[0][STARTX][STARTY].isBlack = false;
+			Map[0][STARTX][STARTY].isRamp = false;
+		}else{
+			if(SEND){Serial.println("lol ");Serial.println(numberOfVictimsToBeFound);}
+		}
+	}
 }
 
 /*
@@ -938,6 +947,73 @@ Vector mapStoriesThatConnectAt(Vector rampCoordinates)
 	Serial.println(rampCoordinates.Y);*/
 	return(stories);
 }
+
+/*
+
+*/
+
+
+void mapPutVitimAt(uint8_t field, uint8_t orientation, uint8_t kits){
+	int x;
+	int y;
+	switch (field)
+	{
+	case 1:
+		x = 8;
+		y = 8;
+		break;
+	case 2:
+		x = 8;
+		y = 7;
+		break;
+	case 3:
+		x = 8;
+		y = 5;
+		break;
+	case 4:
+		x = 9;
+		y = 8;
+		break;
+	case 5:
+		x = 9;
+		y = 7;
+		break;
+	case 6:
+		x = 10;
+		y = 8;
+		break;
+	case 7:
+		x = 10;
+		y = 7;
+		break;
+	case 8:
+		x = 10;
+		y = 6;
+		break;
+	case 9:
+		x = 10;
+		y = 5;
+		break;
+	case 10:
+		x = 11;
+		y = 7;
+		break;
+	case 11:
+		x = 11;
+		y = 6;
+		break;
+	case 12:
+		x = 11;
+		y = 5;
+		break;
+	}
+
+	Map[0][x][y].visited = false;
+	Map[0][x][y].victimOnWall = orientation;
+	Map[0][x][y].numberOfKits = kits;
+}
+
+
 
 /*
  ▄▄▄▄▄▄  ▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄     ▄▄▄▄▄▄ ▄▄   ▄▄ 

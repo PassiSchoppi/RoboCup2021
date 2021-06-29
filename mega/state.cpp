@@ -68,6 +68,7 @@ void stateChange()
 		motorResetAllSteps();
 		if(SEND){Serial.println("resetting");}
 		mapClear();
+		mapPreMap();
 		state = 8;
 		timeSpentInOneState = 0;
 		timeSpentInOneStateB = 0;
@@ -88,6 +89,16 @@ void stateChange()
 		}
 		case 1:
 		{
+
+			
+			motorBrake();
+			if(raspiRead()){
+				state = 1;
+				break;
+			}
+
+
+
 			/*
 			 ▄▄▄▄▄▄  ▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄ ▄▄▄▄▄▄▄ ▄▄    ▄ 
 			█      ██       █       █   █       █   █       █  █  █ █
@@ -202,7 +213,9 @@ void stateChange()
 					█▄█   █▄█▄█ █▄▄█▄▄▄█    
 					*/
 				motorResetAllSteps();
+				stabilize();
 				mapUpdateField();
+				stabilize();
 
 				uint8_t compasToGoTo = mapWhereToDrive();
 				if(SEND){Serial.print("!!! going to: ");
@@ -240,13 +253,21 @@ void stateChange()
 					{
 						if(SEND){Serial.println("ARE WE HOME JET????");}
 						mapReturnToHome();
-						if(SEND){Serial.println("SOON!!!!");}
 						state = 1;
 						timeSpentInOneState = 0;
 						timeSpentInOneStateB = 0;
 						break;
 					}
 				}
+				if(mapCompasToDirection( compasToGoTo ) == 5)
+				{
+					if(SEND){Serial.println("ARE WE HOME JET????");}
+					mapReturnToHome();
+					state = 1;
+					timeSpentInOneState = 0;
+					timeSpentInOneStateB = 0;
+				}
+				
 				// Serial.println("letzzz gooo");
 				mapDisplay();
 				// mapMoveTo( mapCompasToDirection( compasToGoTo ) );
@@ -289,17 +310,17 @@ void stateChange()
 				motorBrake();
 				motorBrake();
 				stabilize();
-				if(wallExists(LEFT) || wallExists(RIGHT)){
-					visVictim = raspiRead();
-					if(visVictim != 'e' && !mapVictimIsAtCurrentField())
-					{
+
+
+
 						lastState = 3;
 						state = 6;
 						timeSpentInOneState = 0;
 						timeSpentInOneStateB = 0;
 						return;
-					}
-				}
+
+
+
 				// gerade aus
 				timeSpentInOneState = 0;
 				timeSpentInOneStateB = 0;
@@ -342,7 +363,7 @@ void stateChange()
 			//7   FC,
 			//8   FR,
 			int plusToDis;
-			plusToDis = 13;
+			plusToDis = 23;
 			if(obstacleSum){
 				average -= 25;
 			}
@@ -384,7 +405,7 @@ void stateChange()
 				break;
 			}
 
-			if(DORAMPDETECTION)
+			/*if(DORAMPDETECTION)
 			{
 
 				// wenn on ramp down
@@ -412,10 +433,10 @@ void stateChange()
 					timeSpentInOneStateB = 0;
 					break;
 				}
-			}
+			}*/
 			
 			// if black tile
-			if( sensorData[13]>MAXWHITE || sensorData[14]>MAXWHITE )
+			/*if( sensorData[13]>MAXWHITE || sensorData[14]>MAXWHITE )
 			{
 				// THIS \/ is the right order!
 				if(outOfField){
@@ -429,7 +450,7 @@ void stateChange()
 				timeSpentInOneStateB = 0;
 				numberOfStepsBeforBlack = motorAverageSteps();
 				break;
-			}
+			}*/
 			break;
 		}
 		case 4:
@@ -469,17 +490,15 @@ void stateChange()
 				stabilize();
 				motorBrake();
 				overHalfOfTurn = false;
-				if(wallExists(LEFT) || wallExists(RIGHT)){
-					visVictim = raspiRead();
-					if(visVictim != 'e' && !mapVictimIsAtCurrentField())
-					{
+
+
 						lastState = 3;
 						state = 6;
 						timeSpentInOneState = 0;
 						timeSpentInOneStateB = 0;
 						return;
-					}
-				}
+
+
 				// gerade aus
 				timeSpentInOneState = 0;
 				timeSpentInOneStateB = 0;
@@ -523,17 +542,16 @@ void stateChange()
 				stabilize();
 				motorBrake();
 				overHalfOfTurn = false;
-				if(wallExists(LEFT) || wallExists(RIGHT)){
-					visVictim = raspiRead();
-					if(visVictim != 'e' && !mapVictimIsAtCurrentField())
-					{
+
+
+
 						lastState = 4;
 						state = 6;
 						timeSpentInOneState = 0;
 						timeSpentInOneStateB = 0;
 						return;
-					}
-				}
+
+
 				// dann left und dann gerade aus
 				state = 4;
 				timeSpentInOneState = 0;
@@ -556,7 +574,9 @@ void stateChange()
 			// wenn noch kein victim auf dem Feld ist
 			
 			// Serial.println();
-			// Serial.print("FOUND");
+			Serial.print("victim?: ");
+			Serial.println(mapVictimIsAtCurrentField());
+			uint8_t partofrotation = 4;
 
 			bool victimIsLeftNotRight = false;
 			if ( mapVictimIsAtCurrentField() != 69 )
@@ -592,6 +612,18 @@ void stateChange()
 				}*/
 
 				// turn left/right 45 deg
+				motorBrake();
+				motorResetAllSteps();
+				if( !victimIsLeftNotRight )
+				{
+					while(motorAverageSteps() < STEPSFORLEFT/partofrotation){
+						motorDriveTo(LEFT, BASESPEED);
+					}
+				}else{
+					while(motorAverageSteps() < STEPFFORRIGHT/partofrotation){
+						motorDriveTo(RIGHT, BASESPEED);
+					}
+				}
 				
 				// sekunde 1
 				motorBrake();
@@ -725,11 +757,24 @@ void stateChange()
 						kitdropperSetTo(POSMIDD-5);
 						delay(2000);
 					}
+								// turn left/right 45 deg
+					motorBrake();
+					motorResetAllSteps();
+					if( !victimIsLeftNotRight )
+					{
+						while(motorAverageSteps() < STEPSFORLEFT/partofrotation){
+							motorDriveTo(RIGHT, BASESPEED);
+						}
+					}else{
+						while(motorAverageSteps() < STEPFFORRIGHT/partofrotation){
+							motorDriveTo(LEFT, BASESPEED);
+						}
+					}
 				}
 			}else{
 				// if(SEND){Serial.println(" OLD VICTIM");
-				// Serial.println("returning to last state:");
-				// Serial.println(lastState);}
+				Serial.println("returning to last state:");
+				Serial.println(lastState);//}
 				state = lastState;
 				timeSpentInOneState = 0;
 
@@ -773,13 +818,14 @@ void stateChange()
 			motorResetAllSteps();
 			if(wallExists(LEFT) || wallExists(RIGHT)){
 				// wenn victim
-				if( sensorData[11]>VICTIMTEMP || sensorData[12]>VICTIMTEMP)
-				{
-					lastState = state;
+				// if( sensorData[11]>VICTIMTEMP || sensorData[12]>VICTIMTEMP)
+				// {
+					lastState = 1;
 					state = 6;
 					timeSpentInOneState = 0;
 					timeSpentInOneStateB = 0;
-				}
+					break;
+				// }
 			}
 			timeSpentInOneState = 0;
 
